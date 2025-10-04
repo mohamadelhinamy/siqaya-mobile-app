@@ -1,0 +1,75 @@
+{
+  "common": {
+    "welcome": "Welcome",
+    "loading": "Loading...",
+    "error": "Error",
+    "retry": "Retry",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort"
+  },
+  "navigation": {
+    "home": "Home",
+    "profile": "Profile",
+    "settings": "Settings",
+    "about": "About"
+  },
+  "home": {
+    "title": "Siqaya Mobile App",
+    "subtitle": "Welcome to your new app",
+    "welcomeCard": {
+      "title": "Welcome",
+      "description": "This is your new React Native application with a proper folder structure. You can start building your features from here!"
+    },
+    "quickActions": {
+      "title": "Quick Actions",
+      "welcome": "Welcome",
+      "getStarted": "Get Started"
+    },
+    "features": {
+      "title": "Features",
+      "organizedStructure": "Organized folder structure",
+      "reusableComponents": "Reusable components",
+      "typescriptSupport": "TypeScript support",
+      "darkModeSupport": "Dark mode support",
+      "sampleScreens": "Sample screens and navigation",
+      "multiLanguage": "Multi-language support"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your account",
+    "userInfo": {
+      "title": "User Information",
+      "name": "Name",
+      "email": "Email",
+      "memberSince": "Member since"
+    },
+    "actions": {
+      "title": "Actions",
+      "editProfile": "Edit Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "sampleData": {
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "memberSince": "October 2025"
+    }
+  },
+  "language": {
+    "title": "Language",
+    "current": "Current Language",
+    "english": "English",
+    "arabic": "Arabic",
+    "switch": "Switch Language"
+  }
+}

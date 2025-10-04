@@ -32,3 +32,25 @@ export interface Theme {
     secondary: string;
   };
 }
+
+// Language and Internationalization types
+export type SupportedLanguage = 'en' | 'ar';
+
+export interface LanguageConfig {
+  code: SupportedLanguage;
+  name: string;
+  nativeName: string;
+  isRTL: boolean;
+}
+
+export interface LanguageContextType {
+  currentLanguage: SupportedLanguage;
+  isRTL: boolean;
+  availableLanguages: LanguageConfig[];
+  changeLanguage: (language: SupportedLanguage) => Promise<void>;
+  t: (key: string, options?: any) => string;
+}
+
+export interface TranslationResource {
+  [key: string]: string | TranslationResource;
+}

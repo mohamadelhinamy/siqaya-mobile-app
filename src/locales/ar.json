@@ -1,0 +1,75 @@
+{
+  "common": {
+    "welcome": "مرحباً",
+    "loading": "جاري التحميل...",
+    "error": "خطأ",
+    "retry": "إعادة المحاولة",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "back": "رجوع",
+    "next": "التالي",
+    "previous": "السابق",
+    "close": "إغلاق",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب"
+  },
+  "navigation": {
+    "home": "الرئيسية",
+    "profile": "الملف الشخصي",
+    "settings": "الإعدادات",
+    "about": "حول التطبيق"
+  },
+  "home": {
+    "title": "تطبيق سقاية المحمول",
+    "subtitle": "مرحباً بك في تطبيقك الجديد",
+    "welcomeCard": {
+      "title": "مرحباً",
+      "description": "هذا هو تطبيق React Native الجديد الخاص بك مع هيكل مجلدات منظم. يمكنك البدء في بناء ميزاتك من هنا!"
+    },
+    "quickActions": {
+      "title": "الإجراءات السريعة",
+      "welcome": "مرحباً",
+      "getStarted": "ابدأ الآن"
+    },
+    "features": {
+      "title": "الميزات",
+      "organizedStructure": "هيكل مجلدات منظم",
+      "reusableComponents": "مكونات قابلة لإعادة الاستخدام",
+      "typescriptSupport": "دعم TypeScript",
+      "darkModeSupport": "دعم الوضع المظلم",
+      "sampleScreens": "شاشات تجريبية والتنقل",
+      "multiLanguage": "دعم متعدد اللغات"
+    }
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "subtitle": "إدارة حسابك",
+    "userInfo": {
+      "title": "معلومات المستخدم",
+      "name": "الاسم",
+      "email": "البريد الإلكتروني",
+      "memberSince": "عضو منذ"
+    },
+    "actions": {
+      "title": "الإجراءات",
+      "editProfile": "تعديل الملف الشخصي",
+      "settings": "الإعدادات",
+      "logout": "تسجيل الخروج"
+    },
+    "sampleData": {
+      "name": "أحمد علي",
+      "email": "ahmed.ali@example.com",
+      "memberSince": "أكتوبر 2025"
+    }
+  },
+  "language": {
+    "title": "اللغة",
+    "current": "اللغة الحالية",
+    "english": "الإنجليزية",
+    "arabic": "العربية",
+    "switch": "تغيير اللغة"
+  }
+}
