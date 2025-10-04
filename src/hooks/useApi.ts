@@ -37,11 +37,11 @@ export const useUpdateUserProfile = () => {
     onSuccess: () => {
       // Invalidate and refetch user profile queries
       queryClient.invalidateQueries({queryKey: ['user', 'profile']});
-      
+
       // Optionally update cache directly
       // queryClient.setQueryData(['user', 'profile'], data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Failed to update profile:', error);
       // Handle error (show toast, etc.)
     },
@@ -53,7 +53,9 @@ export const usePostsList = (page = 1, limit = 10) => {
   return useQuery({
     queryKey: ['posts', 'list', {page, limit}],
     queryFn: async () => {
-      const response = await apiService.get(`/posts?page=${page}&limit=${limit}`);
+      const response = await apiService.get(
+        `/posts?page=${page}&limit=${limit}`,
+      );
       if (!response.success) {
         throw new Error(response.error);
       }
@@ -91,11 +93,11 @@ export const useLogin = () => {
       }
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       // Handle successful login (store token, navigate, etc.)
       console.log('Login successful:', data);
     },
-    onError: (error) => {
+    onError: error => {
       console.error('Login failed:', error);
     },
   });
