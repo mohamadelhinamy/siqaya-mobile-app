@@ -5,6 +5,7 @@ A production-ready React Native application with comprehensive authentication, n
 ## ✨ Features
 
 ### 🔐 Authentication System
+
 - **Token-based authentication** with AsyncStorage persistence
 - **Demo login functionality** for quick testing
 - **Automatic navigation** between auth and main app flows
@@ -12,6 +13,7 @@ A production-ready React Native application with comprehensive authentication, n
 - **Secure logout** with token cleanup
 
 ### 🧭 Navigation Architecture
+
 - **React Navigation v7** with stack and tab navigation
 - **Bottom Tab Navigator** with 3 main screens (Home, Profile, Settings)
 - **Authentication Stack** for login flow
@@ -19,6 +21,7 @@ A production-ready React Native application with comprehensive authentication, n
 - **Dark/Light theme** support throughout navigation
 
 ### 🌍 Internationalization (i18n)
+
 - **Multi-language support** (English & Arabic)
 - **RTL/LTL layout support** with automatic app restart
 - **Device language detection** on first launch
@@ -26,6 +29,7 @@ A production-ready React Native application with comprehensive authentication, n
 - **Complete translation** coverage for all screens
 
 ### 🎨 Modern UI/UX
+
 - **Dark mode support** with system theme detection
 - **RTL-aware components** and layouts
 - **Reusable component library** (Button, Card, Header, etc.)
@@ -33,6 +37,7 @@ A production-ready React Native application with comprehensive authentication, n
 - **Responsive design** for different screen sizes
 
 ### 🏗️ Architecture
+
 - **Clean folder structure** with organized components
 - **TypeScript** for type safety
 - **Context API** for state management
@@ -48,27 +53,32 @@ Make sure you have completed the [React Native Environment Setup](https://reactn
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone <repository-url>
    cd SiqayaMobileApp
    ```
 
 2. **Install dependencies**
+
    ```bash
    yarn install
    ```
 
 3. **Install iOS dependencies**
+
    ```bash
    cd ios && pod install && cd ..
    ```
 
 4. **Start Metro bundler**
+
    ```bash
    yarn start
    ```
 
 5. **Run the app**
+
    ```bash
    # iOS
    yarn ios
@@ -84,16 +94,19 @@ Make sure you have completed the [React Native Environment Setup](https://reactn
 ## 📱 App Flow
 
 ### Initial Launch
+
 1. App checks for existing authentication token
 2. If authenticated → Navigate to Bottom Tab Navigator
 3. If not authenticated → Show Login Screen
 
 ### Authentication Flow
+
 1. User enters credentials (or uses demo login)
 2. Token and user data stored in AsyncStorage
 3. App automatically navigates to main interface
 
 ### Language Switching
+
 1. User selects language from Header or Settings
 2. If RTL/LTR direction changes → App shows restart dialog
 3. App restarts to apply layout direction changes
@@ -146,6 +159,7 @@ src/
 ### Adding New Languages
 
 1. **Add translation file**
+
    ```bash
    # Create new translation file
    touch src/locales/es.json
@@ -155,23 +169,29 @@ src/
    ```typescript
    // src/services/i18n.ts
    export const AVAILABLE_LANGUAGES: LanguageConfig[] = [
-     { code: 'en', name: 'English', nativeName: 'English' },
-     { code: 'ar', name: 'Arabic', nativeName: 'العربية' },
-     { code: 'es', name: 'Spanish', nativeName: 'Español' }, // Add this
+     {code: 'en', name: 'English', nativeName: 'English'},
+     {code: 'ar', name: 'Arabic', nativeName: 'العربية'},
+     {code: 'es', name: 'Spanish', nativeName: 'Español'}, // Add this
    ];
    ```
 
 ### Adding New Screens
 
 1. **Create screen component**
+
    ```typescript
    // src/screens/NewScreen.tsx
    export const NewScreen: React.FC = () => {
-     return <View><Text>New Screen</Text></View>;
+     return (
+       <View>
+         <Text>New Screen</Text>
+       </View>
+     );
    };
    ```
 
 2. **Add to navigation**
+
    ```typescript
    // src/navigation/BottomTabNavigator.tsx
    <Tab.Screen name="New" component={NewScreen} />
@@ -190,16 +210,19 @@ src/
 ## 🛠️ Development
 
 ### Testing Authentication
+
 - Use "Demo Login" button for quick testing
 - Or enter any email/password combination
 - Check AsyncStorage for token persistence
 
 ### Testing Language Switching
+
 1. Switch language from Home header or Settings
 2. For RTL languages (Arabic), app will restart automatically
 3. Test all screens to ensure proper RTL layout
 
 ### Debugging
+
 - Use React Native Debugger for state inspection
 - Check Metro bundler console for errors
 - Use `console.log` statements in development
@@ -207,20 +230,24 @@ src/
 ## 📦 Dependencies
 
 ### Core
+
 - **React Native 0.75.2** - Mobile app framework
 - **TypeScript** - Type safety
 - **React Navigation 7.x** - Navigation system
 
 ### Authentication & Storage
+
 - **@react-native-async-storage/async-storage** - Persistent storage
 - **react-native-restart** - App restart functionality
 
 ### Internationalization
+
 - **i18next** - Internationalization framework
 - **react-i18next** - React bindings for i18next
 - **react-native-localize** - Device locale detection
 
 ### Navigation
+
 - **@react-navigation/native** - Navigation core
 - **@react-navigation/stack** - Stack navigation
 - **@react-navigation/bottom-tabs** - Tab navigation
@@ -233,21 +260,25 @@ src/
 ### Common Issues
 
 1. **Metro bundler not starting**
+
    ```bash
    yarn start --reset-cache
    ```
 
 2. **iOS build fails**
+
    ```bash
    cd ios && pod install && cd ..
    ```
 
 3. **Android build fails**
+
    ```bash
    cd android && ./gradlew clean && cd ..
    ```
 
 4. **Language not switching**
+
    - Check if translations exist in locale files
    - Verify language code in AVAILABLE_LANGUAGES
 
