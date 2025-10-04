@@ -1,0 +1,84 @@
+import React, {useState} from 'react';
+import {
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  useColorScheme,
+  View,
+} from 'react-native';
+import {HomeScreen, ProfileScreen} from './screens';
+import {Button} from './components';
+import {Colors} from './constants';
+
+function App(): React.JSX.Element {
+  const isDarkMode = useColorScheme() === 'dark';
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'profile'>(
+    'home',
+  );
+
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+
+  const renderScreen = () => {
+    switch (currentScreen) {
+      case 'home':
+        return <HomeScreen />;
+      case 'profile':
+        return <ProfileScreen />;
+      default:
+        return <HomeScreen />;
+    }
+  };
+
+  return (
+    <SafeAreaView style={[styles.container, backgroundStyle]}>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={backgroundStyle.backgroundColor}
+      />
+
+      {renderScreen()}
+
+      {/* Simple bottom navigation */}
+      <View
+        style={[
+          styles.bottomNav,
+          {backgroundColor: isDarkMode ? Colors.black : Colors.white},
+        ]}>
+        <Button
+          title="Home"
+          onPress={() => setCurrentScreen('home')}
+          variant={currentScreen === 'home' ? 'primary' : 'outline'}
+          style={styles.navButton}
+        />
+        <Button
+          title="Profile"
+          onPress={() => setCurrentScreen('profile')}
+          variant={currentScreen === 'profile' ? 'primary' : 'outline'}
+          style={styles.navButton}
+        />
+      </View>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  bottomNav: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingBottom: 24,
+    gap: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E5EA',
+  },
+  navButton: {
+    flex: 1,
+  },
+});
+
+export default App;
