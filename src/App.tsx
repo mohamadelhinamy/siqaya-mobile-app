@@ -1,6 +1,6 @@
 import React from 'react';
 import {StatusBar, useColorScheme} from 'react-native';
-import {LanguageProvider, AuthProvider} from './context';
+import {LanguageProvider, AuthProvider, QueryProvider} from './context';
 import {AppNavigator} from './navigation';
 
 // Import i18n configuration
@@ -11,15 +11,17 @@ function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
-    <LanguageProvider>
-      <AuthProvider>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor={isDarkMode ? '#1C1C1E' : '#F2F2F7'}
-        />
-        <AppNavigator />
-      </AuthProvider>
-    </LanguageProvider>
+    <QueryProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <StatusBar
+            barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+            backgroundColor={isDarkMode ? '#1C1C1E' : '#F2F2F7'}
+          />
+          <AppNavigator />
+        </AuthProvider>
+      </LanguageProvider>
+    </QueryProvider>
   );
 }
 
