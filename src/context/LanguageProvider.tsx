@@ -5,7 +5,8 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import {I18nManager} from 'react-native';
+import {I18nManager, Alert} from 'react-native';
+import RNRestart from 'react-native-restart';
 import {useTranslation} from 'react-i18next';
 import {SupportedLanguage, LanguageContextType, LanguageConfig} from '../types';
 import {
@@ -50,10 +51,24 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   // Change language function
   const changeLanguage = async (language: SupportedLanguage): Promise<void> => {
     try {
+      const previousLanguage = currentLanguage;
+      const wasRTL = RTL_LANGUAGES.includes(previousLanguage);
+      const willBeRTL = RTL_LANGUAGES.includes(language);
+
       await i18n.changeLanguage(language);
       await storeLanguage(language);
       setCurrentLanguage(language);
-      updateDirection(language);
+
+      // Check if direction change requires app restart
+      if (wasRTL !== willBeRTL) {
+        // Update the direction first
+        I18nManager.allowRTL(willBeRTL);
+        I18nManager.forceRTL(willBeRTL);
+
+        RNRestart.restart();
+      } else {
+        updateDirection(language);
+      }
     } catch (error) {
       console.error('Error changing language:', error);
     }

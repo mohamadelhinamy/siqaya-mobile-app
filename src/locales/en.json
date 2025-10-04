@@ -14,7 +14,10 @@
     "close": "Close",
     "search": "Search",
     "filter": "Filter",
-    "sort": "Sort"
+    "sort": "Sort",
+    "restartRequired": "Restart Required",
+    "restartMessage": "The app needs to restart to apply the language direction change.",
+    "restartNow": "Restart Now"
   },
   "navigation": {
     "home": "Home",
@@ -71,5 +74,26 @@
     "english": "English",
     "arabic": "Arabic",
     "switch": "Switch Language"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign In",
+      "subtitle": "Welcome back to your account",
+      "welcomeBack": "Welcome Back",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "signIn": "Sign In",
+      "demoLogin": "Use Demo Login",
+      "fillAllFields": "Please fill in all fields",
+      "loginError": "Login failed. Please try again."
+    },
+    "logout": {
+      "title": "Sign Out",
+      "message": "Are you sure you want to sign out?",
+      "confirm": "Sign Out",
+      "cancel": "Cancel"
+    }
   }
 }
