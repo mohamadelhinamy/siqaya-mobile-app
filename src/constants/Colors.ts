@@ -4,12 +4,13 @@ export const Colors = {
   white: '#FFFFFF',
   black: '#1C1C1E',
   light: '#8E8E93',
+  gray: '#8E8E93', // Tab bar inactive color
   dark: '#48484A',
   lighter: '#F2F2F7',
   darker: '#1C1C1E',
 
   // Brand colors
-  primary: '#007AFF',
+  primary: '#134691',
   secondary: '#5856D6',
   success: '#34C759',
   warning: '#FF9500',

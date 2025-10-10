@@ -21,7 +21,10 @@
   },
   "navigation": {
     "home": "Home",
-    "profile": "Profile",
+    "products": "Products",
+    "care": "Care", 
+    "paths": "Paths",
+    "profile": "My Account",
     "settings": "Settings",
     "about": "About"
   },
