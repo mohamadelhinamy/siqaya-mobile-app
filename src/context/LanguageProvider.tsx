@@ -5,10 +5,10 @@ import React, {
   useState,
   ReactNode,
 } from 'react';
-import {I18nManager, Alert} from 'react-native';
+import {I18nManager} from 'react-native';
 import RNRestart from 'react-native-restart';
 import {useTranslation} from 'react-i18next';
-import {SupportedLanguage, LanguageContextType, LanguageConfig} from '../types';
+import {SupportedLanguage, LanguageContextType} from '../types';
 import {
   AVAILABLE_LANGUAGES,
   RTL_LANGUAGES,
@@ -123,9 +123,9 @@ export const useRTLStyles = () => {
 
   return {
     isRTL,
-    textAlign: (isRTL ? 'right' : 'left') as 'left' | 'right',
-    flexDirection: (isRTL ? 'row-reverse' : 'row') as 'row' | 'row-reverse',
-    alignSelf: (isRTL ? 'flex-end' : 'flex-start') as 'flex-start' | 'flex-end',
+    textAlign: 'left',
+    flexDirection: 'row',
+    alignSelf: 'flex-start',
     marginLeft: (value: number) =>
       isRTL ? {marginRight: value} : {marginLeft: value},
     marginRight: (value: number) =>

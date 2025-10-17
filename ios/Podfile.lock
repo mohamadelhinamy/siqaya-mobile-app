@@ -1524,7 +1524,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNLocalize (3.5.2):
+  - RNLocalize (3.5.4):
     - React-Core
   - RNScreens (4.16.0):
     - DoubleConversion
@@ -1778,7 +1778,7 @@ SPEC CHECKSUMS:
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: 69ef571f3de08433d766d614c73a9838a06bf7eb
   hermes-engine: 3b6e0717ca847e2fc90a201e59db36caf04dee88
-  RCT-Folly: 34124ae2e667a0e5f0ea378db071d27548124321
+  RCT-Folly: 4464f4d875961fce86008d45f4ecf6cef6de0740
   RCTDeprecation: 34cbf122b623037ea9facad2e92e53434c5c7422
   RCTRequired: 24c446d7bcd0f517d516b6265d8df04dc3eb1219
   RCTTypeSafety: ef5e91bd791abd3a99b2c75fd565791102a66352
@@ -1837,12 +1837,12 @@ SPEC CHECKSUMS:
   ReactCommon: 6ef348087d250257c44c0204461c03f036650e9b
   RNCAsyncStorage: 23e56519cc41d3bade3c8d4479f7760cb1c11996
   RNGestureHandler: e6655f760db29c1e0533e226dc16778388d043a1
-  RNLocalize: 660576ad61f42a0929eb2c95837f3b04eef768bc
+  RNLocalize: 828754cd4edbe5db83e35c83f0df39d57dbc155d
   RNScreens: 4a6933a3c76e35c7edec7dc26ca024c5a1167630
   RNSVG: b8547fef75093d58c97fc5f5d03f2abe3646e4f6
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   Yoga: a1d7895431387402a674fd0d1c04ec85e87909b8
 
-PODFILE CHECKSUM: e5dc342fd043ad880e91ed10dc96b00d33cf4b0f
+PODFILE CHECKSUM: edc992157fa3bf1bb14db6b9b233a11d7de08c86
 
 COCOAPODS: 1.15.2

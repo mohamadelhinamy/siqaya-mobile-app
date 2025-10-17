@@ -72,7 +72,7 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
       paddingBottom: 20, // Move up from bottom
     },
     container: {
-      flexDirection: 'row-reverse',
+      flexDirection: 'row',
       backgroundColor: Colors.white,
       paddingBottom: 12,
       paddingTop: 12,

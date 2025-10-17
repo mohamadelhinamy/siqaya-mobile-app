@@ -1,132 +1,78 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView, useColorScheme} from 'react-native';
-import {Button, Card, Header} from '../components';
-import {useLanguage, useRTLStyles} from '../context';
+import {
+  ScrollView,
+  SafeAreaView,
+  StatusBar,
+  RefreshControl,
+  StyleSheet,
+  View,
+} from 'react-native';
+import {Colors} from '../constants';
+import {HomeHeader} from '../components/HomeHeader';
+import {SearchBar} from '../components/SearchBar';
+import {HeroBanner} from '../components/HeroBanner';
+import {ServicesGrid} from '../components/ServicesGrid';
+import {LatestProducts} from '../components/LatestProducts';
+import {WaterDeliveryBanner} from '../components/WaterDeliveryBanner';
 
 export const HomeScreen: React.FC = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const {t, changeLanguage, currentLanguage} = useLanguage();
-  const rtlStyles = useRTLStyles();
+  const [refreshing, setRefreshing] = React.useState(false);
 
-  const handleWelcomePress = () => {
-    console.log('Welcome button pressed!');
-  };
-
-  const handleGetStartedPress = () => {
-    console.log('Get Started button pressed!');
-  };
-
-  const handleLanguageSwitch = () => {
-    const newLanguage = currentLanguage === 'en' ? 'ar' : 'en';
-    changeLanguage(newLanguage);
-  };
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    // Simulate API call
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
 
   return (
-    <View
-      style={[
-        styles.container,
-        {backgroundColor: isDarkMode ? '#1C1C1E' : '#F2F2F7'},
-      ]}>
-      <Header
-        title={t('home.title')}
-        subtitle={t('home.subtitle')}
-        rightComponent={
-          <Button
-            title={t('language.switch')}
-            onPress={handleLanguageSwitch}
-            variant="outline"
-            style={styles.languageButton}
-          />
-        }
-      />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="dark-content" backgroundColor={Colors.white} />
 
       <ScrollView
-        style={[
-          styles.scrollView,
-          {direction: rtlStyles.isRTL ? 'rtl' : 'ltr'},
-        ]}
-        contentInsetAdjustmentBehavior="automatic">
-        <View
-          style={[
-            styles.content,
-            {alignItems: rtlStyles.isRTL ? 'flex-end' : 'flex-start'},
-          ]}>
-          <Card title={t('home.welcomeCard.title')}>
-            <Text
-              style={[
-                styles.text,
-                {
-                  color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                  textAlign: rtlStyles.textAlign,
-                },
-              ]}>
-              {t('home.welcomeCard.description')}
-            </Text>
-          </Card>
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+        {/* Components will be added step by step */}
+        {/* Header with Logo and Cart */}
+        <HomeHeader />
 
-          <Card title={t('home.quickActions.title')}>
-            <View style={styles.buttonContainer}>
-              <Button
-                title={t('home.quickActions.welcome')}
-                onPress={handleWelcomePress}
-                variant="primary"
-                style={styles.button}
-              />
-              <Button
-                title={t('home.quickActions.getStarted')}
-                onPress={handleGetStartedPress}
-                variant="outline"
-                style={styles.button}
-              />
-            </View>
-          </Card>
+        {/* Search Bar */}
+        <SearchBar placeholder="بحث ..." />
 
-          <Card title={t('home.features.title')}>
-            <Text
-              style={[
-                styles.text,
-                {
-                  color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                  textAlign: rtlStyles.textAlign,
-                },
-              ]}>
-              ✓ {t('home.features.organizedStructure')}
-              {'\n'}✓ {t('home.features.reusableComponents')}
-              {'\n'}✓ {t('home.features.typescriptSupport')}
-              {'\n'}✓ {t('home.features.darkModeSupport')}
-              {'\n'}✓ {t('home.features.sampleScreens')}
-              {'\n'}✓ {t('home.features.multiLanguage')}
-            </Text>
-          </Card>
-        </View>
+        {/* Hero Banner */}
+        <HeroBanner onPress={() => console.log('Hero banner pressed')} />
+
+        {/* Services Grid */}
+        <ServicesGrid />
+
+        {/* Latest Products */}
+        <LatestProducts />
+
+        {/* Water Delivery Banner */}
+        <WaterDeliveryBanner
+          onPress={() => console.log('Water delivery pressed')}
+        />
+
+        {/* Bottom Spacing for Tab Bar */}
+        <View style={styles.bottomSpacing} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: Colors.white,
   },
   scrollView: {
     flex: 1,
   },
-  content: {
-    padding: 16,
-  },
-  text: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  buttonContainer: {
-    gap: 12,
-  },
-  button: {
-    marginVertical: 4,
-  },
-  languageButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    minHeight: 36,
+  bottomSpacing: {
+    height: 100, // Extra space for floating tab bar
   },
 });
