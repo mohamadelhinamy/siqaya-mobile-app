@@ -46,34 +46,43 @@ src/
 ## 🧩 Components
 
 ### Button
+
 A customizable button component with multiple variants:
+
 - `primary` - Blue background button
-- `secondary` - Gray background button  
+- `secondary` - Gray background button
 - `outline` - Transparent with border
 
 ### Card
+
 A container component with shadow and styling for content grouping.
 
 ### Header
+
 A navigation header with title, subtitle, and optional left/right components.
 
 ### LoadingSpinner
+
 An activity indicator with optional text for loading states.
 
 ## 📱 Screens
 
 ### HomeScreen
+
 The main landing screen showcasing app features and quick actions.
 
 ### ProfileScreen
+
 User profile management screen with user information display.
 
 ## 🔧 Services
 
 ### ApiService
+
 Base HTTP client with methods for GET, POST, PUT, DELETE requests.
 
 ### UserService
+
 User-specific API calls like profile management and avatar upload.
 
 ## 🎨 Styling
@@ -92,7 +101,7 @@ npm start
 # Run on iOS
 npm run ios
 
-# Run on Android  
+# Run on Android
 npm run android
 
 # Run tests
@@ -105,6 +114,7 @@ npm run lint
 ## 📦 Next Steps
 
 You can now:
+
 1. Add more screens to the `src/screens/` directory
 2. Create additional reusable components in `src/components/`
 3. Implement navigation using React Navigation
