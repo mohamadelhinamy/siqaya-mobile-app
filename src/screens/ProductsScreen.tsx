@@ -7,6 +7,7 @@ export const ProductsScreen: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const {t} = useLanguage();
   const rtlStyles = useRTLStyles();
+  const align = (rtlStyles.isRTL ? 'right' : 'left') as 'left' | 'right';
 
   const styles = StyleSheet.create({
     container: {
@@ -18,16 +19,15 @@ export const ProductsScreen: React.FC = () => {
     },
     title: {
       fontSize: 28,
-      fontWeight: 'bold',
       color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
       marginBottom: 24,
-      textAlign: rtlStyles.textAlign,
+      textAlign: align,
     },
     subtitle: {
       fontSize: 16,
       color: isDarkMode ? '#8E8E93' : '#8E8E93',
       marginBottom: 24,
-      textAlign: rtlStyles.textAlign,
+      textAlign: align,
     },
   });
 
@@ -44,7 +44,7 @@ export const ProductsScreen: React.FC = () => {
               fontWeight: '600',
               color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
               marginBottom: 8,
-              textAlign: rtlStyles.textAlign,
+              textAlign: align,
             }}>
             Coming Soon
           </Text>
@@ -52,7 +52,7 @@ export const ProductsScreen: React.FC = () => {
             style={{
               fontSize: 14,
               color: isDarkMode ? '#8E8E93' : '#8E8E93',
-              textAlign: rtlStyles.textAlign,
+              textAlign: align,
             }}>
             Product catalog will be available here
           </Text>

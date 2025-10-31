@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
   TextStyle,
   Image,
 } from 'react-native';
+import {AppText} from '../core/AppText';
 import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
 
@@ -28,7 +28,7 @@ interface ServicesGridProps {
 const defaultServices: ServiceItem[] = [
   {
     id: '1',
-    title: 'أوقاف برؤى',
+    title: 'أوقاف الأيتام',
     subtitle: '',
     image: require('../../assets/images/small_card_image.png'),
     color: '#FFFFFF',
@@ -67,14 +67,16 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
         onPress={service.onPress}
         activeOpacity={0.8}>
         <Image source={service.image} style={styles.serviceImage} />
-        <Text style={styles.serviceTitle}>{service.title}</Text>
+        <AppText style={styles.serviceTitle}>{service.title}</AppText>
       </TouchableOpacity>
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={sectionTitleStyle}>مسارات الخير</Text>
+      <AppText bold style={sectionTitleStyle}>
+        مسارات الخير
+      </AppText>
 
       <ScrollView
         horizontal
@@ -93,7 +95,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: 'bold',
     color: Colors.black,
     marginBottom: 16,
     paddingHorizontal: 16,
@@ -136,7 +137,6 @@ const styles = StyleSheet.create({
   },
   serviceTitle: {
     fontSize: 12,
-    fontWeight: '500',
     color: Colors.black,
     textAlign: 'center',
   },

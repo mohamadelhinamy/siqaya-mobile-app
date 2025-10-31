@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
+import {View, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
+import {AppText} from './core/AppText';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {useLanguage} from '../context';
 
@@ -49,7 +44,7 @@ const TabIcon: React.FC<TabIconProps> = ({name, focused, size}) => {
       case 'Profile':
         return <ProfileIcon {...svgProps} />;
       default:
-        return <Text style={{fontSize: size, color: iconColor}}>•</Text>;
+        return <AppText style={{fontSize: size, color: iconColor}}>•</AppText>;
     }
   };
 
@@ -60,7 +55,7 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
   state,
   navigation,
 }) => {
-  const {t, isRTL} = useLanguage();
+  const {t} = useLanguage();
 
   const styles = StyleSheet.create({
     wrapper: {
@@ -200,13 +195,13 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
                 color={isFocused ? Colors.primary : Colors.gray}
                 size={24}
               />
-              <Text
+              <AppText
                 style={[
                   styles.tabLabel,
                   isFocused ? styles.focusedTabLabel : styles.unfocusedTabLabel,
                 ]}>
                 {getTabLabel(route.name)}
-              </Text>
+              </AppText>
             </TouchableOpacity>
           );
         })}

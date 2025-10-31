@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ViewStyle,
-  TextStyle,
-} from 'react-native';
+import {TouchableOpacity, StyleSheet, ViewStyle, TextStyle} from 'react-native';
+import {AppText} from './core/AppText';
 
 interface ButtonProps {
   title: string;
@@ -35,7 +30,8 @@ export const Button: React.FC<ButtonProps> = ({
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.7}>
-      <Text
+      <AppText
+        bold
         style={[
           styles.text,
           styles[`${variant}Text`],
@@ -43,7 +39,7 @@ export const Button: React.FC<ButtonProps> = ({
           textStyle,
         ]}>
         {title}
-      </Text>
+      </AppText>
     </TouchableOpacity>
   );
 };
@@ -73,7 +69,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    fontWeight: '600',
   },
   primaryText: {
     color: '#FFFFFF',

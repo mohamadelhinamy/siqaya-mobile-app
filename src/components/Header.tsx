@@ -1,5 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet, SafeAreaView} from 'react-native';
+import {View, StyleSheet, SafeAreaView} from 'react-native';
+import {AppText} from './core/AppText';
 
 interface HeaderProps {
   title: string;
@@ -20,8 +21,10 @@ export const Header: React.FC<HeaderProps> = ({
         <View style={styles.leftSection}>{leftComponent}</View>
 
         <View style={styles.centerSection}>
-          <Text style={styles.title}>{title}</Text>
-          {subtitle && <Text style={styles.subtitle}>{subtitle}</Text>}
+          <AppText bold style={styles.title}>
+            {title}
+          </AppText>
+          {subtitle && <AppText style={styles.subtitle}>{subtitle}</AppText>}
         </View>
 
         <View style={styles.rightSection}>{rightComponent}</View>
@@ -56,7 +59,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: '600',
     color: '#1C1C1E',
   },
   subtitle: {

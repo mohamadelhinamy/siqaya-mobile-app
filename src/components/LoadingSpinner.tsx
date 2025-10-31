@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  View,
-  ActivityIndicator,
-  Text,
-  StyleSheet,
-  ViewStyle,
-} from 'react-native';
+import {View, ActivityIndicator, StyleSheet, ViewStyle} from 'react-native';
+import {AppText} from './core/AppText';
 
 interface LoadingSpinnerProps {
   size?: 'small' | 'large';
@@ -23,7 +18,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   return (
     <View style={[styles.container, style]}>
       <ActivityIndicator size={size} color={color} />
-      {text && <Text style={styles.text}>{text}</Text>}
+      {text && <AppText style={styles.text}>{text}</AppText>}
     </View>
   );
 };

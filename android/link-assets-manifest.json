@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/fonts/Juman-Bold.ttf",
+      "sha1": "e7b29368782691801f0f22923bd97ad8afc66b0a"
+    },
+    {
+      "path": "src/assets/fonts/Juman-Regular.ttf",
+      "sha1": "0382091cffe33113cc8f3d63e910b5af956835f3"
+    }
+  ]
+}

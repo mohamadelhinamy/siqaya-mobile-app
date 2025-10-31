@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
@@ -9,6 +8,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import {AppText} from '../core/AppText';
 import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
 
@@ -82,37 +82,43 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
             <Image source={product.image} style={styles.productImage} />
           ) : (
             <View style={[styles.productImage, styles.placeholderImage]}>
-              <Text style={styles.placeholderText}>🏺</Text>
+              <AppText style={styles.placeholderText}>🏺</AppText>
             </View>
           )}
 
           {product.badge && (
             <View style={styles.badge}>
-              <Text style={styles.badgeText}>{product.badge}</Text>
+              <AppText bold style={styles.badgeText}>
+                {product.badge}
+              </AppText>
             </View>
           )}
 
           {product.discount && (
             <View style={styles.discountBadge}>
-              <Text style={styles.discountText}>-{product.discount}</Text>
+              <AppText bold style={styles.discountText}>
+                -{product.discount}
+              </AppText>
             </View>
           )}
         </View>
 
         <View style={styles.productInfo}>
-          <Text style={titleStyle} numberOfLines={2}>
+          <AppText style={titleStyle} numberOfLines={2}>
             {product.title}
-          </Text>
+          </AppText>
 
           <View style={styles.fundingInfo}>
-            <Text style={styles.raisedLabel}>تم جمع</Text>
-            <Text style={styles.price}>{product.price}</Text>
+            <AppText style={styles.raisedLabel}>تم جمع</AppText>
+            <AppText bold style={styles.price}>
+              {product.price}
+            </AppText>
             {product.originalPrice && (
               <>
-                <Text style={styles.targetLabel}>المبلغ المتبقي</Text>
-                <Text style={styles.originalPrice}>
+                <AppText style={styles.targetLabel}>المبلغ المتبقي</AppText>
+                <AppText style={styles.originalPrice}>
                   {product.originalPrice}
-                </Text>
+                </AppText>
               </>
             )}
           </View>
@@ -127,9 +133,9 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
                   ]}
                 />
               </View>
-              <Text style={styles.progressText}>
+              <AppText style={styles.progressText}>
                 {Math.round(product.progress * 100)}% مكتمل
-              </Text>
+              </AppText>
             </View>
           )}
         </View>
@@ -140,9 +146,11 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
   return (
     <View style={containerStyle}>
       <View style={styles.header}>
-        <Text style={sectionTitleStyle}>أحدث المنتجات</Text>
+        <AppText bold style={sectionTitleStyle}>
+          أحدث المنتجات
+        </AppText>
         <TouchableOpacity activeOpacity={0.7}>
-          <Text style={styles.viewAllText}>عرض الكل</Text>
+          <AppText style={styles.viewAllText}>عرض الكل</AppText>
         </TouchableOpacity>
       </View>
 
@@ -282,7 +290,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   progressBar: {
-    height: 4,
+    height: 10,
     backgroundColor: '#E5E5E5',
     borderRadius: 2,
     overflow: 'hidden',

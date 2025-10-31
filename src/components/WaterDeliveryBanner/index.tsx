@@ -1,13 +1,13 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import {AppText} from '../core/AppText';
 import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
 
@@ -44,29 +44,33 @@ export const WaterDeliveryBanner: React.FC<WaterDeliveryBannerProps> = ({
         <View style={styles.overlay} />
 
         <View style={styles.textContainer}>
-          <Text style={titleStyle}>اسق عطشهم تنل أجرهم</Text>
-          <Text style={subtitleStyle}>
+          <AppText bold style={titleStyle}>
+            اسق عطشهم تنل أجرهم
+          </AppText>
+          <AppText style={subtitleStyle}>
             كل ريال تضعه يسهم في توفير ماء نقي{'\n'}
             نتيرة تبحث عن الحياة بكرامة.
-          </Text>
+          </AppText>
 
           <TouchableOpacity
             style={styles.button}
             onPress={onPress}
             activeOpacity={0.8}>
-            <Text style={styles.buttonText}>تبرع الآن</Text>
+            <AppText bold style={styles.buttonText}>
+              تبرع الآن
+            </AppText>
           </TouchableOpacity>
         </View>
 
         <View style={styles.imagesContainer}>
           <View style={styles.circleImage}>
-            <Text style={styles.imageEmoji}>💧</Text>
+            <AppText style={styles.imageEmoji}>💧</AppText>
           </View>
           <View style={styles.circleImage}>
-            <Text style={styles.imageEmoji}>🤲</Text>
+            <AppText style={styles.imageEmoji}>🤲</AppText>
           </View>
           <View style={styles.circleImage}>
-            <Text style={styles.imageEmoji}>💧</Text>
+            <AppText style={styles.imageEmoji}>💧</AppText>
           </View>
         </View>
       </ImageBackground>

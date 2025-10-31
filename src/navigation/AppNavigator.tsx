@@ -5,6 +5,7 @@ import {BottomTabNavigator} from './BottomTabNavigator';
 import {AuthStackNavigator} from './AuthStackNavigator';
 import {LoadingSpinner} from '../components';
 import {useAuth} from '../context';
+import {Fonts} from '../constants';
 
 // Main app navigator that decides between auth flow and main app flow
 export const AppNavigator: React.FC = () => {
@@ -29,19 +30,19 @@ export const AppNavigator: React.FC = () => {
     },
     fonts: {
       regular: {
-        fontFamily: 'System',
+        fontFamily: Fonts.regular,
         fontWeight: '400' as const,
       },
       medium: {
-        fontFamily: 'System',
+        fontFamily: Fonts.regular,
         fontWeight: '500' as const,
       },
       bold: {
-        fontFamily: 'System',
+        fontFamily: Fonts.bold,
         fontWeight: '700' as const,
       },
       heavy: {
-        fontFamily: 'System',
+        fontFamily: Fonts.bold,
         fontWeight: '900' as const,
       },
     },

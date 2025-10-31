@@ -1,31 +1,31 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {useLanguage, useRTLStyles} from '../context';
+import {View, StyleSheet, TouchableOpacity} from 'react-native';
+import {AppText} from './core/AppText';
+import {useLanguage} from '../context';
 
 export const LanguageSelector: React.FC = () => {
-  const {currentLanguage, availableLanguages, changeLanguage, t} =
+  const {currentLanguage, availableLanguages, changeLanguage, t, isRTL} =
     useLanguage();
-  const rtlStyles = useRTLStyles();
+
+  const titleAlignStyle = isRTL ? styles.textRight : styles.textLeft;
+  const currentAlignStyle = isRTL ? styles.textRight : styles.textLeft;
+  const rowDirStyle = isRTL ? styles.rowReverse : styles.row;
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, {textAlign: rtlStyles.textAlign}]}>
+      <AppText bold style={[styles.title, titleAlignStyle]}>
         {t('language.title')}
-      </Text>
+      </AppText>
 
-      <Text style={[styles.currentLanguage, {textAlign: rtlStyles.textAlign}]}>
+      <AppText style={[styles.currentLanguage, currentAlignStyle]}>
         {t('language.current')}:{' '}
         {
           availableLanguages.find(lang => lang.code === currentLanguage)
             ?.nativeName
         }
-      </Text>
+      </AppText>
 
-      <View
-        style={[
-          styles.languageOptions,
-          {flexDirection: rtlStyles.flexDirection},
-        ]}>
+      <View style={[styles.languageOptions, rowDirStyle]}>
         {availableLanguages.map(language => (
           <TouchableOpacity
             key={language.code}
@@ -34,14 +34,13 @@ export const LanguageSelector: React.FC = () => {
               currentLanguage === language.code && styles.activeButton,
             ]}
             onPress={() => changeLanguage(language.code)}>
-            <Text
+            <AppText
               style={[
                 styles.languageButtonText,
                 currentLanguage === language.code && styles.activeButtonText,
-                {textAlign: 'center'},
               ]}>
               {language.nativeName}
-            </Text>
+            </AppText>
           </TouchableOpacity>
         ))}
       </View>
@@ -64,11 +63,22 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  row: {
+    flexDirection: 'row',
+  },
+  rowReverse: {
+    flexDirection: 'row-reverse',
+  },
+  textLeft: {
+    textAlign: 'left',
+  },
+  textRight: {
+    textAlign: 'right',
+  },
   title: {
     fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 12,
     color: '#1C1C1E',
+    marginBottom: 12,
   },
   currentLanguage: {
     fontSize: 14,
@@ -92,7 +102,6 @@ const styles = StyleSheet.create({
   },
   languageButtonText: {
     fontSize: 16,
-    fontWeight: '600',
     color: '#007AFF',
   },
   activeButtonText: {
