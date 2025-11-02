@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import {Typography} from '../Typography';
 import {ProductCard, ProductCardProps} from '../ProductCard';
+import {BackIcon} from '../Icons';
 import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
 import {hp, wp} from '../../utils/responsive';
@@ -124,18 +125,21 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
     <View style={containerStyle}>
       <View style={styles.header}>
         <Typography
-          variant="h5"
+          variant="subtitle1"
           color="textPrimary"
           text={title ?? (t('products.latest') || 'أحدث المنتجات')}
           style={styles.sectionTitle}
         />
-        <TouchableOpacity activeOpacity={0.7}>
+        <TouchableOpacity activeOpacity={0.7} style={styles.viewAllButton}>
           <Typography
             variant="subtitle2"
             color="primary"
             text={t('products.viewAll') || 'عرض الكل'}
             style={styles.viewAllText}
           />
+          <View style={styles.backIconContainer}>
+            <BackIcon width={wp(4)} height={wp(4)} color={Colors.primary} />
+          </View>
         </TouchableOpacity>
       </View>
       {loading ? (
@@ -177,14 +181,21 @@ const styles = StyleSheet.create({
     marginBottom: hp(2),
   },
   sectionTitle: {
-    fontSize: wp(5),
     fontWeight: 'bold',
     color: Colors.text.primary,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(1),
   },
   viewAllText: {
     fontSize: wp(3.5),
     color: Colors.primary,
     fontWeight: '500',
+  },
+  backIconContainer: {
+    transform: [{scaleX: -1}], // Mirror on X-axis (horizontal flip)
   },
   scrollView: {
     paddingLeft: wp(4),

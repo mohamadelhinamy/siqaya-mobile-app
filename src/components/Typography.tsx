@@ -44,7 +44,7 @@ interface TypographyProps {
 const getVariantStyles = (variant: TypographyVariant): TextStyle => {
   const styles: Record<TypographyVariant, TextStyle> = {
     h1: {
-      fontSize: 32,
+      fontSize: 28,
       fontFamily: Fonts.bold,
       lineHeight: 40,
     },

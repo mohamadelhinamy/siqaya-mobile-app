@@ -10,6 +10,7 @@ import {
 import {AppText} from '../core/AppText';
 import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
+import {Typography} from '../Typography';
 
 interface ServiceItem {
   id: string;
@@ -73,9 +74,12 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
 
   return (
     <View style={styles.container}>
-      <AppText bold style={sectionTitleStyle}>
-        {t('services.title')}
-      </AppText>
+      <Typography
+        variant="subtitle1"
+        color="textPrimary"
+        text={t('services.title')}
+        style={styles.sectionTitle}
+      />
 
       <ScrollView
         horizontal
@@ -91,15 +95,13 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 20,
+    alignItems: 'flex-start',
+    gap: 8,
   },
   sectionTitle: {
-    fontSize: 20,
-    color: Colors.black,
-    marginBottom: 16,
+    fontWeight: 'bold',
+    color: Colors.text.primary,
     paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignSelf: 'flex-start',
-    justifyContent: 'flex-start',
   },
   scrollView: {
     paddingLeft: 16,

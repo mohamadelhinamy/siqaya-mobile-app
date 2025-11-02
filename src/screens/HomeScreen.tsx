@@ -57,7 +57,7 @@ export const HomeScreen: React.FC = () => {
           onPress={() => console.log('Water delivery pressed')}
         />
 
-        <LatestProducts />
+        <LatestProducts title="مشاريع على وشك الاكتمال" />
 
         {/* Bottom Spacing for Tab Bar */}
         <View style={styles.bottomSpacing} />

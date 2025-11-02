@@ -400,8 +400,8 @@ const styles = StyleSheet.create({
     paddingVertical: hp(0.5),
   },
   detailsText: {
-    fontSize: wp(3),
-    color: Colors.text.secondary,
+    fontSize: wp(4),
+    color: Colors.text.primary,
     textDecorationLine: 'underline',
   },
 });
