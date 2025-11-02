@@ -17,7 +17,9 @@
     "sort": "Sort",
     "restartRequired": "Restart Required",
     "restartMessage": "The app needs to restart to apply the language direction change.",
-    "restartNow": "Restart Now"
+    "restartNow": "Restart Now",
+    "networkError": "Network Error",
+    "loadProductsError": "Failed to load products"
   },
   "navigation": {
     "home": "Home",
@@ -178,7 +180,10 @@
       "wellsCategory": "Wells and Springs"
     },
     "comingSoon": "Coming Soon",
-    "catalog": "Product catalog will be available here"
+    "catalog": "Product catalog will be available here",
+    "donateNow": "Donate Now",
+    "viewDetails": "View Details",
+    "dependents": "Dependents"
   },
   "services": {
     "title": "Charity Paths",
@@ -203,5 +208,12 @@
       "careServices": "Care Services",
       "careDescription": "Healthcare and support services will be available here"
     }
+  },
+  "cities": {
+    "riyadh": "Riyadh",
+    "jeddah": "Jeddah",
+    "mecca": "Mecca",
+    "medina": "Medina",
+    "dammam": "Dammam"
   }
 }

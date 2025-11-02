@@ -20,26 +20,26 @@ interface LatestProductsProps {
   title?: string;
 }
 
-const getDefaultProducts = (_t: any): ProductCardProps[] => [
+const getDefaultProducts = (t: any): ProductCardProps[] => [
   {
     id: '1',
-    title: 'بئر مياه جديد لمساعدة اخوتنا في قرية الغماس الجنوبية',
+    title: t('products.samples.waterWellTitle'),
     raisedAmount: '10,215 ر.س',
     remainingAmount: '350,971 ر.س',
     progress: 0.2,
-    category: 'آبار وعيون',
-    location: 'الرياض',
+    category: t('products.samples.wellsCategory'),
+    location: t('cities.riyadh'),
     dealersCount: 5,
     image: require('../../assets/images/card_image.png'),
   },
   {
     id: '2',
-    title: 'بئر مياه جديد لمساعدة اخوتنا في قرية الغماس الجنوبية',
+    title: t('products.samples.waterWellTitleShort'),
     raisedAmount: '15,000 ر.س',
     remainingAmount: '285,000 ر.س',
     progress: 0.35,
-    category: 'آبار وعيون',
-    location: 'جدة',
+    category: t('products.samples.wellsCategory'),
+    location: t('cities.jeddah'),
     dealersCount: 8,
     image: require('../../assets/images/small_card_image.png'),
   },
@@ -99,18 +99,18 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
           const mappedProducts = response.data.map(mapProductToCard);
           setFetchedProducts(mappedProducts);
         } else {
-          setError('فشل في تحميل المنتجات');
+          setError(t('common.loadProductsError'));
         }
       } catch (err: any) {
         console.error('Error fetching products:', err);
-        setError(err?.message || 'خطأ في الشبكة');
+        setError(err?.message || t('common.networkError'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchProducts();
-  }, [products]);
+  }, [products, t]);
 
   const containerStyle: ViewStyle = {
     ...styles.container,
@@ -127,7 +127,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
         <Typography
           variant="subtitle1"
           color="textPrimary"
-          text={title ?? (t('products.latest') || 'أحدث المنتجات')}
+          text={title ?? t('products.latest')}
           style={styles.sectionTitle}
         />
         <TouchableOpacity activeOpacity={0.7} style={styles.viewAllButton}>

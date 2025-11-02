@@ -5,6 +5,7 @@ import {CustomButton} from '../CustomButton';
 import {riyalIcon, LocationIcon, ProfileTwoUsersIcon} from '../Icons';
 import {Colors} from '../../constants';
 import {hp, wp} from '../../utils/responsive';
+import {useLanguage} from '../../context';
 
 import ShoppingCartIcon from '../../assets/icons/outlined/shopping-cart.svg';
 
@@ -39,6 +40,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   onPress,
   style,
 }) => {
+  const {t} = useLanguage();
   const defaultOnDonate = () => {
     console.log('Donate button pressed for product:', id);
   };
@@ -94,7 +96,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 <Typography
                   variant="caption"
                   color="primary"
-                  text={`المعالين: ${dealersCount}`}
+                  text={`${t('products.dependents')}: ${dealersCount}`}
                   style={styles.dealersText}
                 />
               </View>
@@ -132,7 +134,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <Typography
                 variant="caption"
                 color="textSecondary"
-                text="تم جمع"
+                text={t('products.raised')}
                 style={styles.fundingLabel}
               />
               <View style={styles.amountRow}>
@@ -150,7 +152,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               <Typography
                 variant="caption"
                 color="textSecondary"
-                text="المبلغ المتبقي"
+                text={t('products.remaining')}
                 style={styles.fundingLabel}
               />
               <View style={styles.amountRow}>
@@ -186,7 +188,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
           <CustomButton
-            title="تبرع الآن"
+            title={t('products.donateNow')}
             variant="primary"
             onPress={onDonate || defaultOnDonate}
             style={styles.donateButton}
@@ -206,7 +208,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <Typography
             variant="caption"
             color="textSecondary"
-            text="عرض التفاصيل"
+            text={t('products.viewDetails')}
             style={styles.detailsText}
           />
         </TouchableOpacity>

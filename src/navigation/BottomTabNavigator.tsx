@@ -29,9 +29,9 @@ export const BottomTabNavigator: React.FC = () => {
         headerShown: false,
       }}>
       <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Products" component={ProductsScreen} />
-      <Tab.Screen name="Care" component={CareScreen} />
-      <Tab.Screen name="Paths" component={PathsScreen} />
+      <Tab.Screen name="Products" component={HomeScreen} />
+      <Tab.Screen name="Care" component={HomeScreen} />
+      <Tab.Screen name="Paths" component={HomeScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
