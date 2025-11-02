@@ -6,6 +6,7 @@ import React, {
   ReactNode,
 } from 'react';
 import {I18nManager} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNRestart from 'react-native-restart';
 import {useTranslation} from 'react-i18next';
 import {SupportedLanguage, LanguageContextType} from '../types';
@@ -28,13 +29,11 @@ const LanguageContext = createContext<LanguageContextType | undefined>(
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   children,
 }) => {
-  const {i18n, t} = useTranslation();
-  const [currentLanguage, setCurrentLanguage] = useState<SupportedLanguage>(
-    (i18n.language as SupportedLanguage) || 'en',
-  );
-  const [isRTL, setIsRTL] = useState<boolean>(
-    RTL_LANGUAGES.includes(currentLanguage),
-  );
+  const {i18n, t, ready} = useTranslation();
+  const [currentLanguage, setCurrentLanguage] =
+    useState<SupportedLanguage>('ar');
+  const [isRTL, setIsRTL] = useState<boolean>(true);
+  const [isInitialized, setIsInitialized] = useState<boolean>(false);
 
   // Update RTL direction when language changes
   const updateDirection = (language: SupportedLanguage) => {
@@ -51,28 +50,62 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
   // Change language function
   const changeLanguage = async (language: SupportedLanguage): Promise<void> => {
     try {
-      const previousLanguage = currentLanguage;
-      const wasRTL = RTL_LANGUAGES.includes(previousLanguage);
-      const willBeRTL = RTL_LANGUAGES.includes(language);
+      const rtl = RTL_LANGUAGES.includes(language);
+      const LANGUAGE_STORAGE_KEY = 'app_language';
 
-      await i18n.changeLanguage(language);
+      await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, language);
       await storeLanguage(language);
       setCurrentLanguage(language);
+      setIsRTL(rtl);
 
-      // Check if direction change requires app restart
-      if (wasRTL !== willBeRTL) {
-        // Update the direction first
-        I18nManager.allowRTL(willBeRTL);
-        I18nManager.forceRTL(willBeRTL);
+      // Always change the language first
+      await i18n.changeLanguage(language);
 
-        RNRestart.restart();
-      } else {
-        updateDirection(language);
+      // Then update RTL direction if needed, and restart
+      if (I18nManager.isRTL !== rtl) {
+        I18nManager.allowRTL(rtl);
+        I18nManager.forceRTL(rtl);
+        setTimeout(() => {
+          RNRestart.restart();
+        }, 200);
       }
     } catch (error) {
       console.error('Error changing language:', error);
     }
   };
+
+  // Initialize language from AsyncStorage on first launch
+  useEffect(() => {
+    const initializeLanguage = async () => {
+      try {
+        const LANGUAGE_STORAGE_KEY = 'app_language';
+        const savedLanguage =
+          ((await AsyncStorage.getItem(
+            LANGUAGE_STORAGE_KEY,
+          )) as SupportedLanguage) || 'ar';
+        const savedRTL = RTL_LANGUAGES.includes(savedLanguage);
+
+        console.log(savedLanguage, 'saved language');
+
+        setCurrentLanguage(savedLanguage);
+        setIsRTL(savedRTL);
+
+        if (I18nManager.isRTL !== savedRTL) {
+          console.log(savedRTL, 'rtl in init language');
+          I18nManager.allowRTL(savedRTL);
+          I18nManager.forceRTL(savedRTL);
+        }
+
+        await i18n.changeLanguage(savedLanguage);
+        setIsInitialized(true);
+      } catch (error) {
+        console.error('Error initializing language:', error);
+        setIsInitialized(true);
+      }
+    };
+
+    initializeLanguage();
+  }, [i18n]);
 
   // Listen for language changes from i18n
   useEffect(() => {
@@ -84,13 +117,15 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
 
     i18n.on('languageChanged', handleLanguageChange);
 
-    // Set initial direction
-    updateDirection(currentLanguage);
-
     return () => {
       i18n.off('languageChanged', handleLanguageChange);
     };
-  }, [i18n, currentLanguage]);
+  }, [i18n]);
+
+  // Don't render children until i18n is ready and language is initialized
+  if (!ready || !isInitialized) {
+    return null;
+  }
 
   // Context value
   const contextValue: LanguageContextType = {
@@ -123,9 +158,9 @@ export const useRTLStyles = () => {
 
   return {
     isRTL,
-    textAlign: 'left',
-    flexDirection: 'row',
-    alignSelf: 'flex-start',
+    textAlign: isRTL ? ('right' as const) : ('left' as const),
+    flexDirection: isRTL ? ('row' as const) : ('row' as const),
+    alignSelf: isRTL ? ('flex-end' as const) : ('flex-start' as const),
     marginLeft: (value: number) =>
       isRTL ? {marginRight: value} : {marginLeft: value},
     marginRight: (value: number) =>

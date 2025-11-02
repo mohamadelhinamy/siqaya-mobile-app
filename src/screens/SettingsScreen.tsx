@@ -1,13 +1,18 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   useColorScheme,
   Alert,
 } from 'react-native';
-import {Button, Card, Header, LanguageSelector} from '../components';
+import {
+  Button,
+  Card,
+  Header,
+  LanguageSelector,
+  Typography,
+} from '../components';
 import {useLanguage, useRTLStyles, useAuth} from '../context';
 
 export const SettingsScreen: React.FC = () => {
@@ -55,26 +60,18 @@ export const SettingsScreen: React.FC = () => {
           ]}>
           <Card title="User Account">
             <View style={styles.userSection}>
-              <Text
-                style={[
-                  styles.userInfo,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('profile.userInfo.name')}: {user?.name}
-              </Text>
-              <Text
-                style={[
-                  styles.userInfo,
-                  {
-                    color: isDarkMode ? '#8E8E93' : '#8E8E93',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('profile.userInfo.email')}: {user?.email}
-              </Text>
+              <Typography
+                variant="body1"
+                color={isDarkMode ? 'white' : 'text'}
+                style={[styles.userInfo, {textAlign: rtlStyles.textAlign}]}
+                text={`${t('profile.userInfo.name')}: ${user?.name}`}
+              />
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                style={[styles.userInfo, {textAlign: rtlStyles.textAlign}]}
+                text={`${t('profile.userInfo.email')}: ${user?.email}`}
+              />
             </View>
           </Card>
 

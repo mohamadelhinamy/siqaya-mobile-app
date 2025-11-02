@@ -3,6 +3,7 @@ import {View, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
 import {AppText} from './core/AppText';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import {useLanguage} from '../context';
+import {hp, wp} from '../utils/responsive';
 
 // Import SVG icons
 import HomeIcon from '../assets/icons/outlined/home.svg';
@@ -64,23 +65,23 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
       left: 0,
       right: 0,
       backgroundColor: 'transparent',
-      paddingBottom: 20, // Move up from bottom
+      paddingBottom: hp(2.5),
     },
     container: {
       flexDirection: 'row',
       backgroundColor: Colors.white,
-      paddingBottom: 12,
-      paddingTop: 12,
-      paddingHorizontal: 12,
-      marginHorizontal: 16,
-      borderRadius: 30,
-      height: 70,
+      paddingBottom: hp(1.5),
+      paddingTop: hp(1.5),
+      paddingHorizontal: wp(3),
+      marginHorizontal: wp(4),
+      borderRadius: wp(7.5),
+      height: hp(9),
       shadowOffset: {
         width: 0,
-        height: 8,
+        height: hp(1),
       },
       shadowOpacity: 0.15,
-      shadowRadius: 16,
+      shadowRadius: wp(4),
       elevation: 12,
     },
     tabButton: {
@@ -91,22 +92,22 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
       height: '100%',
     },
     centerButton: {
-      width: 60,
-      height: 60,
-      borderRadius: 30,
+      width: wp(15),
+      height: wp(15),
+      borderRadius: wp(7.5),
       backgroundColor: Colors.primary,
       alignItems: 'center',
       justifyContent: 'center',
       position: 'absolute',
-      top: -32,
+      top: hp(-4),
       shadowOffset: {
         width: 0,
-        height: 8,
+        height: hp(1),
       },
-      shadowOpacity: 0.4,
-      shadowRadius: 12,
+      shadowOpacity: 0.25,
+      shadowRadius: wp(3),
       elevation: 16,
-      borderWidth: 3,
+      borderWidth: wp(0.75),
       borderColor: Colors.white,
     },
     centerButtonContainer: {
@@ -118,7 +119,7 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
     tabLabel: {
       fontSize: 10,
       fontWeight: '500',
-      marginTop: 2,
+      marginTop: hp(0.25),
       textAlign: 'center',
     },
     focusedTabLabel: {

@@ -28,32 +28,31 @@ interface LatestProductsProps {
   products?: Product[];
 }
 
-const defaultProducts: Product[] = [
+const getDefaultProducts = (t: any): Product[] => [
   {
     id: '1',
-    title: 'بئر مياه جديد لمساعدة إخوتنا في قرية العماس الجنوبية',
+    title: t('products.samples.waterWellTitle'),
     price: '10,215 ر.س',
     originalPrice: '350,971 ر.س',
     discount: '',
     progress: 0.2,
-    badge: 'آبار وعيون',
+    badge: t('products.samples.wellsCategory'),
     image: require('../../assets/images/card_image.png'),
   },
   {
     id: '2',
-    title: 'بئر مياه جديد لقرية القمة',
+    title: t('products.samples.waterWellTitleShort'),
     price: '10,215 ر.س',
     originalPrice: '',
     progress: 0.2,
-    badge: 'آبار وعيون',
+    badge: t('products.samples.wellsCategory'),
     image: require('../../assets/images/small_card_image.png'),
   },
 ];
 
-export const LatestProducts: React.FC<LatestProductsProps> = ({
-  products = defaultProducts,
-}) => {
-  const {isRTL} = useLanguage();
+export const LatestProducts: React.FC<LatestProductsProps> = ({products}) => {
+  const {isRTL, t} = useLanguage();
+  const displayProducts = products || getDefaultProducts(t);
 
   const containerStyle: ViewStyle = {
     ...styles.container,
@@ -109,13 +108,15 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
           </AppText>
 
           <View style={styles.fundingInfo}>
-            <AppText style={styles.raisedLabel}>تم جمع</AppText>
+            <AppText style={styles.raisedLabel}>{t('products.raised')}</AppText>
             <AppText bold style={styles.price}>
               {product.price}
             </AppText>
             {product.originalPrice && (
               <>
-                <AppText style={styles.targetLabel}>المبلغ المتبقي</AppText>
+                <AppText style={styles.targetLabel}>
+                  {t('products.remaining')}
+                </AppText>
                 <AppText style={styles.originalPrice}>
                   {product.originalPrice}
                 </AppText>
@@ -134,7 +135,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
                 />
               </View>
               <AppText style={styles.progressText}>
-                {Math.round(product.progress * 100)}% مكتمل
+                {Math.round(product.progress * 100)}% {t('products.completed')}
               </AppText>
             </View>
           )}
@@ -147,10 +148,10 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
     <View style={containerStyle}>
       <View style={styles.header}>
         <AppText bold style={sectionTitleStyle}>
-          أحدث المنتجات
+          {t('products.latest')}
         </AppText>
         <TouchableOpacity activeOpacity={0.7}>
-          <AppText style={styles.viewAllText}>عرض الكل</AppText>
+          <AppText style={styles.viewAllText}>{t('products.viewAll')}</AppText>
         </TouchableOpacity>
       </View>
 
@@ -159,7 +160,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
         style={styles.scrollView}>
-        {products.map(renderProductCard)}
+        {displayProducts.map(renderProductCard)}
       </ScrollView>
     </View>
   );

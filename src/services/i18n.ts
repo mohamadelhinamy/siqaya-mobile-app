@@ -75,7 +75,8 @@ export const storeLanguage = async (
 
 // Initialize i18n
 i18n.use(initReactI18next).init({
-  fallbackLng: 'en',
+  lng: 'ar', // Set Arabic as default language
+  fallbackLng: 'ar',
   debug: __DEV__,
 
   resources: {
@@ -92,9 +93,6 @@ i18n.use(initReactI18next).init({
   },
 });
 
-// Set initial language
-getInitialLanguage().then(language => {
-  i18n.changeLanguage(language);
-});
+// Don't auto-initialize language - let LanguageProvider handle it
 
 export default i18n;

@@ -18,7 +18,7 @@ interface WaterDeliveryBannerProps {
 export const WaterDeliveryBanner: React.FC<WaterDeliveryBannerProps> = ({
   onPress,
 }) => {
-  const {isRTL} = useLanguage();
+  const {isRTL, t} = useLanguage();
 
   const containerStyle: ViewStyle = {
     ...styles.container,
@@ -45,11 +45,10 @@ export const WaterDeliveryBanner: React.FC<WaterDeliveryBannerProps> = ({
 
         <View style={styles.textContainer}>
           <AppText bold style={titleStyle}>
-            اسق عطشهم تنل أجرهم
+            {t('waterDelivery.title')}
           </AppText>
           <AppText style={subtitleStyle}>
-            كل ريال تضعه يسهم في توفير ماء نقي{'\n'}
-            نتيرة تبحث عن الحياة بكرامة.
+            {t('waterDelivery.description')}
           </AppText>
 
           <TouchableOpacity
@@ -57,7 +56,7 @@ export const WaterDeliveryBanner: React.FC<WaterDeliveryBannerProps> = ({
             onPress={onPress}
             activeOpacity={0.8}>
             <AppText bold style={styles.buttonText}>
-              تبرع الآن
+              {t('waterDelivery.donateNow')}
             </AppText>
           </TouchableOpacity>
         </View>

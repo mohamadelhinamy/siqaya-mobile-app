@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, StyleSheet, ViewStyle} from 'react-native';
-import {AppText} from './core/AppText';
+import {Typography} from './Typography';
 
 interface CardProps {
   children: React.ReactNode;
@@ -11,11 +11,7 @@ interface CardProps {
 export const Card: React.FC<CardProps> = ({children, title, style}) => {
   return (
     <View style={[styles.card, style]}>
-      {title && (
-        <AppText bold style={styles.title}>
-          {title}
-        </AppText>
-      )}
+      {title && <Typography variant="h4" style={styles.title} text={title} />}
       <View style={styles.content}>{children}</View>
     </View>
   );

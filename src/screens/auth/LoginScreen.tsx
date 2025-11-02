@@ -1,14 +1,12 @@
 import React, {useState} from 'react';
 import {
   View,
-  Text,
-  TextInput,
   StyleSheet,
   ScrollView,
   useColorScheme,
   Alert,
 } from 'react-native';
-import {Button, Card, Header} from '../../components';
+import {Button, Card, Header, Typography, CustomInput} from '../../components';
 import {useLanguage, useRTLStyles} from '../../context';
 import {useAuth} from '../../context/AuthProvider';
 
@@ -67,54 +65,18 @@ export const LoginScreen: React.FC = () => {
         <View style={styles.content}>
           <Card title={t('auth.login.welcomeBack')}>
             <View style={styles.form}>
-              <Text
-                style={[
-                  styles.label,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('auth.login.email')}
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    backgroundColor: isDarkMode ? '#2C2C2E' : '#FFFFFF',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}
+              <CustomInput
+                label={t('auth.login.email')}
                 placeholder={t('auth.login.emailPlaceholder')}
-                placeholderTextColor={isDarkMode ? '#8E8E93' : '#8E8E93'}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
               />
 
-              <Text
-                style={[
-                  styles.label,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('auth.login.password')}
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    backgroundColor: isDarkMode ? '#2C2C2E' : '#FFFFFF',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}
+              <CustomInput
+                label={t('auth.login.password')}
                 placeholder={t('auth.login.passwordPlaceholder')}
-                placeholderTextColor={isDarkMode ? '#8E8E93' : '#8E8E93'}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry

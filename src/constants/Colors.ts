@@ -28,5 +28,6 @@ export const Colors = {
     secondary: '#8E8E93',
     light: '#48484A',
     dark: '#FFFFFF',
+    turquoise: '#3EB9E4',
   },
 } as const;

@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView, useColorScheme} from 'react-native';
+import {View, StyleSheet, ScrollView, useColorScheme} from 'react-native';
 import {useLanguage, useRTLStyles} from '../context';
-import {Card} from '../components';
+import {Card, Typography} from '../components';
 
 export const CareScreen: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -34,28 +34,35 @@ export const CareScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>{t('navigation.care')}</Text>
-        <Text style={styles.subtitle}>Healthcare services and support</Text>
+        <Typography
+          variant="h1"
+          style={styles.title}
+          text={t('navigation.care')}
+        />
+        <Typography
+          variant="body1"
+          style={styles.subtitle}
+          text="Healthcare services and support"
+        />
 
         <Card>
-          <Text
+          <Typography
+            variant="h4"
+            color={isDarkMode ? 'white' : 'text'}
             style={{
-              fontSize: 18,
-              fontWeight: '600',
-              color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
               marginBottom: 8,
               textAlign: rtlStyles.textAlign,
-            }}>
-            Care Services
-          </Text>
-          <Text
+            }}
+            text="Care Services"
+          />
+          <Typography
+            variant="body2"
+            color="textSecondary"
             style={{
-              fontSize: 14,
-              color: isDarkMode ? '#8E8E93' : '#8E8E93',
               textAlign: rtlStyles.textAlign,
-            }}>
-            Healthcare and support services will be available here
-          </Text>
+            }}
+            text="Healthcare and support services will be available here"
+          />
         </Card>
       </ScrollView>
     </View>

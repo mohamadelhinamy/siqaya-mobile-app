@@ -41,7 +41,7 @@ export const HomeScreen: React.FC = () => {
         <HomeHeader />
 
         {/* Search Bar */}
-        <SearchBar placeholder="بحث ..." />
+        <SearchBar />
 
         {/* Hero Banner */}
         <HeroBanner onPress={() => console.log('Hero banner pressed')} />

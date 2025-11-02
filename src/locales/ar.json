@@ -79,6 +79,34 @@
     "switch": "تغيير اللغة"
   },
   "auth": {
+    "phoneEntry": {
+      "title": "التحقق من الهاتف",
+      "subtitle": "أدخل رقم هاتفك للمتابعة",
+      "enterPhone": "إدخال رقم الهاتف",
+      "description": "سنرسل لك رمز تحقق عبر الرسائل النصية للتحقق من رقم هاتفك",
+      "phoneNumber": "رقم الهاتف",
+      "phonePlaceholder": "501 234 567",
+      "sendCode": "إرسال الرمز",
+      "demoPhone": "استخدام رقم تجريبي",
+      "invalidPhone": "يرجى إدخال رقم هاتف صحيح مكون من 10 أرقام",
+      "passwordRequired": "يرجى إدخال كلمة المرور",
+      "sendError": "فشل إرسال رمز التحقق. يرجى المحاولة مرة أخرى."
+    },
+    "verification": {
+      "title": "التحقق من الرمز",
+      "subtitle": "أدخل رمز التحقق",
+      "enterCode": "رمز التحقق",
+      "description": "أدخل الرمز المكون من 6 أرقام المرسل إلى {{phoneNumber}}",
+      "verify": "تحقق",
+      "resendCode": "إعادة إرسال الرمز",
+      "resendIn": "إعادة الإرسال خلال {{seconds}} ثانية",
+      "changePhone": "تغيير رقم الهاتف",
+      "incompleteCode": "يرجى إدخال الرمز كاملاً المكون من 6 أرقام",
+      "verificationError": "رمز التحقق غير صحيح. يرجى المحاولة مرة أخرى.",
+      "codeSent": "تم إرسال الرمز",
+      "newCodeSent": "تم إرسال رمز تحقق جديد إلى هاتفك",
+      "resendError": "فشل إعادة إرسال الرمز. يرجى المحاولة مرة أخرى."
+    },
     "login": {
       "title": "تسجيل الدخول",
       "subtitle": "مرحباً بعودتك إلى حسابك",
@@ -97,6 +125,43 @@
       "message": "هل أنت متأكد من أنك تريد تسجيل الخروج؟",
       "confirm": "تسجيل الخروج",
       "cancel": "إلغاء"
+    }
+  },
+  "products": {
+    "latest": "أحدث المنتجات",
+    "viewAll": "عرض الكل",
+    "raised": "تم جمع",
+    "remaining": "المبلغ المتبقي",
+    "completed": "مكتمل",
+    "samples": {
+      "waterWellTitle": "بئر مياه جديد لمساعدة إخوتنا في قرية العماس الجنوبية",
+      "waterWellTitleShort": "بئر مياه جديد لقرية القمة",
+      "wellsCategory": "آبار وعيون"
+    },
+    "comingSoon": "قريباً",
+    "catalog": "كتالوج المنتجات سيكون متوفراً هنا"
+  },
+  "services": {
+    "title": "مسارات الخير",
+    "orphanEndowments": "أوقاف الأيتام",
+    "investmentFunds": "الصناديق الاستثمارية"
+  },
+  "waterDelivery": {
+    "title": "اسق عطشهم تنل أجرهم",
+    "description": "كل ريال تضعه يسهم في توفير ماء نقي\nنتيرة تبحث عن الحياة بكرامة.",
+    "donateNow": "تبرع الآن"
+  },
+  "screens": {
+    "products": {
+      "browseProducts": "تصفح منتجاتنا وخدماتنا"
+    },
+    "paths": {
+      "learningPaths": "مسارات التعلم",
+      "learningDescription": "المحتوى التعليمي ومسارات التعلم ستكون متاحة هنا"
+    },
+    "care": {
+      "careServices": "خدمات الرعاية",
+      "careDescription": "خدمات الرعاية الصحية والدعم ستكون متاحة هنا"
     }
   }
 }

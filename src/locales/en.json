@@ -79,6 +79,34 @@
     "switch": "Switch Language"
   },
   "auth": {
+    "phoneEntry": {
+      "title": "Phone Verification",
+      "subtitle": "Enter your phone number to continue",
+      "enterPhone": "Enter Phone Number",
+      "description": "We'll send you a verification code via SMS to verify your phone number",
+      "phoneNumber": "Phone Number",
+      "phonePlaceholder": "501 234 567",
+      "sendCode": "Send Code",
+      "demoPhone": "Use Demo Phone",
+      "invalidPhone": "Please enter a valid 10-digit phone number",
+      "passwordRequired": "Please enter your password",
+      "sendError": "Failed to send verification code. Please try again."
+    },
+    "verification": {
+      "title": "Verify Code",
+      "subtitle": "Enter the verification code",
+      "enterCode": "Verification Code",
+      "description": "Enter the 6-digit code sent to {{phoneNumber}}",
+      "verify": "Verify",
+      "resendCode": "Resend Code",
+      "resendIn": "Resend in {{seconds}}s",
+      "changePhone": "Change Phone Number",
+      "incompleteCode": "Please enter the complete 6-digit code",
+      "verificationError": "Invalid verification code. Please try again.",
+      "codeSent": "Code Sent",
+      "newCodeSent": "A new verification code has been sent to your phone",
+      "resendError": "Failed to resend code. Please try again."
+    },
     "login": {
       "title": "Sign In",
       "subtitle": "Welcome back to your account",
@@ -97,6 +125,43 @@
       "message": "Are you sure you want to sign out?",
       "confirm": "Sign Out",
       "cancel": "Cancel"
+    }
+  },
+  "products": {
+    "latest": "Latest Products",
+    "viewAll": "View All",
+    "raised": "Raised",
+    "remaining": "Remaining Amount",
+    "completed": "Complete",
+    "samples": {
+      "waterWellTitle": "New water well to help our brothers in South Al-Amas village",
+      "waterWellTitleShort": "New water well for Al-Qimma village",
+      "wellsCategory": "Wells and Springs"
+    },
+    "comingSoon": "Coming Soon",
+    "catalog": "Product catalog will be available here"
+  },
+  "services": {
+    "title": "Charity Paths",
+    "orphanEndowments": "Orphan Endowments",
+    "investmentFunds": "Investment Funds"
+  },
+  "waterDelivery": {
+    "title": "Quench their thirst, earn their reward",
+    "description": "Every riyal you put contributes to providing clean water\nFor those seeking life with dignity.",
+    "donateNow": "Donate Now"
+  },
+  "screens": {
+    "products": {
+      "browseProducts": "Browse our products and services"
+    },
+    "paths": {
+      "learningPaths": "Learning Paths",
+      "learningDescription": "Educational content and learning paths will be available here"
+    },
+    "care": {
+      "careServices": "Care Services",
+      "careDescription": "Healthcare and support services will be available here"
     }
   }
 }

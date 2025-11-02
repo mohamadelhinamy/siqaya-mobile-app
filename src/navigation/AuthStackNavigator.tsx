@@ -1,11 +1,18 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import {LoginScreen} from '../screens';
+import {PhoneEntryScreen} from '../screens/auth/PhoneEntryScreen';
+import {VerificationCodeScreen} from '../screens/auth/VerificationCodeScreen';
 
 export type AuthStackParamList = {
   Login: undefined;
-  Register?: undefined; // Add when you create RegisterScreen
-  ForgotPassword?: undefined; // Add when you create ForgotPasswordScreen
+  PhoneEntry: undefined;
+  VerificationCode: {
+    phoneNumber: string;
+    userId: number;
+    otpExpiresIn: number;
+  };
+  // Register?: undefined; // Add when you create RegisterScreen
+  // ForgotPassword?: undefined; // Add when you create ForgotPasswordScreen
 };
 
 const Stack = createStackNavigator<AuthStackParamList>();
@@ -13,6 +20,7 @@ const Stack = createStackNavigator<AuthStackParamList>();
 export const AuthStackNavigator: React.FC = () => {
   return (
     <Stack.Navigator
+      initialRouteName="PhoneEntry"
       screenOptions={{
         headerShown: false,
         cardStyle: {
@@ -20,10 +28,18 @@ export const AuthStackNavigator: React.FC = () => {
         },
       }}>
       <Stack.Screen
-        name="Login"
-        component={LoginScreen}
+        name="PhoneEntry"
+        component={PhoneEntryScreen}
         options={{
-          title: 'Sign In',
+          title: 'Enter Phone Number',
+        }}
+      />
+
+      <Stack.Screen
+        name="VerificationCode"
+        component={VerificationCodeScreen}
+        options={{
+          title: 'Verify Code',
         }}
       />
 

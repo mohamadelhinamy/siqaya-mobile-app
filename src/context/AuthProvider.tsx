@@ -7,6 +7,7 @@ import React, {
 } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {User} from '../types';
+import {apiService} from '../services/api';
 
 const AUTH_TOKEN_KEY = 'auth_token';
 const AUTH_USER_KEY = 'auth_user';
@@ -80,6 +81,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
 
   const logout = async () => {
     try {
+      // Call the API logout if we have a token
+      if (token) {
+        try {
+          await apiService.logout(token);
+        } catch (apiError) {
+          console.warn(
+            'API logout failed, proceeding with local logout:',
+            apiError,
+          );
+        }
+      }
+
       await clearAuthData();
       setToken(null);
       setUser(null);

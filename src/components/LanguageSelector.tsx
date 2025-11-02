@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   rowReverse: {
-    flexDirection: 'row-reverse',
+    flexDirection: 'row',
   },
   textLeft: {
     textAlign: 'left',

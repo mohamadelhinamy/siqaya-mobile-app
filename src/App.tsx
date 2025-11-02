@@ -5,6 +5,8 @@ import {
   Text,
   TextInput,
   StyleSheet,
+  View,
+  ActivityIndicator,
 } from 'react-native';
 import {LanguageProvider, AuthProvider, QueryProvider} from './context';
 import {AppNavigator} from './navigation';

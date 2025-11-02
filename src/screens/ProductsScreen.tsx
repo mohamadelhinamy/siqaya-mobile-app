@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView, useColorScheme} from 'react-native';
+import {View, StyleSheet, ScrollView, useColorScheme} from 'react-native';
 import {useLanguage, useRTLStyles} from '../context';
-import {Card} from '../components';
+import {Card, Typography} from '../components';
 
 export const ProductsScreen: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -34,28 +34,30 @@ export const ProductsScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>{t('navigation.products')}</Text>
-        <Text style={styles.subtitle}>Browse our products and services</Text>
+        <Typography
+          variant="h1"
+          style={styles.title}
+          text={t('navigation.products')}
+        />
+        <Typography
+          variant="body1"
+          style={styles.subtitle}
+          text={t('screens.products.browseProducts')}
+        />
 
         <Card>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: '600',
-              color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-              marginBottom: 8,
-              textAlign: align,
-            }}>
-            Coming Soon
-          </Text>
-          <Text
-            style={{
-              fontSize: 14,
-              color: isDarkMode ? '#8E8E93' : '#8E8E93',
-              textAlign: align,
-            }}>
-            Product catalog will be available here
-          </Text>
+          <Typography
+            variant="h4"
+            color={isDarkMode ? 'white' : 'text'}
+            style={{marginBottom: 8, textAlign: align}}
+            text={t('products.comingSoon')}
+          />
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            style={{textAlign: align}}
+            text={t('products.catalog')}
+          />
         </Card>
       </ScrollView>
     </View>

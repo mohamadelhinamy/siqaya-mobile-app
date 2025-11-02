@@ -1,12 +1,25 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView, useColorScheme} from 'react-native';
-import {Button, Card, Header, LanguageSelector} from '../components';
-import {useLanguage, useRTLStyles} from '../context';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  useColorScheme,
+  Alert,
+} from 'react-native';
+import {
+  Button,
+  Card,
+  Header,
+  LanguageSelector,
+  Typography,
+} from '../components';
+import {useLanguage, useRTLStyles, useAuth} from '../context';
 
 export const ProfileScreen: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const {t} = useLanguage();
   const rtlStyles = useRTLStyles();
+  const {logout} = useAuth();
 
   const handleEditProfile = () => {
     console.log('Edit Profile pressed!');
@@ -17,7 +30,23 @@ export const ProfileScreen: React.FC = () => {
   };
 
   const handleLogout = () => {
-    console.log('Logout pressed!');
+    Alert.alert(t('auth.logout.title'), t('auth.logout.message'), [
+      {
+        text: t('auth.logout.cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('auth.logout.confirm'),
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await logout();
+          } catch (error) {
+            console.error('Logout error:', error);
+          }
+        },
+      },
+    ]);
   };
 
   return (
@@ -28,104 +57,75 @@ export const ProfileScreen: React.FC = () => {
       ]}>
       <Header title={t('profile.title')} subtitle={t('profile.subtitle')} />
 
-      <ScrollView style={styles.scrollView}>
-        <View
-          style={[
-            styles.content,
-            {alignItems: rtlStyles.isRTL ? 'flex-end' : 'flex-start'},
-          ]}>
-          <Card title={t('profile.userInfo.title')}>
-            <View style={styles.userInfo}>
-              <Text
-                style={[
-                  styles.label,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('profile.userInfo.name')}:
-              </Text>
-              <Text
-                style={[
-                  styles.value,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('profile.sampleData.name')}
-              </Text>
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.content}
+        showsVerticalScrollIndicator={false}
+        bounces={false}>
+        <Card title={t('profile.userInfo.title')}>
+          <View style={styles.userInfo}>
+            <Typography
+              variant="body2"
+              color={isDarkMode ? 'white' : 'text'}
+              style={[styles.label, {textAlign: rtlStyles.textAlign}]}
+              text={`${t('profile.userInfo.name')}:`}
+            />
+            <Typography
+              variant="body1"
+              color={isDarkMode ? 'white' : 'text'}
+              style={[styles.value, {textAlign: rtlStyles.textAlign}]}
+              text={t('profile.sampleData.name')}
+            />
 
-              <Text
-                style={[
-                  styles.label,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('profile.userInfo.email')}:
-              </Text>
-              <Text
-                style={[
-                  styles.value,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('profile.sampleData.email')}
-              </Text>
+            <Typography
+              variant="body2"
+              color={isDarkMode ? 'white' : 'text'}
+              style={[styles.label, {textAlign: rtlStyles.textAlign}]}
+              text={`${t('profile.userInfo.email')}:`}
+            />
+            <Typography
+              variant="body1"
+              color={isDarkMode ? 'white' : 'text'}
+              style={[styles.value, {textAlign: rtlStyles.textAlign}]}
+              text={t('profile.sampleData.email')}
+            />
 
-              <Text
-                style={[
-                  styles.label,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('profile.userInfo.memberSince')}:
-              </Text>
-              <Text
-                style={[
-                  styles.value,
-                  {
-                    color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                    textAlign: rtlStyles.textAlign,
-                  },
-                ]}>
-                {t('profile.sampleData.memberSince')}
-              </Text>
-            </View>
-          </Card>
+            <Typography
+              variant="body2"
+              color={isDarkMode ? 'white' : 'text'}
+              style={[styles.label, {textAlign: rtlStyles.textAlign}]}
+              text={`${t('profile.userInfo.memberSince')}:`}
+            />
+            <Typography
+              variant="body1"
+              color={isDarkMode ? 'white' : 'text'}
+              style={[styles.value, {textAlign: rtlStyles.textAlign}]}
+              text={t('profile.sampleData.memberSince')}
+            />
+          </View>
+        </Card>
 
-          <Card title={t('profile.actions.title')}>
-            <View style={styles.buttonContainer}>
-              <Button
-                title={t('profile.actions.editProfile')}
-                onPress={handleEditProfile}
-                variant="primary"
-                style={styles.button}
-              />
-              <Button
-                title={t('profile.actions.settings')}
-                onPress={handleSettings}
-                variant="outline"
-                style={styles.button}
-              />
-              <Button
-                title={t('profile.actions.logout')}
-                onPress={handleLogout}
-                variant="secondary"
-                style={styles.button}
-              />
-            </View>
-          </Card>
+        <Card title={t('profile.actions.title')}>
+          <View style={styles.buttonContainer}>
+            <Button
+              title={t('profile.actions.editProfile')}
+              onPress={handleEditProfile}
+              variant="primary"
+            />
+            <Button
+              title={t('profile.actions.settings')}
+              onPress={handleSettings}
+              variant="outline"
+            />
+            <Button
+              title={t('profile.actions.logout')}
+              onPress={handleLogout}
+              variant="secondary"
+            />
+          </View>
+        </Card>
 
-          <LanguageSelector />
-        </View>
+        <LanguageSelector />
       </ScrollView>
     </View>
   );
@@ -139,7 +139,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flexGrow: 1,
     padding: 16,
+    paddingBottom: 140, // Add extra padding at bottom to ensure buttons are visible above floating tab bar (70px height + 20px bottom + 50px extra)
   },
   userInfo: {
     gap: 8,
@@ -155,6 +157,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     gap: 12,
+    marginBottom: 16, // Add margin bottom to separate from language selector
   },
   button: {
     marginVertical: 4,

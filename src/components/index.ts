@@ -10,3 +10,5 @@ export {HeroBanner} from './HeroBanner';
 export {ServicesGrid} from './ServicesGrid';
 export {LatestProducts} from './LatestProducts';
 export {WaterDeliveryBanner} from './WaterDeliveryBanner';
+export {Typography} from './Typography';
+export {CustomInput} from './CustomInput';

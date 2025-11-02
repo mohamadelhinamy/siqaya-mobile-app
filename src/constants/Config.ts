@@ -5,8 +5,12 @@ export const Config = {
 
   // API Configuration
   API: {
-    BASE_URL: __DEV__ ? 'http://localhost:3000/api' : 'https://api.siqaya.com',
+    BASE_URL: 'https://sokya.ahmedanbar.dev/api/v1',
     TIMEOUT: 10000,
+    // These should be moved to environment variables in production
+    APP_KEY: 'app_ENaNAQqNhKAEh7hAdUvKTOX50g4APNw3RuOncGyEgoy2aaos', // Replace with actual app key
+    APP_SECRET:
+      '6efI2ZVr30b4MLkRlUsZi4IjnRmYdbSFWTtOgfk6vcileST62rsc8dBiEFjqTga6', // Replace with actual app secret
   },
 
   // Screen dimensions and responsive breakpoints

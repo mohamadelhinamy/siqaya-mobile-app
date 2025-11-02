@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView, useColorScheme} from 'react-native';
+import {View, StyleSheet, ScrollView, useColorScheme} from 'react-native';
 import {useLanguage, useRTLStyles} from '../context';
-import {Card} from '../components';
+import {Card, Typography} from '../components';
 
 export const PathsScreen: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -34,28 +34,35 @@ export const PathsScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>{t('navigation.paths')}</Text>
-        <Text style={styles.subtitle}>Learning paths and programs</Text>
+        <Typography
+          variant="h1"
+          style={styles.title}
+          text={t('navigation.paths')}
+        />
+        <Typography
+          variant="body1"
+          style={styles.subtitle}
+          text={t('screens.paths.learningPaths')}
+        />
 
         <Card>
-          <Text
+          <Typography
+            variant="h4"
+            color={isDarkMode ? 'white' : 'text'}
             style={{
-              fontSize: 18,
-              fontWeight: '600',
-              color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
               marginBottom: 8,
               textAlign: rtlStyles.textAlign,
-            }}>
-            Learning Paths
-          </Text>
-          <Text
+            }}
+            text={t('screens.paths.learningPaths')}
+          />
+          <Typography
+            variant="body2"
+            color="textSecondary"
             style={{
-              fontSize: 14,
-              color: isDarkMode ? '#8E8E93' : '#8E8E93',
               textAlign: rtlStyles.textAlign,
-            }}>
-            Educational content and learning paths will be available here
-          </Text>
+            }}
+            text={t('screens.paths.learningDescription')}
+          />
         </Card>
       </ScrollView>
     </View>

@@ -1,6 +1,11 @@
 import React from 'react';
-import {View, TouchableOpacity, StyleSheet, TextStyle} from 'react-native';
-import {AppTextInput} from '../core/AppTextInput';
+import {
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  TextInput,
+  TextStyle,
+} from 'react-native';
 import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
 
@@ -13,10 +18,11 @@ interface SearchBarProps {
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
-  placeholder = 'بحث',
+  placeholder,
   onSearch,
 }) => {
-  const {isRTL} = useLanguage();
+  const {isRTL, t} = useLanguage();
+  const defaultPlaceholder = placeholder || t('common.search');
   const [searchText, setSearchText] = React.useState('');
 
   const handleSearch = (text: string) => {
@@ -33,9 +39,9 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <AppTextInput
+        <TextInput
           style={inputStyle}
-          placeholder={placeholder}
+          placeholder={defaultPlaceholder}
           placeholderTextColor={Colors.gray}
           value={searchText}
           onChangeText={handleSearch}

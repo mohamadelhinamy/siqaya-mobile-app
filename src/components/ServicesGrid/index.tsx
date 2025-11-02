@@ -25,34 +25,33 @@ interface ServicesGridProps {
   services?: ServiceItem[];
 }
 
-const defaultServices: ServiceItem[] = [
+const getDefaultServices = (t: any): ServiceItem[] => [
   {
     id: '1',
-    title: 'أوقاف الأيتام',
+    title: t('services.orphanEndowments'),
     subtitle: '',
     image: require('../../assets/images/small_card_image.png'),
     color: '#FFFFFF',
   },
   {
     id: '2',
-    title: 'أوقاف الأيتام',
+    title: t('services.orphanEndowments'),
     subtitle: '',
     image: require('../../assets/images/small_card_image.png'),
     color: '#FFFFFF',
   },
   {
     id: '3',
-    title: 'الصناديق الاستثمارية',
+    title: t('services.investmentFunds'),
     subtitle: '',
     image: require('../../assets/images/small_card_image.png'),
     color: '#FFFFFF',
   },
 ];
 
-export const ServicesGrid: React.FC<ServicesGridProps> = ({
-  services = defaultServices,
-}) => {
-  const {isRTL} = useLanguage();
+export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
+  const {isRTL, t} = useLanguage();
+  const displayServices = services || getDefaultServices(t);
 
   const sectionTitleStyle: TextStyle = {
     ...styles.sectionTitle,
@@ -75,7 +74,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
   return (
     <View style={styles.container}>
       <AppText bold style={sectionTitleStyle}>
-        مسارات الخير
+        {t('services.title')}
       </AppText>
 
       <ScrollView
@@ -83,7 +82,7 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
         style={styles.scrollView}>
-        {services.map(renderServiceCard)}
+        {displayServices.map(renderServiceCard)}
       </ScrollView>
     </View>
   );
