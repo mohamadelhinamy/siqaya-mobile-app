@@ -36,19 +36,15 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   return (
     <View style={[styles.container, containerStyle]}>
       {label && (
-        <Typography
-          variant="body2"
-          color={labelColor ? undefined : 'textPrimary'}
-          style={[styles.label, labelColor && {color: labelColor}]}>
-          {label}
-          {required && (
-            <Typography variant="body2" color="error">
-              {' *'}
-            </Typography>
-          )}
-        </Typography>
+        <View style={styles.labelContainer}>
+          <Typography
+            variant="body2"
+            color={labelColor ? undefined : 'textPrimary'}
+            style={[styles.label, labelColor && {color: labelColor}]}
+            text={`${label}${required ? ' *' : ''}`}
+          />
+        </View>
       )}
-
       <TextInput
         style={[
           styles.input,
@@ -63,9 +59,9 @@ export const CustomInput: React.FC<CustomInputProps> = ({
       {error && (
         <Typography
           variant="caption"
-          style={[styles.errorText, {color: errorColor}]}>
-          {error}
-        </Typography>
+          style={[styles.errorText, {color: errorColor}]}
+          text={error}
+        />
       )}
     </View>
   );
@@ -74,6 +70,12 @@ export const CustomInput: React.FC<CustomInputProps> = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 16,
+  },
+  labelContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   },
   label: {
     marginBottom: 8,

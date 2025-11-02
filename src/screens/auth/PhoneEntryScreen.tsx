@@ -94,12 +94,15 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
   };
 
   const handleCreateAccount = () => {
-    // TODO: Navigate to Register screen when created
-    Alert.alert('إنشاء حساب', 'ستتوفر هذه الخدمة قريباً');
+    navigation.navigate('Register');
   };
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header with Logo */}
+      <View style={styles.waveIconContainer}>
+        <WaveIcon />
+      </View>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}>
@@ -107,10 +110,6 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled">
-          {/* Header with Logo */}
-          <View style={styles.waveIconContainer}>
-            <WaveIcon />
-          </View>
           <View style={styles.headerContainer}>
             <Image
               source={require('../../assets/images/login-header.png')}

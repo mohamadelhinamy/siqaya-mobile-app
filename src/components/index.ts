@@ -12,3 +12,4 @@ export {LatestProducts} from './LatestProducts';
 export {WaterDeliveryBanner} from './WaterDeliveryBanner';
 export {Typography} from './Typography';
 export {CustomInput} from './CustomInput';
+export {BackHeader} from './BackHeader';

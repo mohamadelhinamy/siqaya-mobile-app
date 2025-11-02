@@ -2,6 +2,7 @@ import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 import {PhoneEntryScreen} from '../screens/auth/PhoneEntryScreen';
 import {VerificationCodeScreen} from '../screens/auth/VerificationCodeScreen';
+import {RegisterScreen} from '../screens/auth/RegisterScreen';
 
 export type AuthStackParamList = {
   Login: undefined;
@@ -11,7 +12,7 @@ export type AuthStackParamList = {
     userId: number;
     otpExpiresIn: number;
   };
-  // Register?: undefined; // Add when you create RegisterScreen
+  Register: undefined;
   // ForgotPassword?: undefined; // Add when you create ForgotPasswordScreen
 };
 
@@ -43,7 +44,6 @@ export const AuthStackNavigator: React.FC = () => {
         }}
       />
 
-      {/* Add more auth screens here when created
       <Stack.Screen
         name="Register"
         component={RegisterScreen}
@@ -51,7 +51,8 @@ export const AuthStackNavigator: React.FC = () => {
           title: 'Sign Up',
         }}
       />
-      
+
+      {/* Add more auth screens here when created
       <Stack.Screen
         name="ForgotPassword"
         component={ForgotPasswordScreen}
