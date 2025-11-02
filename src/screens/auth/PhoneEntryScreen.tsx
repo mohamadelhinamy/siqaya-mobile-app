@@ -15,7 +15,7 @@ import {useLanguage} from '../../context';
 import {AuthStackParamList} from '../../navigation/AuthStackNavigator';
 import {apiService} from '../../services/api';
 import {Colors, Fonts} from '../../constants';
-import {Typography, CustomInput} from '../../components';
+import {Typography, CustomInput, CustomButton} from '../../components';
 import {hp, wp} from '../../utils/responsive';
 import {WaveIcon} from '../../components/Icons';
 
@@ -134,46 +134,52 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
             />
 
             {/* Terms and Conditions Checkbox */}
-            <TouchableOpacity
-              style={styles.termsContainer}
-              onPress={() => setTermsAccepted(!termsAccepted)}>
-              <View
-                style={[
-                  styles.checkbox,
-                  termsAccepted && styles.checkboxChecked,
-                ]}>
-                {termsAccepted && (
-                  <Typography variant="caption" color="white" text="✓" />
-                )}
-              </View>
+            <View style={styles.termsContainer}>
+              <TouchableOpacity
+                onPress={() => setTermsAccepted(!termsAccepted)}>
+                <View
+                  style={[
+                    styles.checkbox,
+                    termsAccepted && styles.checkboxChecked,
+                  ]}>
+                  {termsAccepted && (
+                    <Typography variant="caption" color="white" text="✓" />
+                  )}
+                </View>
+              </TouchableOpacity>
               <View style={styles.termsTextContainer}>
                 <Typography
                   variant="h6"
                   color="textSecondary"
                   text="أوافق على"
                 />
-                <Typography
-                  variant="h6"
-                  color="turquoise"
-                  text=" سياسات التبرع والأحكام"
-                />
+                <TouchableOpacity
+                  onPress={() => {
+                    // Handle terms and conditions link press
+                    Alert.alert(
+                      'Terms and Conditions',
+                      'عرض سياسات التبرع و الشروط الأحكام',
+                    );
+                  }}>
+                  <Typography
+                    variant="h6"
+                    color="turquoise"
+                    text=" سياسات التبرع و الشروط الأحكام"
+                    style={styles.termsLink}
+                  />
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
+            </View>
 
             {/* Register Button */}
-            <TouchableOpacity
-              style={[
-                styles.registerButton,
-                (loading || !termsAccepted) && styles.registerButtonDisabled,
-              ]}
+            <CustomButton
+              title={loading ? t('common.loading') : 'التسجيل الآن'}
               onPress={handleSendCode}
-              disabled={loading || !termsAccepted}>
-              <Typography
-                variant="button"
-                color="white"
-                text={loading ? t('common.loading') : 'التسجيل الآن'}
-              />
-            </TouchableOpacity>
+              disabled={!termsAccepted}
+              loading={loading}
+              variant="primary"
+              size="large"
+            />
 
             {/* Sign In Link */}
             <TouchableOpacity
@@ -195,6 +201,10 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      {/* Bottom Wave Icon - mirrored */}
+      <View style={styles.bottomWaveIconContainer}>
+        <WaveIcon />
+      </View>
     </SafeAreaView>
   );
 };
@@ -252,16 +262,16 @@ const styles = StyleSheet.create({
   termsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     marginBottom: hp(3),
+    gap: wp(1),
   },
   checkbox: {
     width: wp(5),
     height: wp(5),
-    borderRadius: wp(1),
+    borderRadius: wp(2),
     borderWidth: 1,
     borderColor: Colors.light,
-    marginRight: wp(3),
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.white,
@@ -287,26 +297,10 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
   },
   termsLink: {
-    color: Colors.primary,
     fontFamily: Fonts.bold,
+    textDecorationLine: 'underline',
   },
-  registerButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: wp(4),
-    paddingVertical: hp(2.2),
-    alignItems: 'center',
-    marginBottom: hp(3),
-    minHeight: hp(7),
-    justifyContent: 'center',
-  },
-  registerButtonDisabled: {
-    backgroundColor: Colors.light,
-  },
-  registerButtonText: {
-    color: Colors.white,
-    fontSize: 18,
-    fontFamily: Fonts.bold,
-  },
+
   signInContainer: {
     alignItems: 'center',
     paddingVertical: hp(2),
@@ -324,5 +318,13 @@ const styles = StyleSheet.create({
   signInLink: {
     color: Colors.primary,
     fontFamily: Fonts.bold,
+  },
+  bottomWaveIconContainer: {
+    position: 'absolute',
+    bottom: -100,
+    left: 0,
+    height: hp(30),
+    zIndex: -1,
+    transform: [{rotate: '180deg'}], // Rotate 180 degrees to flip both axes
   },
 });

@@ -38,7 +38,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
       {label && (
         <View style={styles.labelContainer}>
           <Typography
-            variant="body2"
+            variant="h5"
             color={labelColor ? undefined : 'textPrimary'}
             style={[styles.label, labelColor && {color: labelColor}]}
             text={`${label}${required ? ' *' : ''}`}

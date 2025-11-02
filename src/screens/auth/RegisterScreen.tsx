@@ -13,7 +13,13 @@ import {useLanguage} from '../../context';
 import {AuthStackParamList} from '../../navigation/AuthStackNavigator';
 import {apiService} from '../../services/api';
 import {Colors} from '../../constants';
-import {Typography, CustomInput, BackHeader} from '../../components';
+import {
+  Typography,
+  CustomInput,
+  BackHeader,
+  RadioGroup,
+  CustomButton,
+} from '../../components';
 import {hp, wp} from '../../utils/responsive';
 import {WaveIcon} from '../../components/Icons';
 
@@ -29,6 +35,11 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | ''>('');
   const [loading, setLoading] = useState(false);
+
+  const genderOptions = [
+    {value: 'male', label: 'ذكر'},
+    {value: 'female', label: 'أنثى'},
+  ];
 
   const formatPhoneNumber = (text: string) => {
     // Remove all non-digits
@@ -183,59 +194,23 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
             />
 
             {/* Gender Selection */}
-            <View style={styles.genderContainer}>
-              <Typography variant="h6" color="textPrimary" text="الجنس" />
-              <View style={styles.genderOptions}>
-                <TouchableOpacity
-                  style={styles.genderOption}
-                  onPress={() => setGender('male')}>
-                  <View
-                    style={[
-                      styles.radioButton,
-                      gender === 'male' && styles.radioButtonSelected,
-                    ]}
-                  />
-                  <Typography
-                    variant="body1"
-                    color="textPrimary"
-                    text="ذكر"
-                    style={styles.genderLabel}
-                  />
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={styles.genderOption}
-                  onPress={() => setGender('female')}>
-                  <View
-                    style={[
-                      styles.radioButton,
-                      gender === 'female' && styles.radioButtonSelected,
-                    ]}
-                  />
-                  <Typography
-                    variant="body1"
-                    color="textPrimary"
-                    text="أنثى"
-                    style={styles.genderLabel}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
+            <RadioGroup
+              label="الجنس"
+              options={genderOptions}
+              value={gender}
+              onValueChange={value => setGender(value as 'male' | 'female')}
+              horizontal={true}
+              required={true}
+            />
 
             {/* Register Button */}
-            <TouchableOpacity
-              style={[
-                styles.registerButton,
-                loading && styles.registerButtonDisabled,
-              ]}
+            <CustomButton
+              title={loading ? t('common.loading') : 'التسجيل الآن'}
               onPress={handleRegister}
-              disabled={loading}>
-              <Typography
-                variant="button"
-                color="white"
-                text={loading ? t('common.loading') : 'التسجيل الآن'}
-              />
-            </TouchableOpacity>
+              loading={loading}
+              variant="primary"
+              size="large"
+            />
 
             {/* Login Link */}
             <TouchableOpacity
@@ -318,49 +293,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginBottom: hp(3),
   },
-  genderContainer: {
-    marginBottom: hp(4),
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-  },
-  genderOptions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    marginTop: hp(2),
-    gap: wp(6),
-  },
-  genderOption: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  radioButton: {
-    width: wp(6),
-    height: wp(6),
-    borderRadius: wp(3),
-    borderWidth: 2,
-    borderColor: Colors.light,
-    backgroundColor: Colors.white,
-    marginRight: wp(2),
-  },
-  radioButtonSelected: {
-    borderColor: Colors.primary,
-    backgroundColor: Colors.primary,
-  },
-  genderLabel: {
-    marginLeft: wp(2),
-  },
-  registerButton: {
-    backgroundColor: Colors.primary,
-    borderRadius: wp(4),
-    paddingVertical: hp(2.2),
-    alignItems: 'center',
-    marginBottom: hp(3),
-    minHeight: hp(7),
-    justifyContent: 'center',
-  },
-  registerButtonDisabled: {
-    backgroundColor: Colors.light,
-  },
+
   loginContainer: {
     alignItems: 'center',
     paddingVertical: hp(2),
