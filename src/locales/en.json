@@ -48,7 +48,8 @@
       "darkModeSupport": "Dark mode support",
       "sampleScreens": "Sample screens and navigation",
       "multiLanguage": "Multi-language support"
-    }
+    },
+    "projectsNearCompletion": "Projects Near Completion"
   },
   "profile": {
     "title": "Profile",
@@ -90,7 +91,15 @@
       "demoPhone": "Use Demo Phone",
       "invalidPhone": "Please enter a valid 10-digit phone number",
       "passwordRequired": "Please enter your password",
-      "sendError": "Failed to send verification code. Please try again."
+      "sendError": "Failed to send verification code. Please try again.",
+      "mobileNumber": "Mobile Number",
+      "enterMobileNumber": "Enter mobile number",
+      "registerNow": "Register Now",
+      "agreeToTerms": "I agree to",
+      "termsAndPolicies": " donation policies and terms & conditions",
+      "alreadyHaveAccount": "Don't have an account? ",
+      "newAccount": "New Account",
+      "termsAcceptanceRequired": "Please accept the terms and conditions"
     },
     "verification": {
       "title": "Verify Code",
@@ -105,7 +114,15 @@
       "verificationError": "Invalid verification code. Please try again.",
       "codeSent": "Code Sent",
       "newCodeSent": "A new verification code has been sent to your phone",
-      "resendError": "Failed to resend code. Please try again."
+      "resendError": "Failed to resend code. Please try again.",
+      "confirmMobileNumber": "Confirm Mobile Number",
+      "enterCodeSentTo": "Enter the code sent to +{{phoneNumber}} to confirm mobile number",
+      "confirm": "Confirm",
+      "didNotReceiveCode": "Didn't receive the code yet?",
+      "resendAfter": "Resend after (00:{{seconds}} s)",
+      "enterCompleteCode": "Please enter the complete code",
+      "verificationCodeError": "An error occurred while verifying the code",
+      "codeSentSuccess": "Code sent successfully"
     },
     "login": {
       "title": "Sign In",
@@ -119,6 +136,28 @@
       "demoLogin": "Use Demo Login",
       "fillAllFields": "Please fill in all fields",
       "loginError": "Login failed. Please try again."
+    },
+    "register": {
+      "title": "New Account",
+      "subtitle": "Thank you for joining Siqaya Foundation, please enter your information to continue",
+      "fullName": "Name",
+      "enterFullName": "Enter full name",
+      "mobileNumber": "Mobile Number",
+      "enterMobileNumber": "Enter mobile number",
+      "email": "Email",
+      "emailPlaceholder": "Email",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "registerNow": "Register Now",
+      "alreadyHaveAccount": "Already have an account? ",
+      "signIn": "Sign In",
+      "fullNameRequired": "Please enter full name",
+      "validMobileRequired": "Please enter a valid mobile number",
+      "emailRequired": "Please enter email address",
+      "validEmailRequired": "Please enter a valid email address",
+      "genderRequired": "Please select gender",
+      "registrationError": "An error occurred during registration"
     },
     "logout": {
       "title": "Sign Out",

@@ -156,7 +156,7 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
 
   const handleVerifyCode = async () => {
     if (value.length !== CELL_COUNT) {
-      Alert.alert(t('common.error'), 'يرجى إدخال الكود كاملاً');
+      Alert.alert(t('common.error'), t('auth.verification.enterCompleteCode'));
       return;
     }
 
@@ -181,11 +181,14 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
       } else {
         Alert.alert(
           t('common.error'),
-          response.message || 'حدث خطأ في التحقق من الكود',
+          response.message || t('auth.verification.verificationCodeError'),
         );
       }
     } catch (error) {
-      Alert.alert(t('common.error'), 'حدث خطأ في التحقق من الكود');
+      Alert.alert(
+        t('common.error'),
+        t('auth.verification.verificationCodeError'),
+      );
     } finally {
       setLoading(false);
     }
@@ -206,15 +209,18 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
         setResendCountdown(30);
         setValue('');
 
-        Alert.alert('تم الإرسال', 'تم إرسال كود جديد إلى رقمك');
+        Alert.alert(
+          t('auth.verification.codeSentSuccess'),
+          t('auth.verification.newCodeSent'),
+        );
       } else {
         Alert.alert(
           t('common.error'),
-          response.message || 'فشل في إعادة إرسال الكود',
+          response.message || t('auth.verification.resendError'),
         );
       }
     } catch (error) {
-      Alert.alert(t('common.error'), 'فشل في إعادة إرسال الكود');
+      Alert.alert(t('common.error'), t('auth.verification.resendError'));
     } finally {
       setLoading(false);
     }
@@ -239,13 +245,13 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
             <Typography
               variant="h4"
               color="textPrimary"
-              text="تأكيد رقم الجوال"
+              text={t('auth.verification.confirmMobileNumber')}
               style={styles.title}
             />
             <Typography
               variant="body2"
               color="textSecondary"
-              text={`ادخل الكود المرسل إلى +${phoneNumber} لتأكيد رقم الجوال`}
+              text={t('auth.verification.enterCodeSentTo', {phoneNumber})}
               style={styles.subtitle}
             />
           </View>
@@ -284,7 +290,9 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
 
             {/* Verify Button */}
             <CustomButton
-              title={loading ? t('common.loading') : 'تأكيد'}
+              title={
+                loading ? t('common.loading') : t('auth.verification.confirm')
+              }
               onPress={handleVerifyCode}
               loading={loading}
               disabled={value.length !== CELL_COUNT}
@@ -298,7 +306,7 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
               <Typography
                 variant="body1"
                 color="textSecondary"
-                text="لم تستلم الكود بعد؟"
+                text={t('auth.verification.didNotReceiveCode')}
                 style={styles.resendQuestion}
               />
               <TouchableOpacity
@@ -310,10 +318,10 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
                   color={'turquoise'}
                   text={
                     canResend
-                      ? 'إعادة الإرسال'
-                      : `إعادة الإرسال بعد (00:${resendCountdown
-                          .toString()
-                          .padStart(2, '0')} ث)`
+                      ? t('auth.verification.resendCode')
+                      : t('auth.verification.resendAfter', {
+                          seconds: resendCountdown.toString().padStart(2, '0'),
+                        })
                   }
                   style={styles.resendText}
                 />

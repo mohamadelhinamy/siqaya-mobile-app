@@ -48,7 +48,8 @@
       "darkModeSupport": "دعم الوضع المظلم",
       "sampleScreens": "شاشات تجريبية والتنقل",
       "multiLanguage": "دعم متعدد اللغات"
-    }
+    },
+    "projectsNearCompletion": "مشاريع على وشك الاكتمال"
   },
   "profile": {
     "title": "الملف الشخصي",
@@ -90,7 +91,15 @@
       "demoPhone": "استخدام رقم تجريبي",
       "invalidPhone": "يرجى إدخال رقم هاتف صحيح مكون من 10 أرقام",
       "passwordRequired": "يرجى إدخال كلمة المرور",
-      "sendError": "فشل إرسال رمز التحقق. يرجى المحاولة مرة أخرى."
+      "sendError": "فشل إرسال رمز التحقق. يرجى المحاولة مرة أخرى.",
+      "mobileNumber": "رقم الجوال",
+      "enterMobileNumber": "أدخل رقم الجوال",
+      "registerNow": "التسجيل الآن",
+      "agreeToTerms": "أوافق على",
+      "termsAndPolicies": " سياسات التبرع و الشروط الأحكام",
+      "alreadyHaveAccount": "ليس لديك حساب؟ ",
+      "newAccount": "حساب جديد",
+      "termsAcceptanceRequired": "يرجى الموافقة على الشروط والأحكام"
     },
     "verification": {
       "title": "التحقق من الرمز",
@@ -105,7 +114,15 @@
       "verificationError": "رمز التحقق غير صحيح. يرجى المحاولة مرة أخرى.",
       "codeSent": "تم إرسال الرمز",
       "newCodeSent": "تم إرسال رمز تحقق جديد إلى هاتفك",
-      "resendError": "فشل إعادة إرسال الرمز. يرجى المحاولة مرة أخرى."
+      "resendError": "فشل إعادة إرسال الرمز. يرجى المحاولة مرة أخرى.",
+      "confirmMobileNumber": "تأكيد رقم الجوال",
+      "enterCodeSentTo": "ادخل الكود المرسل إلى +{{phoneNumber}} لتأكيد رقم الجوال",
+      "confirm": "تأكيد",
+      "didNotReceiveCode": "لم تستلم الكود بعد؟",
+      "resendAfter": "إعادة الإرسال بعد (00:{{seconds}} ث)",
+      "enterCompleteCode": "يرجى إدخال الكود كاملاً",
+      "verificationCodeError": "حدث خطأ في التحقق من الكود",
+      "codeSentSuccess": "تم الإرسال"
     },
     "login": {
       "title": "تسجيل الدخول",
@@ -119,6 +136,28 @@
       "demoLogin": "استخدام تسجيل الدخول التجريبي",
       "fillAllFields": "يرجى ملء جميع الحقول",
       "loginError": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى."
+    },
+    "register": {
+      "title": "حساب جديد",
+      "subtitle": "نشكرك على انضمامك معنا في مؤسسة سقاية، من فضلك أدخل بياناتك للاستمرار",
+      "fullName": "الاسم",
+      "enterFullName": "ادخل الاسم كاملا",
+      "mobileNumber": "رقم الجوال",
+      "enterMobileNumber": "ادخل رقم الجوال",
+      "email": "البريد الالكتروني",
+      "emailPlaceholder": "البريد الالكتروني",
+      "gender": "الجنس",
+      "male": "ذكر",
+      "female": "أنثى",
+      "registerNow": "التسجيل الآن",
+      "alreadyHaveAccount": "لديك حساب من قبل؟ ",
+      "signIn": "تسجيل الدخول",
+      "fullNameRequired": "يرجى إدخال الاسم كاملاً",
+      "validMobileRequired": "يرجى إدخال رقم الجوال صحيحاً",
+      "emailRequired": "يرجى إدخال البريد الإلكتروني",
+      "validEmailRequired": "يرجى إدخال بريد إلكتروني صحيح",
+      "genderRequired": "يرجى اختيار الجنس",
+      "registrationError": "حدث خطأ أثناء التسجيل"
     },
     "logout": {
       "title": "تسجيل الخروج",

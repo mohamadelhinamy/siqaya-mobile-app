@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import {Colors} from '../constants';
+import {useLanguage} from '../context';
 import {HomeHeader} from '../components/HomeHeader';
 import {SearchBar} from '../components/SearchBar';
 import {HeroBanner} from '../components/HeroBanner';
@@ -23,6 +24,7 @@ import {
 } from '../components/Skeletons';
 
 export const HomeScreen: React.FC = () => {
+  const {t} = useLanguage();
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
 
@@ -81,7 +83,7 @@ export const HomeScreen: React.FC = () => {
           />
         )}
 
-        <LatestProducts title="مشاريع على وشك الاكتمال" />
+        <LatestProducts title={t('home.projectsNearCompletion')} />
 
         {/* Bottom Spacing for Tab Bar */}
         <View style={styles.bottomSpacing} />

@@ -6,28 +6,13 @@ import {
   useColorScheme,
   Alert,
 } from 'react-native';
-import {
-  Button,
-  Card,
-  Header,
-  LanguageSelector,
-  Typography,
-} from '../components';
-import {useLanguage, useRTLStyles, useAuth} from '../context';
+import {Button, Card, Header, LanguageSelector} from '../components';
+import {useLanguage, useAuth} from '../context';
 
 export const ProfileScreen: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const {t} = useLanguage();
-  const rtlStyles = useRTLStyles();
   const {logout} = useAuth();
-
-  const handleEditProfile = () => {
-    console.log('Edit Profile pressed!');
-  };
-
-  const handleSettings = () => {
-    console.log('Settings pressed!');
-  };
 
   const handleLogout = () => {
     Alert.alert(t('auth.logout.title'), t('auth.logout.message'), [
@@ -62,61 +47,8 @@ export const ProfileScreen: React.FC = () => {
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
         bounces={false}>
-        <Card title={t('profile.userInfo.title')}>
-          <View style={styles.userInfo}>
-            <Typography
-              variant="body2"
-              color={isDarkMode ? 'white' : 'text'}
-              style={[styles.label, {textAlign: rtlStyles.textAlign}]}
-              text={`${t('profile.userInfo.name')}:`}
-            />
-            <Typography
-              variant="body1"
-              color={isDarkMode ? 'white' : 'text'}
-              style={[styles.value, {textAlign: rtlStyles.textAlign}]}
-              text={t('profile.sampleData.name')}
-            />
-
-            <Typography
-              variant="body2"
-              color={isDarkMode ? 'white' : 'text'}
-              style={[styles.label, {textAlign: rtlStyles.textAlign}]}
-              text={`${t('profile.userInfo.email')}:`}
-            />
-            <Typography
-              variant="body1"
-              color={isDarkMode ? 'white' : 'text'}
-              style={[styles.value, {textAlign: rtlStyles.textAlign}]}
-              text={t('profile.sampleData.email')}
-            />
-
-            <Typography
-              variant="body2"
-              color={isDarkMode ? 'white' : 'text'}
-              style={[styles.label, {textAlign: rtlStyles.textAlign}]}
-              text={`${t('profile.userInfo.memberSince')}:`}
-            />
-            <Typography
-              variant="body1"
-              color={isDarkMode ? 'white' : 'text'}
-              style={[styles.value, {textAlign: rtlStyles.textAlign}]}
-              text={t('profile.sampleData.memberSince')}
-            />
-          </View>
-        </Card>
-
         <Card title={t('profile.actions.title')}>
           <View style={styles.buttonContainer}>
-            <Button
-              title={t('profile.actions.editProfile')}
-              onPress={handleEditProfile}
-              variant="primary"
-            />
-            <Button
-              title={t('profile.actions.settings')}
-              onPress={handleSettings}
-              variant="outline"
-            />
             <Button
               title={t('profile.actions.logout')}
               onPress={handleLogout}

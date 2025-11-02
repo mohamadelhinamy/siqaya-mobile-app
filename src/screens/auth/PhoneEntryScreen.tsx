@@ -57,7 +57,10 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
       return false;
     }
     if (!termsAccepted) {
-      Alert.alert(t('common.error'), 'يرجى الموافقة على الشروط والأحكام');
+      Alert.alert(
+        t('common.error'),
+        t('auth.phoneEntry.termsAcceptanceRequired'),
+      );
       return false;
     }
     return true;
@@ -122,8 +125,8 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
           <View style={styles.formContainer}>
             {/* Phone Number Input */}
             <CustomInput
-              label="رقم الجوال"
-              placeholder="أدخل رقم الجوال"
+              label={t('auth.phoneEntry.mobileNumber')}
+              placeholder={t('auth.phoneEntry.enterMobileNumber')}
               value={phoneNumber}
               onChangeText={(text: string) =>
                 setPhoneNumber(formatPhoneNumber(text))
@@ -151,7 +154,7 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
                 <Typography
                   variant="h6"
                   color="textSecondary"
-                  text="أوافق على"
+                  text={t('auth.phoneEntry.agreeToTerms')}
                 />
                 <TouchableOpacity
                   onPress={() => {
@@ -164,7 +167,7 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
                   <Typography
                     variant="h6"
                     color="turquoise"
-                    text=" سياسات التبرع و الشروط الأحكام"
+                    text={t('auth.phoneEntry.termsAndPolicies')}
                     style={styles.termsLink}
                   />
                 </TouchableOpacity>
@@ -173,7 +176,9 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
 
             {/* Register Button */}
             <CustomButton
-              title={loading ? t('common.loading') : 'التسجيل الآن'}
+              title={
+                loading ? t('common.loading') : t('auth.phoneEntry.registerNow')
+              }
               onPress={handleSendCode}
               disabled={!termsAccepted}
               loading={loading}
@@ -189,12 +194,12 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
                 <Typography
                   variant="body2"
                   color="textSecondary"
-                  text="ليس لديك حساب؟ "
+                  text={t('auth.phoneEntry.alreadyHaveAccount')}
                 />
                 <Typography
                   variant="body2"
                   color="turquoise"
-                  text="حساب جديد"
+                  text={t('auth.phoneEntry.newAccount')}
                 />
               </View>
             </TouchableOpacity>

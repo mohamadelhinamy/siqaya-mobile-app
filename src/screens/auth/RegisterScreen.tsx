@@ -37,8 +37,8 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
   const [loading, setLoading] = useState(false);
 
   const genderOptions = [
-    {value: 'male', label: 'ذكر'},
-    {value: 'female', label: 'أنثى'},
+    {value: 'male', label: t('auth.register.male')},
+    {value: 'female', label: t('auth.register.female')},
   ];
 
   const formatPhoneNumber = (text: string) => {
@@ -61,29 +61,29 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
 
   const validateForm = () => {
     if (!fullName.trim()) {
-      Alert.alert(t('common.error'), 'يرجى إدخال الاسم كاملاً');
+      Alert.alert(t('common.error'), t('auth.register.fullNameRequired'));
       return false;
     }
 
     const cleanPhone = phoneNumber.replace(/\D/g, '');
     if (cleanPhone.length !== 10) {
-      Alert.alert(t('common.error'), 'يرجى إدخال رقم الجوال صحيحاً');
+      Alert.alert(t('common.error'), t('auth.register.validMobileRequired'));
       return false;
     }
 
     if (!email.trim()) {
-      Alert.alert(t('common.error'), 'يرجى إدخال البريد الإلكتروني');
+      Alert.alert(t('common.error'), t('auth.register.emailRequired'));
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert(t('common.error'), 'يرجى إدخال بريد إلكتروني صحيح');
+      Alert.alert(t('common.error'), t('auth.register.validEmailRequired'));
       return false;
     }
 
     if (!gender) {
-      Alert.alert(t('common.error'), 'يرجى اختيار الجنس');
+      Alert.alert(t('common.error'), t('auth.register.genderRequired'));
       return false;
     }
 
@@ -118,12 +118,12 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
           otpExpiresIn: response.data.otp_expires_in,
         });
       } else {
-        Alert.alert(t('common.error'), 'حدث خطأ أثناء التسجيل');
+        Alert.alert(t('common.error'), t('auth.register.registrationError'));
       }
     } catch (error) {
       console.log(error, 'error');
       console.error('Register error:', error);
-      Alert.alert(t('common.error'), 'حدث خطأ أثناء التسجيل');
+      Alert.alert(t('common.error'), t('auth.register.registrationError'));
     } finally {
       setLoading(false);
     }
@@ -152,13 +152,13 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
             <Typography
               variant="h4"
               color="textPrimary"
-              text="حساب جديد"
+              text={t('auth.register.title')}
               align="left"
             />
             <Typography
               variant="body2"
               color="textSecondary"
-              text="نشكرك على انضمامك معنا في مؤسسة سقاية، من فضلك أدخل بياناتك للاستمرار"
+              text={t('auth.register.subtitle')}
               style={styles.subtitle}
             />
           </View>
@@ -167,8 +167,8 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
           <View style={styles.formContainer}>
             {/* Full Name Input */}
             <CustomInput
-              label="الاسم"
-              placeholder="ادخل الاسم كاملا"
+              label={t('auth.register.fullName')}
+              placeholder={t('auth.register.enterFullName')}
               value={fullName}
               onChangeText={setFullName}
               returnKeyType="next"
@@ -177,8 +177,8 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
 
             {/* Phone Number Input */}
             <CustomInput
-              label="رقم الجوال"
-              placeholder="ادخل رقم الجوال"
+              label={t('auth.register.mobileNumber')}
+              placeholder={t('auth.register.enterMobileNumber')}
               value={phoneNumber}
               onChangeText={(text: string) =>
                 setPhoneNumber(formatPhoneNumber(text))
@@ -190,8 +190,8 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
 
             {/* Email Input */}
             <CustomInput
-              label="البريد الالكتروني"
-              placeholder="البريد الالكتروني"
+              label={t('auth.register.email')}
+              placeholder={t('auth.register.emailPlaceholder')}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -202,7 +202,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
 
             {/* Gender Selection */}
             <RadioGroup
-              label="الجنس"
+              label={t('auth.register.gender')}
               options={genderOptions}
               value={gender}
               onValueChange={value => setGender(value as 'male' | 'female')}
@@ -212,7 +212,9 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
 
             {/* Register Button */}
             <CustomButton
-              title={loading ? t('common.loading') : 'التسجيل الآن'}
+              title={
+                loading ? t('common.loading') : t('auth.register.registerNow')
+              }
               onPress={handleRegister}
               loading={loading}
               variant="primary"
@@ -227,12 +229,12 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
                 <Typography
                   variant="body2"
                   color="textSecondary"
-                  text="لديك حساب من قبل؟ "
+                  text={t('auth.register.alreadyHaveAccount')}
                 />
                 <Typography
                   variant="body2"
                   color="turquoise"
-                  text="تسجيل الدخول"
+                  text={t('auth.register.signIn')}
                 />
               </View>
             </TouchableOpacity>
