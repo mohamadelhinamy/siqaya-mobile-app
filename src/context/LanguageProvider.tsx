@@ -85,16 +85,38 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
           )) as SupportedLanguage) || 'ar';
         const savedRTL = RTL_LANGUAGES.includes(savedLanguage);
 
-        console.log(savedLanguage, 'saved language');
+        console.log(
+          'Initializing - Saved language:',
+          savedLanguage,
+          'Should be RTL:',
+          savedRTL,
+          'Current RTL:',
+          I18nManager.isRTL,
+        );
 
+        // Check if there's a direction mismatch that requires restart
+        if (I18nManager.isRTL !== savedRTL) {
+          console.log(
+            'RTL direction mismatch detected! Restarting app to fix layout...',
+          );
+
+          // Set correct RTL direction
+          I18nManager.allowRTL(true);
+          I18nManager.forceRTL(savedRTL);
+
+          // Force restart to apply RTL changes
+          setTimeout(() => {
+            RNRestart.restart();
+          }, 100);
+          return; // Don't continue initialization, restart will handle it
+        }
+
+        // No mismatch, continue normal initialization
         setCurrentLanguage(savedLanguage);
         setIsRTL(savedRTL);
 
-        if (I18nManager.isRTL !== savedRTL) {
-          console.log(savedRTL, 'rtl in init language');
-          I18nManager.allowRTL(savedRTL);
-          I18nManager.forceRTL(savedRTL);
-        }
+        // Ensure RTL is allowed
+        I18nManager.allowRTL(true);
 
         await i18n.changeLanguage(savedLanguage);
         setIsInitialized(true);
