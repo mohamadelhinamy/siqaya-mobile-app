@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   ScrollView,
   ViewStyle,
-  ActivityIndicator,
 } from 'react-native';
 import {Typography} from '../Typography';
 import {ProductCard, ProductCardProps} from '../ProductCard';
@@ -14,6 +13,7 @@ import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
 import {hp, wp} from '../../utils/responsive';
 import {apiService, Product} from '../../services/api';
+import {LatestProductsSkeleton} from '../Skeletons';
 
 interface LatestProductsProps {
   products?: ProductCardProps[];
@@ -143,9 +143,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
         </TouchableOpacity>
       </View>
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="small" color={Colors.primary} />
-        </View>
+        <LatestProductsSkeleton />
       ) : error ? (
         <View style={styles.errorContainer}>
           <Typography

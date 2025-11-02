@@ -14,9 +14,26 @@ import {HeroBanner} from '../components/HeroBanner';
 import {ServicesGrid} from '../components/ServicesGrid';
 import {LatestProducts} from '../components/LatestProducts';
 import {WaterDeliveryBanner} from '../components/WaterDeliveryBanner';
+import {
+  HomeHeaderSkeleton,
+  SearchBarSkeleton,
+  HeroBannerSkeleton,
+  ServicesGridSkeleton,
+  WaterDeliveryBannerSkeleton,
+} from '../components/Skeletons';
 
 export const HomeScreen: React.FC = () => {
   const [refreshing, setRefreshing] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    // Simulate initial loading
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -36,26 +53,33 @@ export const HomeScreen: React.FC = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
-        {/* Components will be added step by step */}
         {/* Header with Logo and Cart */}
-        <HomeHeader />
+        {loading ? <HomeHeaderSkeleton /> : <HomeHeader />}
 
         {/* Search Bar */}
-        <SearchBar />
+        {loading ? <SearchBarSkeleton /> : <SearchBar />}
 
         {/* Hero Banner */}
-        <HeroBanner onPress={() => console.log('Hero banner pressed')} />
+        {loading ? (
+          <HeroBannerSkeleton />
+        ) : (
+          <HeroBanner onPress={() => console.log('Hero banner pressed')} />
+        )}
 
         {/* Services Grid */}
-        <ServicesGrid />
+        {loading ? <ServicesGridSkeleton /> : <ServicesGrid />}
 
         {/* Latest Products */}
         <LatestProducts />
 
         {/* Water Delivery Banner */}
-        <WaterDeliveryBanner
-          onPress={() => console.log('Water delivery pressed')}
-        />
+        {loading ? (
+          <WaterDeliveryBannerSkeleton />
+        ) : (
+          <WaterDeliveryBanner
+            onPress={() => console.log('Water delivery pressed')}
+          />
+        )}
 
         <LatestProducts title="مشاريع على وشك الاكتمال" />
 
