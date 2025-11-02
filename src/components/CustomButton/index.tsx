@@ -5,20 +5,22 @@ import {
   StyleProp,
   ViewStyle,
   ActivityIndicator,
+  View,
 } from 'react-native';
 import {Typography} from '../Typography';
 import {Colors} from '../../constants';
 import {hp, wp} from '../../utils/responsive';
 
 interface CustomButtonProps {
-  title: string;
+  title?: string;
   onPress: () => void;
   disabled?: boolean;
   loading?: boolean;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary' | 'outline' | 'icon';
   size?: 'small' | 'medium' | 'large';
   style?: StyleProp<ViewStyle>;
   fullWidth?: boolean;
+  icon?: React.ReactNode;
 }
 
 export const CustomButton: React.FC<CustomButtonProps> = ({
@@ -30,6 +32,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
   size = 'large',
   style,
   fullWidth = true,
+  icon,
 }) => {
   const isDisabled = disabled || loading;
 
@@ -54,6 +57,12 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
         baseStyle.push(styles.outlineButton);
         if (isDisabled) {
           baseStyle.push(styles.outlineButtonDisabled);
+        }
+        break;
+      case 'icon':
+        baseStyle.push(styles.iconButton);
+        if (isDisabled) {
+          baseStyle.push(styles.iconButtonDisabled);
         }
         break;
     }
@@ -85,22 +94,36 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     return 'white';
   };
 
-  return (
-    <TouchableOpacity
-      style={[getButtonStyle(), style]}
-      onPress={onPress}
-      disabled={isDisabled}
-      activeOpacity={0.8}>
-      {loading ? (
-        <ActivityIndicator color={Colors.white} size="small" />
-      ) : (
+  const renderContent = () => {
+    if (loading) {
+      return <ActivityIndicator color={Colors.white} size="small" />;
+    }
+
+    if (variant === 'icon' && icon) {
+      return <View style={styles.iconContainer}>{icon}</View>;
+    }
+
+    if (title) {
+      return (
         <Typography
           variant="button"
           color={getTextColor()}
           text={title}
           style={styles.buttonText}
         />
-      )}
+      );
+    }
+
+    return null;
+  };
+
+  return (
+    <TouchableOpacity
+      style={[getButtonStyle(), style]}
+      onPress={onPress}
+      disabled={isDisabled}
+      activeOpacity={0.8}>
+      {renderContent()}
     </TouchableOpacity>
   );
 };
@@ -149,6 +172,21 @@ const styles = StyleSheet.create({
   outlineButtonDisabled: {
     borderColor: Colors.light,
     backgroundColor: 'transparent',
+  },
+  iconButton: {
+    backgroundColor: Colors.background.light,
+    width: hp(5.5),
+    height: hp(5.5),
+    borderRadius: wp(6),
+    paddingVertical: 0,
+    marginBottom: 0,
+  },
+  iconButtonDisabled: {
+    backgroundColor: Colors.light,
+  },
+  iconContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   buttonText: {
     textAlign: 'center',

@@ -50,12 +50,12 @@ const getDefaultServices = (t: any): ServiceItem[] => [
 ];
 
 export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
-  const {isRTL, t} = useLanguage();
+  const {t} = useLanguage();
   const displayServices = services || getDefaultServices(t);
 
   const sectionTitleStyle: TextStyle = {
     ...styles.sectionTitle,
-    textAlign: isRTL ? 'right' : 'left',
+    textAlign: 'left',
   };
 
   const renderServiceCard = (service: ServiceItem) => {
