@@ -150,7 +150,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
             />
             <Typography
               variant="body2"
-              color="textPrimary"
+              color="textSecondary"
               text="نشكرك على انضمامك معنا في مؤسسة سقاية، من فضلك أدخل بياناتك للاستمرار"
               style={styles.subtitle}
             />

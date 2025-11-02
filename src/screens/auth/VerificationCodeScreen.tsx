@@ -1,43 +1,146 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
-  TextInput,
   StyleSheet,
   ScrollView,
-  useColorScheme,
   Alert,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import {RouteProp} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {Button, Card, Header, Typography} from '../../components';
-import {useLanguage, useRTLStyles} from '../../context';
+import {
+  CodeField,
+  useClearByFocusCell,
+} from 'react-native-confirmation-code-field';
+import {Typography, CustomButton, BackHeader} from '../../components';
+import {useLanguage} from '../../context';
 import {useAuth} from '../../context/AuthProvider';
 import {AuthStackParamList} from '../../navigation/AuthStackNavigator';
 import {apiService} from '../../services/api';
+import {Colors} from '../../constants';
+import {hp, wp} from '../../utils/responsive';
+import {WaveIcon} from '../../components/Icons';
 
 interface VerificationCodeScreenProps {
   navigation: StackNavigationProp<AuthStackParamList, 'VerificationCode'>;
   route: RouteProp<AuthStackParamList, 'VerificationCode'>;
 }
 
+const CELL_COUNT = 6;
+
 export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
-  navigation,
   route,
 }) => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const {t} = useLanguage();
-  const rtlStyles = useRTLStyles();
+  const {t, isRTL} = useLanguage();
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background.light,
+    },
+    waveIconContainer: {
+      position: 'absolute',
+      top: 0,
+      right: 0,
+      height: hp(30),
+    },
+    bottomWaveIconContainer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      height: hp(30),
+      transform: [{rotate: '180deg'}], // Rotate 180 degrees to flip both axes
+    },
+    keyboardView: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1,
+      paddingHorizontal: wp(6),
+      paddingTop: hp(5),
+      paddingBottom: hp(5),
+    },
+    headerContainer: {
+      alignItems: 'flex-start',
+      marginBottom: hp(4),
+    },
+    title: {
+      textAlign: 'left',
+    },
+    subtitle: {
+      textAlign: 'left',
+      lineHeight: hp(3),
+    },
+    formContainer: {
+      justifyContent: 'center',
+    },
+    codeContainer: {
+      marginBottom: hp(4),
+    },
+    codeRootStyle: {
+      flexDirection: isRTL ? 'row-reverse' : 'row',
+    },
+    cell: {
+      width: wp(12),
+      height: wp(12),
+      borderWidth: 0.5,
+      borderColor: Colors.light,
+      borderRadius: wp(3),
+      backgroundColor: Colors.white,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginHorizontal: wp(1),
+    },
+    focusCell: {
+      borderColor: Colors.primaryLight,
+      borderWidth: 0.5,
+    },
+    filledCell: {
+      borderColor: Colors.primaryLight,
+      borderWidth: 0.5,
+      backgroundColor: Colors.white,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    cellText: {
+      textAlign: 'center',
+      fontSize: wp(6),
+      fontWeight: '600',
+    },
+    verifyButton: {
+      marginBottom: hp(4),
+    },
+    resendContainer: {
+      alignItems: 'center',
+      paddingVertical: hp(2),
+    },
+    resendQuestion: {
+      textAlign: 'center',
+      marginBottom: hp(1),
+    },
+    resendButton: {
+      paddingVertical: hp(1),
+      paddingHorizontal: wp(4),
+    },
+    resendText: {
+      textAlign: 'center',
+    },
+  });
   const {login} = useAuth();
 
-  const {phoneNumber, userId, otpExpiresIn} = route.params;
+  const {phoneNumber, userId} = route.params;
 
-  const [code, setCode] = useState(['', '', '', '', '', '']);
+  const [value, setValue] = useState('');
   const [loading, setLoading] = useState(false);
-  const [resendCountdown, setResendCountdown] = useState(60);
+  const [resendCountdown, setResendCountdown] = useState(30);
   const [canResend, setCanResend] = useState(false);
 
-  const inputRefs = useRef<(TextInput | null)[]>([]);
+  const [props, getCellOnLayoutHandler] = useClearByFocusCell({
+    value,
+    setValue,
+  });
 
   // Countdown timer for resend button
   useEffect(() => {
@@ -51,54 +154,16 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
     }
   }, [resendCountdown]);
 
-  const handleCodeChange = (value: string, index: number) => {
-    if (value.length > 1) {
-      // Handle paste
-      const pastedCode = value.slice(0, 6).split('');
-      const newCode = [...code];
-      pastedCode.forEach((digit, i) => {
-        if (i + index < 6) {
-          newCode[i + index] = digit;
-        }
-      });
-      setCode(newCode);
-
-      // Focus on the next empty input or the last one
-      const nextEmptyIndex = newCode.findIndex(c => c === '');
-      const focusIndex = nextEmptyIndex === -1 ? 5 : nextEmptyIndex;
-      inputRefs.current[focusIndex]?.focus();
-      return;
-    }
-
-    const newCode = [...code];
-    newCode[index] = value;
-    setCode(newCode);
-
-    // Auto-focus next input
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyPress = (key: string, index: number) => {
-    if (key === 'Backspace' && !code[index] && index > 0) {
-      // Focus previous input on backspace if current is empty
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
   const handleVerifyCode = async () => {
-    const verificationCode = code.join('');
-
-    if (verificationCode.length !== 6) {
-      Alert.alert(t('common.error'), t('auth.verification.incompleteCode'));
+    if (value.length !== CELL_COUNT) {
+      Alert.alert(t('common.error'), 'يرجى إدخال الكود كاملاً');
       return;
     }
 
     setLoading(true);
     try {
       // Use the real Sokya API to verify OTP
-      const response = await apiService.verifyOtp(userId, verificationCode);
+      const response = await apiService.verifyOtp(userId, value);
 
       if (response.success && response.data) {
         // Login successful, use the returned user data and token
@@ -116,11 +181,11 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
       } else {
         Alert.alert(
           t('common.error'),
-          response.message || t('auth.verification.verificationError'),
+          response.message || 'حدث خطأ في التحقق من الكود',
         );
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('auth.verification.verificationError'));
+      Alert.alert(t('common.error'), 'حدث خطأ في التحقق من الكود');
     } finally {
       setLoading(false);
     }
@@ -138,173 +203,130 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
 
       if (response.success) {
         setCanResend(false);
-        setResendCountdown(60);
-        setCode(['', '', '', '', '', '']);
-        inputRefs.current[0]?.focus();
+        setResendCountdown(30);
+        setValue('');
 
-        Alert.alert(
-          t('auth.verification.codeSent'),
-          t('auth.verification.newCodeSent'),
-        );
+        Alert.alert('تم الإرسال', 'تم إرسال كود جديد إلى رقمك');
       } else {
         Alert.alert(
           t('common.error'),
-          response.message || t('auth.verification.resendError'),
+          response.message || 'فشل في إعادة إرسال الكود',
         );
       }
     } catch (error) {
-      Alert.alert(t('common.error'), t('auth.verification.resendError'));
+      Alert.alert(t('common.error'), 'فشل في إعادة إرسال الكود');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleBackToPhone = () => {
-    navigation.goBack();
-  };
-
   return (
-    <View
-      style={[
-        styles.container,
-        {backgroundColor: isDarkMode ? '#1C1C1E' : '#F2F2F7'},
-      ]}>
-      <Header
-        title={t('auth.verification.title')}
-        subtitle={t('auth.verification.subtitle')}
-      />
+    <View style={styles.container}>
+      <BackHeader />
+      <View style={styles.waveIconContainer}>
+        <WaveIcon />
+      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
+          {/* Header with Logo */}
 
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.content}>
-          <Card title={t('auth.verification.enterCode')}>
-            <View style={styles.form}>
-              <Typography
-                variant="body2"
-                color="textSecondary"
-                style={[styles.description, {textAlign: rtlStyles.textAlign}]}
-                text={t('auth.verification.description', {phoneNumber})}
-              />
+          <View style={styles.headerContainer}>
+            <Typography
+              variant="h4"
+              color="textPrimary"
+              text="تأكيد رقم الجوال"
+              style={styles.title}
+            />
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              text={`ادخل الكود المرسل إلى +${phoneNumber} لتأكيد رقم الجوال`}
+              style={styles.subtitle}
+            />
+          </View>
 
-              <View style={styles.codeInputContainer}>
-                {code.map((digit, index) => (
-                  <TextInput
+          {/* Verification Form */}
+          <View style={styles.formContainer}>
+            {/* Code Input */}
+            <View style={styles.codeContainer}>
+              <CodeField
+                {...props}
+                value={value}
+                onChangeText={setValue}
+                cellCount={CELL_COUNT}
+                rootStyle={styles.codeRootStyle}
+                keyboardType="number-pad"
+                textContentType="oneTimeCode"
+                renderCell={({index, symbol, isFocused}) => (
+                  <View
                     key={index}
-                    ref={ref => (inputRefs.current[index] = ref)}
                     style={[
-                      styles.codeInput,
-                      {
-                        color: isDarkMode ? '#FFFFFF' : '#1C1C1E',
-                        backgroundColor: isDarkMode ? '#2C2C2E' : '#FFFFFF',
-                        borderColor: digit ? '#007AFF' : '#E5E5EA',
-                      },
+                      styles.cell,
+                      isFocused && styles.focusCell,
+                      symbol && styles.filledCell,
                     ]}
-                    value={digit}
-                    onChangeText={value => handleCodeChange(value, index)}
-                    onKeyPress={({nativeEvent}) =>
-                      handleKeyPress(nativeEvent.key, index)
-                    }
-                    keyboardType="number-pad"
-                    maxLength={1}
-                    textAlign="center"
-                    selectTextOnFocus
-                  />
-                ))}
-              </View>
-
-              <Button
-                title={
-                  loading ? t('common.loading') : t('auth.verification.verify')
-                }
-                onPress={handleVerifyCode}
-                variant="primary"
-                disabled={loading || code.join('').length !== 6}
-                style={styles.verifyButton}
-              />
-
-              <View style={styles.resendContainer}>
-                <TouchableOpacity
-                  onPress={handleResendCode}
-                  disabled={!canResend || loading}
-                  style={styles.resendButton}>
-                  <Typography
-                    variant="body1"
-                    color={canResend && !loading ? 'primary' : 'textSecondary'}
-                    style={[
-                      styles.resendText,
-                      {textAlign: rtlStyles.textAlign},
-                    ]}
-                    text={
-                      canResend
-                        ? t('auth.verification.resendCode')
-                        : t('auth.verification.resendIn', {
-                            seconds: resendCountdown,
-                          })
-                    }
-                  />
-                </TouchableOpacity>
-              </View>
-
-              <Button
-                title={t('auth.verification.changePhone')}
-                onPress={handleBackToPhone}
-                variant="outline"
-                style={styles.changePhoneButton}
+                    onLayout={getCellOnLayoutHandler(index)}>
+                    <Typography
+                      variant="h2"
+                      color="textPrimary"
+                      text={symbol || (isFocused ? '|' : '')}
+                      style={styles.cellText}
+                    />
+                  </View>
+                )}
               />
             </View>
-          </Card>
-        </View>
-      </ScrollView>
+
+            {/* Verify Button */}
+            <CustomButton
+              title={loading ? t('common.loading') : 'تأكيد'}
+              onPress={handleVerifyCode}
+              loading={loading}
+              disabled={value.length !== CELL_COUNT}
+              variant="primary"
+              size="large"
+              style={styles.verifyButton}
+            />
+
+            {/* Resend Code */}
+            <View style={styles.resendContainer}>
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                text="لم تستلم الكود بعد؟"
+                style={styles.resendQuestion}
+              />
+              <TouchableOpacity
+                onPress={handleResendCode}
+                disabled={!canResend || loading}
+                style={styles.resendButton}>
+                <Typography
+                  variant="body1"
+                  color={'turquoise'}
+                  text={
+                    canResend
+                      ? 'إعادة الإرسال'
+                      : `إعادة الإرسال بعد (00:${resendCountdown
+                          .toString()
+                          .padStart(2, '0')} ث)`
+                  }
+                  style={styles.resendText}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Bottom Wave Icon - mirrored */}
+          <View style={styles.bottomWaveIconContainer}>
+            <WaveIcon />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
-  content: {
-    padding: 16,
-  },
-  form: {
-    gap: 20,
-  },
-  description: {
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-  codeInputContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 8,
-    marginVertical: 20,
-  },
-  codeInput: {
-    flex: 1,
-    height: 56,
-    borderWidth: 2,
-    borderRadius: 12,
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  verifyButton: {
-    marginTop: 10,
-  },
-  resendContainer: {
-    alignItems: 'center',
-  },
-  resendButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  resendText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  changePhoneButton: {
-    marginTop: 10,
-  },
-});
