@@ -247,23 +247,21 @@ const styles = StyleSheet.create({
     left: wp(3),
     right: wp(3),
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     gap: wp(2),
   },
   locationBadge: {
     backgroundColor: 'rgba(232, 244, 253, 0.9)',
-    paddingHorizontal: wp(2.5),
+    paddingHorizontal: wp(2),
     paddingVertical: hp(0.6),
     borderRadius: wp(4),
-    flex: 1,
     alignItems: 'center',
   },
   dealersBadge: {
     backgroundColor: 'rgba(232, 244, 253, 0.9)',
-    paddingHorizontal: wp(2.5),
+    paddingHorizontal: wp(2),
     paddingVertical: hp(0.6),
     borderRadius: wp(4),
-    flex: 1,
     alignItems: 'center',
   },
   locationText: {
@@ -276,12 +274,12 @@ const styles = StyleSheet.create({
   },
   categoryBadge: {
     position: 'absolute',
-    bottom: wp(3),
-    left: wp(3),
+    bottom: 0,
+    right: 0,
     backgroundColor: '#4CAF50',
     paddingHorizontal: wp(3),
     paddingVertical: hp(0.8),
-    borderRadius: wp(3),
+    borderTopLeftRadius: wp(3),
   },
   categoryText: {
     fontSize: wp(3),
@@ -297,6 +295,7 @@ const styles = StyleSheet.create({
     color: Colors.text.primary,
     marginBottom: hp(1.5),
     lineHeight: wp(4.5),
+    textAlign: 'left',
   },
   progressSection: {
     backgroundColor: '#F8F9FA',
@@ -352,13 +351,12 @@ const styles = StyleSheet.create({
   progressTextOverlay: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'red',
     paddingBottom: 0,
   },
   progressText: {
     fontSize: wp(3),
     fontWeight: '600',
-    margin: 0,
+    marginBottom: 0,
   },
   actionButtons: {
     flexDirection: 'row',
@@ -367,15 +365,18 @@ const styles = StyleSheet.create({
     height: hp(5.5),
   },
   donateButton: {
-    width: '80%',
+    flex: 1, // Use flex instead of percentage for better alignment
     borderRadius: wp(6),
     margin: 0,
+    marginBottom: 0, // Override CustomButton's default marginBottom
   },
   cartButton: {
-    width: '15%',
+    width: hp(5.5), // Fixed width to match height
     margin: 0,
+    marginBottom: 0, // Override CustomButton's default marginBottom
   },
   detailsLink: {
+    marginTop: hp(3),
     alignItems: 'center',
     paddingVertical: hp(0.5),
   },

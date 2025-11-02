@@ -96,7 +96,6 @@ const getVariantStyles = (variant: TypographyVariant): TextStyle => {
     caption: {
       fontSize: 12,
       fontFamily: Fonts.regular,
-      lineHeight: 16,
     },
     overline: {
       fontSize: 10,

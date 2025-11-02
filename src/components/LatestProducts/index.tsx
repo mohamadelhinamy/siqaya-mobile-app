@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     paddingLeft: wp(4),
   },
   scrollContainer: {
-    paddingRight: wp(4),
+    paddingLeft: wp(4),
     gap: wp(3),
   },
 });
