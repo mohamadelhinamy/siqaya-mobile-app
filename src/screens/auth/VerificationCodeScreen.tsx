@@ -18,8 +18,7 @@ import {Typography, CustomButton, BackHeader} from '../../components';
 import {useLanguage} from '../../context';
 import {useAuth} from '../../context/AuthProvider';
 import {AuthStackParamList} from '../../navigation/AuthStackNavigator';
-// TODO: Uncomment when API is enabled
-// import {apiService} from '../../services/api';
+import {apiService} from '../../services/api';
 import {Colors} from '../../constants';
 import {hp, wp} from '../../utils/responsive';
 import {WaveIcon} from '../../components/Icons';
@@ -163,8 +162,6 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
 
     setLoading(true);
     try {
-      // TODO: Uncomment API call when ready for production
-      /*
       // Use the real Sokya API to verify OTP
       const response = await apiService.verifyOtp(userId, value);
 
@@ -187,27 +184,6 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
           response.message || 'حدث خطأ في التحقق من الكود',
         );
       }
-      */
-
-      // Temporary: Mock successful verification for testing
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Mock user data for testing
-      const userData = {
-        id: userId.toString(),
-        name: 'Test User',
-        email: 'test@example.com',
-        phone: phoneNumber,
-        avatar: '',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-
-      // Mock token for testing
-      const mockToken = 'mock_jwt_token_for_testing_' + Date.now();
-
-      await login(mockToken, userData);
     } catch (error) {
       Alert.alert(t('common.error'), 'حدث خطأ في التحقق من الكود');
     } finally {
@@ -222,8 +198,6 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
 
     setLoading(true);
     try {
-      // TODO: Uncomment API call when ready for production
-      /*
       // Use the real Sokya API to resend OTP
       const response = await apiService.resendOtp(userId);
 
@@ -239,16 +213,6 @@ export const VerificationCodeScreen: React.FC<VerificationCodeScreenProps> = ({
           response.message || 'فشل في إعادة إرسال الكود',
         );
       }
-      */
-
-      // Temporary: Mock successful resend for testing
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      setCanResend(false);
-      setResendCountdown(30);
-      setValue('');
-
-      Alert.alert('تم الإرسال', 'تم إرسال كود جديد إلى رقمك');
     } catch (error) {
       Alert.alert(t('common.error'), 'فشل في إعادة إرسال الكود');
     } finally {

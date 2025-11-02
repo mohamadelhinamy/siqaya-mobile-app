@@ -13,8 +13,7 @@ import {
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useLanguage} from '../../context';
 import {AuthStackParamList} from '../../navigation/AuthStackNavigator';
-// TODO: Uncomment when API is enabled
-// import {apiService} from '../../services/api';
+import {apiService} from '../../services/api';
 import {Colors, Fonts} from '../../constants';
 import {Typography, CustomInput, CustomButton} from '../../components';
 import {hp, wp} from '../../utils/responsive';
@@ -71,8 +70,6 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
 
     setLoading(true);
 
-    // TODO: Uncomment API call when ready for production
-    /*
     try {
       const cleanPhone = phoneNumber.replace(/\D/g, '');
       const response = await apiService.loginWithMobile(cleanPhone);
@@ -91,22 +88,6 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
       console.log(error, 'error');
       console.error('Login error:', error);
       Alert.alert(t('common.error'), t('auth.phoneEntry.sendError'));
-    }
-    */
-
-    // Temporary: Navigate directly to VerificationCode screen for testing
-    try {
-      const cleanPhone = phoneNumber.replace(/\D/g, '');
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      navigation.navigate('VerificationCode', {
-        phoneNumber: cleanPhone,
-        userId: 123, // Mock user ID for testing
-        otpExpiresIn: 300, // Mock expiry time (5 minutes)
-      });
-    } catch (error) {
-      console.log('Navigation error:', error);
     } finally {
       setLoading(false);
     }

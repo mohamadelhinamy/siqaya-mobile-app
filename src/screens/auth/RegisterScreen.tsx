@@ -100,8 +100,15 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
     try {
       const cleanPhone = phoneNumber.replace(/\D/g, '');
 
-      // TODO: Replace with actual register API call
-      const response = await apiService.loginWithMobile(cleanPhone);
+      // Use the proper registration API call
+      const response = await apiService.register({
+        name: fullName,
+        email: email,
+        mobile: cleanPhone,
+        password: 'password', // You might want to add a password field to the form
+        password_confirmation: 'password',
+        login_type: 'mobile',
+      });
       console.log('Register response:', response);
 
       if (response.success && response.data) {

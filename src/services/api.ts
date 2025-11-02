@@ -31,6 +31,21 @@ export interface ResendOtpResponse {
   otp_expires_in: number;
 }
 
+export interface RegisterRequest {
+  name: string;
+  email: string;
+  mobile: string;
+  password: string;
+  password_confirmation: string;
+  login_type: 'mobile';
+}
+
+export interface RegisterResponse {
+  user_id: number;
+  requires_otp: boolean;
+  otp_expires_in: number;
+}
+
 /**
  * Sokya API service class with app token management
  */
@@ -141,8 +156,16 @@ class ApiService {
       data: {
         mobile,
         login_type: 'mobile',
-        password: 'password123',
       },
+    });
+  }
+
+  async register(
+    registerData: RegisterRequest,
+  ): Promise<ApiResponse<RegisterResponse>> {
+    return this.makeRequest<RegisterResponse>('/auth/register', {
+      method: 'POST',
+      data: registerData,
     });
   }
 
