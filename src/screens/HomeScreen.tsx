@@ -57,6 +57,8 @@ export const HomeScreen: React.FC = () => {
           onPress={() => console.log('Water delivery pressed')}
         />
 
+        <LatestProducts />
+
         {/* Bottom Spacing for Tab Bar */}
         <View style={styles.bottomSpacing} />
       </ScrollView>

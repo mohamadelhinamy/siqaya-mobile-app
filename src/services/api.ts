@@ -46,6 +46,38 @@ export interface RegisterResponse {
   otp_expires_in: number;
 }
 
+export interface Product {
+  id: number;
+  guid: string;
+  product_name: string;
+  product_brief: string | null;
+  product_description: string | null;
+  target_amount: string;
+  received_amount: string;
+  association: {
+    id: number;
+    name: string;
+  };
+  category: {
+    id: number;
+    name: string;
+    slug: string;
+  };
+  stage: {
+    stage_target: number;
+    stage_collected: number;
+    stage_remaining?: number;
+    stage_percentage: number;
+  };
+  current_stage?: {
+    stage_number: number;
+    target_amount: number | null;
+  };
+  image: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 /**
  * Sokya API service class with app token management
  */
@@ -167,6 +199,20 @@ class ApiService {
       method: 'POST',
       data: registerData,
     });
+  }
+
+  async getProducts(
+    perPage: number = 12,
+    page: number = 1,
+  ): Promise<ApiResponse<Product[]>> {
+    const products = await this.makeRequest<Product[]>(
+      `/products?per_page=${perPage}&page=${page}`,
+      {
+        method: 'GET',
+      },
+    );
+    console.log;
+    return products;
   }
 
   async verifyOtp(

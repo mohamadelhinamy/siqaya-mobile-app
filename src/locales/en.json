@@ -144,7 +144,8 @@
   "services": {
     "title": "Charity Paths",
     "orphanEndowments": "Orphan Endowments",
-    "investmentFunds": "Investment Funds"
+    "investmentFunds": "Investment Funds",
+    "houseOfGodEndowments": "Mosque Endowments"
   },
   "waterDelivery": {
     "title": "Quench their thirst, earn their reward",

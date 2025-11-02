@@ -144,7 +144,8 @@
   "services": {
     "title": "مسارات الخير",
     "orphanEndowments": "أوقاف الأيتام",
-    "investmentFunds": "الصناديق الاستثمارية"
+    "investmentFunds": "الصناديق الاستثمارية",
+    "houseOfGodEndowments": "أوقاف بيوت الله"
   },
   "waterDelivery": {
     "title": "اسق عطشهم تنل أجرهم",

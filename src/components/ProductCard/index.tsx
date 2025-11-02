@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {Typography} from '../Typography';
 import {CustomButton} from '../CustomButton';
-import {riyalIcon} from '../Icons';
+import {riyalIcon, LocationIcon, ProfileTwoUsersIcon} from '../Icons';
 import {Colors} from '../../constants';
 import {hp, wp} from '../../utils/responsive';
 
@@ -70,20 +70,34 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           {/* Location Info at Top of Image */}
           <View style={styles.locationContainer}>
             <View style={styles.locationBadge}>
-              <Typography
-                variant="caption"
-                color="primary"
-                text={location}
-                style={styles.locationText}
-              />
+              <View style={styles.badgeContent}>
+                <LocationIcon
+                  width={wp(3)}
+                  height={wp(3)}
+                  color={Colors.primary}
+                />
+                <Typography
+                  variant="caption"
+                  color="primary"
+                  text={location}
+                  style={styles.locationText}
+                />
+              </View>
             </View>
             <View style={styles.dealersBadge}>
-              <Typography
-                variant="caption"
-                color="primary"
-                text={`المعالين: ${dealersCount}`}
-                style={styles.dealersText}
-              />
+              <View style={styles.badgeContent}>
+                <ProfileTwoUsersIcon
+                  width={wp(3)}
+                  height={wp(3)}
+                  color={Colors.primary}
+                />
+                <Typography
+                  variant="caption"
+                  color="primary"
+                  text={`المعالين: ${dealersCount}`}
+                  style={styles.dealersText}
+                />
+              </View>
             </View>
           </View>
 
@@ -263,6 +277,11 @@ const styles = StyleSheet.create({
     paddingVertical: hp(0.6),
     borderRadius: wp(4),
     alignItems: 'center',
+  },
+  badgeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(1),
   },
   locationText: {
     fontSize: wp(2.8),

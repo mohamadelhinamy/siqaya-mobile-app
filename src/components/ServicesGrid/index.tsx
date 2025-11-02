@@ -28,7 +28,7 @@ interface ServicesGridProps {
 const getDefaultServices = (t: any): ServiceItem[] => [
   {
     id: '1',
-    title: t('services.orphanEndowments'),
+    title: t('services.investmentFunds'),
     subtitle: '',
     image: require('../../assets/images/small_card_image.png'),
     color: '#FFFFFF',
@@ -37,12 +37,12 @@ const getDefaultServices = (t: any): ServiceItem[] => [
     id: '2',
     title: t('services.orphanEndowments'),
     subtitle: '',
-    image: require('../../assets/images/small_card_image.png'),
+    image: require('../../assets/images/small-card-image-1.png'),
     color: '#FFFFFF',
   },
   {
     id: '3',
-    title: t('services.investmentFunds'),
+    title: t('services.houseOfGodEndowments'),
     subtitle: '',
     image: require('../../assets/images/small_card_image.png'),
     color: '#FFFFFF',

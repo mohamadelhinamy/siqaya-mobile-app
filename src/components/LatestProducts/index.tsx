@@ -1,19 +1,22 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
   ViewStyle,
+  ActivityIndicator,
 } from 'react-native';
 import {Typography} from '../Typography';
 import {ProductCard, ProductCardProps} from '../ProductCard';
 import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
 import {hp, wp} from '../../utils/responsive';
+import {apiService, Product} from '../../services/api';
 
 interface LatestProductsProps {
   products?: ProductCardProps[];
+  title?: string;
 }
 
 const getDefaultProducts = (_t: any): ProductCardProps[] => [
@@ -41,9 +44,72 @@ const getDefaultProducts = (_t: any): ProductCardProps[] => [
   },
 ];
 
-export const LatestProducts: React.FC<LatestProductsProps> = ({products}) => {
+export const LatestProducts: React.FC<LatestProductsProps> = ({
+  products,
+  title,
+}) => {
   const {t} = useLanguage();
-  const displayProducts = products || getDefaultProducts(t);
+  const [fetchedProducts, setFetchedProducts] = useState<ProductCardProps[]>(
+    [],
+  );
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const displayProducts =
+    products || fetchedProducts.length > 0
+      ? fetchedProducts
+      : getDefaultProducts(t);
+
+  // Map API Product to ProductCardProps
+  const mapProductToCard = (product: Product): ProductCardProps => {
+    const progressPercent = product.stage?.stage_percentage || 0;
+    const raised =
+      product.stage?.stage_collected || Number(product.received_amount) || 0;
+    const remaining =
+      product.stage?.stage_remaining ||
+      product.stage?.stage_target - (product.stage?.stage_collected || 0) ||
+      Number(product.target_amount) - Number(product.received_amount) ||
+      0;
+
+    return {
+      id: String(product.id),
+      title: product.product_name || product.product_brief || '—',
+      raisedAmount: `${raised.toLocaleString('ar-SA')} ر.س`,
+      remainingAmount: `${remaining.toLocaleString('ar-SA')} ر.س`,
+      progress: Math.max(0, Math.min(1, progressPercent / 100)),
+      category: product.category?.name || '',
+      location: product.association?.name || '',
+      dealersCount: 0, // Not provided in API
+      image: product.image || undefined,
+    };
+  };
+
+  useEffect(() => {
+    if (products) {
+      return; // Don't fetch if products are provided as props
+    }
+
+    const fetchProducts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await apiService.getProducts(3, 1); // per_page=3, page=1
+        if (response.data) {
+          const mappedProducts = response.data.map(mapProductToCard);
+          setFetchedProducts(mappedProducts);
+        } else {
+          setError('فشل في تحميل المنتجات');
+        }
+      } catch (err: any) {
+        console.error('Error fetching products:', err);
+        setError(err?.message || 'خطأ في الشبكة');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [products]);
 
   const containerStyle: ViewStyle = {
     ...styles.container,
@@ -60,7 +126,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({products}) => {
         <Typography
           variant="h5"
           color="textPrimary"
-          text={t('products.latest') || 'أحدث المنتجات'}
+          text={title ?? (t('products.latest') || 'أحدث المنتجات')}
           style={styles.sectionTitle}
         />
         <TouchableOpacity activeOpacity={0.7}>
@@ -72,13 +138,28 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({products}) => {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}
-        style={styles.scrollView}>
-        {displayProducts.map(renderProductCard)}
-      </ScrollView>
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="small" color={Colors.primary} />
+        </View>
+      ) : error ? (
+        <View style={styles.errorContainer}>
+          <Typography
+            variant="body2"
+            color="textSecondary"
+            text={error}
+            style={styles.errorText}
+          />
+        </View>
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContainer}
+          style={styles.scrollView}>
+          {displayProducts.map(renderProductCard)}
+        </ScrollView>
+      )}
     </View>
   );
 };
@@ -111,5 +192,20 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingLeft: wp(4),
     gap: wp(3),
+  },
+  loadingContainer: {
+    height: hp(25),
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: wp(4),
+  },
+  errorContainer: {
+    height: hp(15),
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: wp(4),
+  },
+  errorText: {
+    textAlign: 'center',
   },
 });
