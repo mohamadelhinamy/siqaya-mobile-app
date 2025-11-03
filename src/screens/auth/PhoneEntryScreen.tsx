@@ -11,11 +11,16 @@ import {
   Platform,
 } from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {useLanguage} from '../../context';
+import {useLanguage, useAuth} from '../../context';
 import {AuthStackParamList} from '../../navigation/AuthStackNavigator';
 import {apiService} from '../../services/api';
 import {Colors, Fonts} from '../../constants';
-import {Typography, CustomInput, CustomButton} from '../../components';
+import {
+  Typography,
+  CustomInput,
+  CustomButton,
+  CloseHeader,
+} from '../../components';
 import {hp, wp} from '../../utils/responsive';
 import {WaveIcon} from '../../components/Icons';
 
@@ -27,6 +32,7 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
   navigation,
 }) => {
   const {t} = useLanguage();
+  const {setSkipLogin} = useAuth();
 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
@@ -100,8 +106,19 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
     navigation.navigate('Register');
   };
 
+  const handleSkipLogin = async () => {
+    try {
+      await setSkipLogin(true);
+    } catch (error) {
+      console.error('Error setting skip login:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* Skip Login Button */}
+      <CloseHeader onPress={handleSkipLogin} />
+
       {/* Header with Logo */}
       <View style={styles.waveIconContainer}>
         <WaveIcon />

@@ -11,15 +11,18 @@ import {apiService} from '../services/api';
 
 const AUTH_TOKEN_KEY = 'auth_token';
 const AUTH_USER_KEY = 'auth_user';
+const SKIP_LOGIN_KEY = 'skip_login';
 
 interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   user: User | null;
   token: string | null;
+  skipLogin: boolean;
   login: (token: string, user: User) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: User) => Promise<void>;
+  setSkipLogin: (skip: boolean) => Promise<void>;
 }
 
 interface AuthProviderProps {
@@ -35,6 +38,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const [skipLogin, setSkipLoginState] = useState(false);
 
   // Check for existing authentication on app start
   useEffect(() => {
@@ -43,10 +47,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
 
   const checkAuthState = async () => {
     try {
-      const [storedToken, storedUser] = await Promise.all([
+      const [storedToken, storedUser, storedSkipLogin] = await Promise.all([
         AsyncStorage.getItem(AUTH_TOKEN_KEY),
         AsyncStorage.getItem(AUTH_USER_KEY),
+        AsyncStorage.getItem(SKIP_LOGIN_KEY),
       ]);
+
+      // Check if user has skip login enabled
+      if (storedSkipLogin === 'true') {
+        setSkipLoginState(true);
+      }
 
       if (storedToken && storedUser) {
         const parsedUser = JSON.parse(storedUser);
@@ -97,6 +107,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       setToken(null);
       setUser(null);
       setIsAuthenticated(false);
+      setSkipLoginState(false);
     } catch (error) {
       console.error('Error during logout:', error);
       throw error;
@@ -113,10 +124,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     }
   };
 
+  const setSkipLogin = async (skip: boolean) => {
+    try {
+      await AsyncStorage.setItem(SKIP_LOGIN_KEY, skip.toString());
+      setSkipLoginState(skip);
+    } catch (error) {
+      console.error('Error setting skip login:', error);
+      throw error;
+    }
+  };
+
   const clearAuthData = async () => {
     await Promise.all([
       AsyncStorage.removeItem(AUTH_TOKEN_KEY),
       AsyncStorage.removeItem(AUTH_USER_KEY),
+      AsyncStorage.removeItem(SKIP_LOGIN_KEY),
     ]);
   };
 
@@ -125,9 +147,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     isLoading,
     user,
     token,
+    skipLogin,
     login,
     logout,
     updateUser,
+    setSkipLogin,
   };
 
   return (

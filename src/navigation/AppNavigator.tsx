@@ -10,7 +10,7 @@ import {Fonts} from '../constants';
 // Main app navigator that decides between auth flow and main app flow
 export const AppNavigator: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
-  const {isAuthenticated, isLoading} = useAuth();
+  const {isAuthenticated, isLoading, skipLogin} = useAuth();
 
   // Show loading screen while checking authentication state
   if (isLoading) {
@@ -50,11 +50,11 @@ export const AppNavigator: React.FC = () => {
 
   return (
     <NavigationContainer theme={navigationTheme}>
-      {isAuthenticated ? (
-        // User is authenticated - show main app with bottom tabs
+      {isAuthenticated || skipLogin ? (
+        // User is authenticated or skipped login - show main app with bottom tabs
         <BottomTabNavigator />
       ) : (
-        // User is not authenticated - show auth flow
+        // User is not authenticated and hasn't skipped - show auth flow
         <AuthStackNavigator />
       )}
     </NavigationContainer>

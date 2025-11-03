@@ -45,7 +45,7 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
   const safeSlides = slides && slides.length > 0 ? slides : defaultSlides;
 
-  const renderSlide = ({item}: {item: HeroSlide}) => {
+  const renderSlide = ({item}: any) => {
     if (!item) {
       return null;
     }
@@ -95,15 +95,12 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         inactiveSlideScale={1}
         itemWidth={screenWidth}
         inactiveSlideOpacity={1}
+        vertical={false}
         onSnapToItem={index => {
           setActiveSlide(isRTL ? safeSlides.length - 1 - index : index);
         }}
-        defaultIndex={
-          safeSlides?.length > 0
-            ? isRTL
-              ? safeSlides?.length - 1
-              : 0
-            : undefined
+        firstItem={
+          safeSlides?.length > 0 ? (isRTL ? safeSlides?.length - 1 : 0) : 0
         }
         autoplay={true}
         autoplayDelay={3000}

@@ -16,3 +16,4 @@ export {BackHeader} from './BackHeader';
 export {RadioGroup} from './RadioGroup';
 export {CustomButton} from './CustomButton';
 export {ProductCard} from './ProductCard';
+export {CloseHeader} from './CloseHeader';

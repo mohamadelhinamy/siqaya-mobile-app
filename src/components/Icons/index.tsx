@@ -177,3 +177,19 @@ export const ProfileTwoUsersIcon: React.FC<IconProps> = ({
     />
   </Svg>
 );
+
+export const CloseIcon: React.FC<IconProps> = ({
+  width = 24,
+  height = 24,
+  color = 'currentColor',
+}) => (
+  <Svg width={width} height={height} viewBox="0 0 10 10" fill="none">
+    <Path
+      d="M9.24267 0.757377L0.757385 9.24266M9.24267 9.24261L0.757385 0.757324"
+      stroke={color}
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);

@@ -82,6 +82,9 @@
     "switch": "Switch Language"
   },
   "auth": {
+    "skipLogin": "Skip Login",
+    "continueAsGuest": "Continue as Guest",
+    "browseAsGuest": "Browse as Guest",
     "phoneEntry": {
       "title": "Phone Verification",
       "subtitle": "Enter your phone number to continue",
@@ -166,6 +169,13 @@
       "message": "Are you sure you want to sign out?",
       "confirm": "Sign Out",
       "cancel": "Cancel"
+    },
+    "guest": {
+      "mode": "Guest Mode",
+      "message": "You are browsing as a guest. Sign in to access all features.",
+      "signIn": "Sign In",
+      "exitGuestMode": "Exit Guest Mode",
+      "exitMessage": "Would you like to sign in to access more features?"
     }
   },
   "products": {
