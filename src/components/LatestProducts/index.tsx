@@ -96,6 +96,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
       try {
         const response = await apiService.getProducts(3, 1); // per_page=3, page=1
         if (response.data) {
+          console.log('Fetched products:', response.data);
           const mappedProducts = response.data.map(mapProductToCard);
           setFetchedProducts(mappedProducts);
         } else {

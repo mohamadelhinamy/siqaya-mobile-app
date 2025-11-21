@@ -15,6 +15,7 @@
     "search": "Search",
     "filter": "Filter",
     "sort": "Sort",
+    "all": "All",
     "restartRequired": "Restart Required",
     "restartMessage": "The app needs to restart to apply the language direction change.",
     "restartNow": "Restart Now",
@@ -179,6 +180,8 @@
     }
   },
   "products": {
+    "product": "Product",
+    "noProducts": "No products found",
     "latest": "Latest Products",
     "viewAll": "View All",
     "raised": "Raised",
