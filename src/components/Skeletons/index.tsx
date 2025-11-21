@@ -1,4 +1,6 @@
 export {default as ProductCardSkeleton} from './ProductCardSkeleton';
+export {default as HorizontalProductCardSkeleton} from './HorizontalProductCardSkeleton';
+export {default as FilterPillsSkeleton} from './FilterPillsSkeleton';
 export {default as LatestProductsSkeleton} from './LatestProductsSkeleton';
 export {default as HomeHeaderSkeleton} from './HomeHeaderSkeleton';
 export {default as SearchBarSkeleton} from './SearchBarSkeleton';

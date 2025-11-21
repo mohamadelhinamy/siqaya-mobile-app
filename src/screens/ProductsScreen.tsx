@@ -11,6 +11,10 @@ import {
 } from 'react-native';
 import {useLanguage} from '../context';
 import {Typography, HorizontalProductCard} from '../components';
+import {
+  HorizontalProductCardSkeleton,
+  FilterPillsSkeleton,
+} from '../components/Skeletons';
 import ShoppingCartIcon from '../assets/icons/outlined/shopping-cart.svg';
 import SearchIcon from '../assets/icons/outlined/search.svg';
 import TickIcon from '../assets/icons/outlined/tick-square.svg';
@@ -243,7 +247,7 @@ export const ProductsScreen: React.FC = () => {
     },
     flatListContent: {
       paddingHorizontal: wp(5),
-      paddingBottom: hp(2),
+      paddingBottom: hp(12),
     },
     loadMoreContainer: {
       paddingVertical: hp(2),
@@ -252,6 +256,9 @@ export const ProductsScreen: React.FC = () => {
     },
     productsContainer: {
       flex: 1,
+    },
+    skeletonContainer: {
+      paddingHorizontal: wp(5),
     },
   });
 
@@ -295,50 +302,44 @@ export const ProductsScreen: React.FC = () => {
       </View>
 
       {/* Filter Pills */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.filterScrollView}
-        contentContainerStyle={styles.filterScrollContent}>
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="small" color={Colors.text.turquoise} />
-          </View>
-        ) : (
-          <>
-            {/* "All" filter */}
+      {loading ? (
+        <FilterPillsSkeleton />
+      ) : (
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.filterScrollView}
+          contentContainerStyle={styles.filterScrollContent}>
+          {/* "All" filter */}
+          <TouchableOpacity
+            style={selectedFilter === null ? styles.pillActive : styles.pill}
+            onPress={() => handleFilterPress(null)}>
+            <Typography
+              variant="body2"
+              text={t('common.all')}
+              color={selectedFilter === null ? 'white' : 'textSecondary'}
+              style={styles.pillText}
+            />
+          </TouchableOpacity>
+
+          {/* Dynamic filters from API */}
+          {filters?.map(filter => (
             <TouchableOpacity
-              style={selectedFilter === null ? styles.pillActive : styles.pill}
-              onPress={() => handleFilterPress(null)}>
+              key={filter.id}
+              style={
+                selectedFilter === filter.id ? styles.pillActive : styles.pill
+              }
+              onPress={() => handleFilterPress(filter.id)}>
               <Typography
                 variant="body2"
-                text={t('common.all')}
-                color={selectedFilter === null ? 'white' : 'textSecondary'}
+                text={filter.name}
+                color={selectedFilter === filter.id ? 'white' : 'textSecondary'}
                 style={styles.pillText}
               />
             </TouchableOpacity>
-
-            {/* Dynamic filters from API */}
-            {filters?.map(filter => (
-              <TouchableOpacity
-                key={filter.id}
-                style={
-                  selectedFilter === filter.id ? styles.pillActive : styles.pill
-                }
-                onPress={() => handleFilterPress(filter.id)}>
-                <Typography
-                  variant="body2"
-                  text={filter.name}
-                  color={
-                    selectedFilter === filter.id ? 'white' : 'textSecondary'
-                  }
-                  style={styles.pillText}
-                />
-              </TouchableOpacity>
-            ))}
-          </>
-        )}
-      </ScrollView>
+          ))}
+        </ScrollView>
+      )}
 
       {/* Products FlatList */}
       <View style={styles.productsContainer}>
@@ -400,14 +401,11 @@ export const ProductsScreen: React.FC = () => {
           )}
           ListEmptyComponent={
             productsLoading ? (
-              <View style={styles.productsLoadingContainer}>
-                <ActivityIndicator size="large" color={Colors.text.turquoise} />
-                <Typography
-                  variant="body1"
-                  text={t('common.loading')}
-                  color="textSecondary"
-                  style={styles.loadingText}
-                />
+              <View style={styles.skeletonContainer}>
+                <HorizontalProductCardSkeleton />
+                <HorizontalProductCardSkeleton />
+                <HorizontalProductCardSkeleton />
+                <HorizontalProductCardSkeleton />
               </View>
             ) : (
               <View style={styles.emptyContainer}>
