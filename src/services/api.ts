@@ -54,6 +54,9 @@ export interface Product {
   product_description: string | null;
   target_amount: string;
   received_amount: string;
+  collected_amount?: number;
+  remaining_amount?: number;
+  completion_percentage?: number;
   association: {
     id: number;
     name: string;
