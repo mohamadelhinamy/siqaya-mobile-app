@@ -54,6 +54,13 @@
     },
     "projectsNearCompletion": "مشاريع على وشك الاكتمال"
   },
+  "cart": {
+    "title": "سلة التسوق",
+    "empty": "سلة التبرع الخاصة بك فارغة",
+    "continueShopping": "التبرع الآن",
+    "total": "اجمالى مبلغ التبرع",
+    "checkout": "تبرع الآن"
+  },
   "profile": {
     "title": "الملف الشخصي",
     "subtitle": "إدارة حسابك",

@@ -7,3 +7,4 @@ export {default as SearchBarSkeleton} from './SearchBarSkeleton';
 export {default as HeroBannerSkeleton} from './HeroBannerSkeleton';
 export {default as ServicesGridSkeleton} from './ServicesGridSkeleton';
 export {default as WaterDeliveryBannerSkeleton} from './WaterDeliveryBannerSkeleton';
+export {default as CartItemSkeleton} from './CartItemSkeleton';

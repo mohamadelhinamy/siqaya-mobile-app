@@ -25,188 +25,204 @@ interface TabIconProps {
 const TabIcon: React.FC<TabIconProps> = ({name, focused, size}) => {
   const iconColor = focused ? Colors.primary : Colors.gray;
 
-  const renderIcon = () => {
-    const svgProps = {
-      width: size,
-      height: size,
-      color: iconColor,
-    };
-
-    // Now SVGs use currentColor and will properly inherit the dynamic color
-    switch (name) {
-      case 'Home':
-        return <HomeIcon {...svgProps} />;
-      case 'Products':
-        return <ShopIcon {...svgProps} />;
-      case 'Care':
-        return <HandsIcon width={size} height={size} color={Colors.white} />;
-      case 'Paths':
-        return <GridIcon {...svgProps} />;
-      case 'Profile':
-        return <ProfileIcon {...svgProps} />;
-      default:
-        return <AppText style={{fontSize: size, color: iconColor}}>•</AppText>;
-    }
+  const svgProps = {
+    width: size,
+    height: size,
+    color: iconColor,
   };
 
-  return renderIcon();
+  switch (name) {
+    case 'Home':
+      return <HomeIcon {...svgProps} />;
+    case 'Products':
+      return <ShopIcon {...svgProps} />;
+    case 'Care':
+      return <HandsIcon width={size} height={size} color={Colors.white} />;
+    case 'Paths':
+      return <GridIcon {...svgProps} />;
+    case 'Profile':
+      return <ProfileIcon {...svgProps} />;
+    default:
+      return <AppText style={{fontSize: size, color: iconColor}}>•</AppText>;
+  }
 };
 
 export const CustomTabBar: React.FC<BottomTabBarProps> = ({
   state,
   navigation,
+  style, // 👈 this is important
 }) => {
   const {t} = useLanguage();
 
-  const styles = StyleSheet.create({
-    wrapper: {
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      backgroundColor: 'transparent',
-      paddingBottom: hp(2.5),
-    },
-    container: {
-      flexDirection: 'row',
-      backgroundColor: Colors.white,
-      paddingBottom: hp(1.5),
-      paddingTop: hp(1.5),
-      paddingHorizontal: wp(3),
-      marginHorizontal: wp(4),
-      borderRadius: wp(7.5),
-      height: hp(9),
-      shadowOffset: {
-        width: 0,
-        height: hp(1),
-      },
-      shadowOpacity: 0.15,
-      shadowRadius: wp(4),
-      elevation: 12,
-    },
-    tabButton: {
-      width: (width - 64) / 5,
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 4,
-      height: '100%',
-    },
-    centerButton: {
-      width: wp(15),
-      height: wp(15),
-      borderRadius: wp(7.5),
-      backgroundColor: Colors.primary,
-      alignItems: 'center',
-      justifyContent: 'center',
-      position: 'absolute',
-      top: hp(-4),
-      shadowOffset: {
-        width: 0,
-        height: hp(1),
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: wp(3),
-      elevation: 16,
-      borderWidth: wp(0.75),
-      borderColor: Colors.white,
-    },
-    centerButtonContainer: {
-      width: (width - 64) / 5,
-      alignItems: 'center',
-      justifyContent: 'flex-end',
-      height: '100%',
-    },
-    tabLabel: {
-      fontSize: 10,
-      fontWeight: '500',
-      marginTop: hp(0.25),
-      textAlign: 'center',
-    },
-    focusedTabLabel: {
-      color: Colors.primary,
-    },
-    unfocusedTabLabel: {
-      color: Colors.gray,
-    },
-  });
+  // Determine if we should hide the tab bar (e.g. CartScreen inside Home stack)
+  const focusedRootRoute = state.routes[state.index];
+  let hideTabBar = false;
+  if (focusedRootRoute.name === 'Home' && (focusedRootRoute as any).state) {
+    const nestedState = (focusedRootRoute as any).state;
+    const nestedFocusedRoute = nestedState.routes[nestedState.index];
+    if (nestedFocusedRoute?.name === 'CartScreen') {
+      hideTabBar = true;
+    }
+  }
+
+  if (hideTabBar) {
+    return null; // Do not render the tab bar
+  }
 
   return (
-    <View style={styles.wrapper}>
-      <View style={styles.container}>
-        {state.routes.map((route, index) => {
-          const isFocused = state.index === index;
-          const isCenterTab = route.name === 'Care';
+    // 🔥 OUTER VIEW RECEIVES THE STYLE FROM NAVIGATION
+    <View style={style}>
+      <View style={styles.wrapper}>
+        <View style={styles.container}>
+          {state.routes.map((route, index) => {
+            const isFocused = state.index === index;
+            const isCenterTab = route.name === 'Care';
 
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
+            const onPress = () => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
 
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
+              if (!isFocused && !event.defaultPrevented) {
+                navigation.navigate(route.name);
+              }
+            };
+
+            const getTabLabel = (routeName: string) => {
+              switch (routeName) {
+                case 'Home':
+                  return t('navigation.home');
+                case 'Products':
+                  return t('navigation.products');
+                case 'Care':
+                  return t('navigation.care');
+                case 'Paths':
+                  return t('navigation.paths');
+                case 'Profile':
+                  return t('navigation.profile');
+                default:
+                  return routeName;
+              }
+            };
+
+            if (isCenterTab) {
+              return (
+                <View key={route.key} style={styles.centerButtonContainer}>
+                  <TouchableOpacity
+                    style={styles.centerButton}
+                    onPress={onPress}
+                    activeOpacity={0.7}>
+                    <TabIcon
+                      name={route.name}
+                      focused={false}
+                      color={Colors.white}
+                      size={28}
+                    />
+                  </TouchableOpacity>
+                </View>
+              );
             }
-          };
 
-          const getTabLabel = (routeName: string) => {
-            switch (routeName) {
-              case 'Home':
-                return t('navigation.home');
-              case 'Products':
-                return t('navigation.products');
-              case 'Care':
-                return t('navigation.care');
-              case 'Paths':
-                return t('navigation.paths');
-              case 'Profile':
-                return t('navigation.profile');
-              default:
-                return routeName;
-            }
-          };
-
-          if (isCenterTab) {
             return (
-              <View key={route.key} style={styles.centerButtonContainer}>
-                <TouchableOpacity
-                  style={styles.centerButton}
-                  onPress={onPress}
-                  activeOpacity={0.7}>
-                  <TabIcon
-                    name={route.name}
-                    focused={false}
-                    color={Colors.white}
-                    size={28}
-                  />
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity
+                key={route.key}
+                style={styles.tabButton}
+                onPress={onPress}
+                activeOpacity={0.7}>
+                <TabIcon
+                  name={route.name}
+                  focused={isFocused}
+                  color={isFocused ? Colors.primary : Colors.gray}
+                  size={24}
+                />
+                <AppText
+                  style={[
+                    styles.tabLabel,
+                    isFocused
+                      ? styles.focusedTabLabel
+                      : styles.unfocusedTabLabel,
+                  ]}>
+                  {getTabLabel(route.name)}
+                </AppText>
+              </TouchableOpacity>
             );
-          }
-
-          return (
-            <TouchableOpacity
-              key={route.key}
-              style={styles.tabButton}
-              onPress={onPress}
-              activeOpacity={0.7}>
-              <TabIcon
-                name={route.name}
-                focused={isFocused}
-                color={isFocused ? Colors.primary : Colors.gray}
-                size={24}
-              />
-              <AppText
-                style={[
-                  styles.tabLabel,
-                  isFocused ? styles.focusedTabLabel : styles.unfocusedTabLabel,
-                ]}>
-                {getTabLabel(route.name)}
-              </AppText>
-            </TouchableOpacity>
-          );
-        })}
+          })}
+        </View>
       </View>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  wrapper: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'transparent',
+    paddingBottom: hp(2.5),
+  },
+  container: {
+    flexDirection: 'row',
+    backgroundColor: Colors.white,
+    paddingBottom: hp(1.5),
+    paddingTop: hp(1.5),
+    paddingHorizontal: wp(3),
+    marginHorizontal: wp(4),
+    borderRadius: wp(7.5),
+    height: hp(9),
+    shadowOffset: {
+      width: 0,
+      height: hp(1),
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: wp(4),
+    elevation: 12,
+  },
+  tabButton: {
+    width: (width - 64) / 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 4,
+    height: '100%',
+  },
+  centerButton: {
+    width: wp(15),
+    height: wp(15),
+    borderRadius: wp(7.5),
+    backgroundColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    top: hp(-4),
+    shadowOffset: {
+      width: 0,
+      height: hp(1),
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: wp(3),
+    elevation: 16,
+    borderWidth: wp(0.75),
+    borderColor: Colors.white,
+  },
+  centerButtonContainer: {
+    width: (width - 64) / 5,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    height: '100%',
+  },
+  tabLabel: {
+    fontSize: 10,
+    fontWeight: '500',
+    marginTop: hp(0.25),
+    textAlign: 'center',
+  },
+  focusedTabLabel: {
+    color: Colors.primary,
+  },
+  unfocusedTabLabel: {
+    color: Colors.gray,
+  },
+});

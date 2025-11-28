@@ -81,6 +81,18 @@ export interface Product {
   updated_at: string;
 }
 
+export interface CartItem {
+  id: number;
+  product_id: number;
+  quantity: number;
+  amount: number;
+  product: Product;
+  created_at: string;
+  updated_at: string;
+}
+
+export type CartResponse = any[];
+
 /**
  * Sokya API service class with app token management
  */
@@ -103,23 +115,35 @@ class ApiService {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         'X-App-Locale': 'ar',
-        ...(options.headers || {}),
+        'X-Device-ID': 'device-mobile-app',
       };
 
-      // Add app token if available and required
+      // Merge custom headers from options
+      Object.assign(headers, options.headers || {});
+
+      // Add app token if available and required (always last to ensure it's not overridden)
       if (requiresAppToken && this.appToken) {
         headers['X-App-Token'] = `${this.appToken}`;
+        console.log('🔑 APP TOKEN FOR TESTING:', this.appToken);
       }
 
       console.log(options, 'options');
+      console.log(headers, 'final headers');
 
-      const response: AxiosResponse<any> = await axios({
+      const axiosConfig = {
         url: `${Config.API.BASE_URL}${endpoint}`,
         method: options.method || 'GET',
         data: options.data,
-        headers,
         ...options,
-      });
+        headers, // Headers MUST come after ...options to not be overridden
+      };
+
+      console.log(
+        '🌐 Full axios config:',
+        JSON.stringify(axiosConfig, null, 2),
+      );
+
+      const response: AxiosResponse<any> = await axios(axiosConfig);
 
       console.log(response, 'response');
 
@@ -133,6 +157,11 @@ class ApiService {
 
       // Handle axios errors
       if (error.response) {
+        console.error('❌ Server error response:', {
+          status: error.response.status,
+          data: error.response.data,
+          headers: error.response.headers,
+        });
         const errorMessage =
           error.response.data?.message ||
           `HTTP error! status: ${error.response.status}`;
@@ -150,20 +179,28 @@ class ApiService {
       this.appTokenExpiry &&
       Date.now() < this.appTokenExpiry - 5 * 60 * 1000
     ) {
-      console.log('Using existing valid app token', this.appToken);
+      console.log('✅ Using existing valid app token:', {
+        token: this.appToken.substring(0, 20) + '...',
+        expiresAt: new Date(this.appTokenExpiry).toISOString(),
+        timeRemaining:
+          Math.floor((this.appTokenExpiry - Date.now()) / 1000) + 's',
+      });
       return true;
     }
 
+    console.log('🔄 App token expired or missing, generating new token...');
     try {
       const response = await this.generateAppToken();
+      console.log('✅ App token generation result:', response.success);
       return response.success;
     } catch (error) {
-      console.error('Failed to generate app token:', error);
+      console.error('❌ Failed to generate app token:', error);
       return false;
     }
   }
 
   async generateAppToken(): Promise<ApiResponse<AppTokenResponse>> {
+    console.log('🔑 Requesting new app token from /auth/app-token');
     const response = await this.makeRequest<AppTokenResponse>(
       '/auth/app-token',
       {
@@ -176,10 +213,29 @@ class ApiService {
       false,
     ); // Don't require app token for this call
 
+    console.log(
+      '📦 Full app token response:',
+      JSON.stringify(response, null, 2),
+    );
+    console.log('📦 Response.data:', response.data);
+    console.log('📦 Response.data.token:', response.data?.token);
+
     if (response.success && response.data) {
-      console.log('Generated new app token', response.data);
       this.appToken = response.data.token;
       this.appTokenExpiry = Date.now() + response.data.expires_in * 1000;
+      console.log('✅ App token stored:', {
+        fullToken: this.appToken,
+        tokenLength: this.appToken.length,
+        expiresIn: response.data.expires_in + 's',
+        expiresAt: new Date(this.appTokenExpiry).toISOString(),
+        postmanToken:
+          '5aENf0Th8N3XUMGM45Zeq5zEIRyeE5RFZz4AHAtMlVH5fn6hzqOyCSVUUzw2mhVw',
+        tokensMatch:
+          this.appToken ===
+          '5aENf0Th8N3XUMGM45Zeq5zEIRyeE5RFZz4AHAtMlVH5fn6hzqOyCSVUUzw2mhVw',
+      });
+    } else {
+      console.error('❌ App token generation failed:', response);
     }
 
     return response;
@@ -256,6 +312,19 @@ class ApiService {
         Authorization: `Bearer ${userToken}`,
       },
     });
+  }
+
+  async getCart(userToken: string): Promise<ApiResponse<CartResponse>> {
+    return this.makeRequest<CartResponse>(
+      '/cart',
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      },
+      true, // requiresAppToken
+    );
   }
 
   // Keep backward compatibility methods

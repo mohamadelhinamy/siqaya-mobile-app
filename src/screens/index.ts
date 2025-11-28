@@ -1,5 +1,6 @@
 export {HomeScreen} from './HomeScreen';
 export {ProductsScreen} from './ProductsScreen';
+export {CartScreen} from './CartScreen';
 export {CareScreen} from './CareScreen';
 export {PathsScreen} from './PathsScreen';
 export {ProfileScreen} from './ProfileScreen';

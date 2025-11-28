@@ -54,6 +54,13 @@
     },
     "projectsNearCompletion": "Projects Near Completion"
   },
+  "cart": {
+    "title": "Shopping Cart",
+    "empty": "Your donation cart is empty",
+    "continueShopping": "Donate Now",
+    "total": "Total Donation Amount",
+    "checkout": "Donate Now"
+  },
   "profile": {
     "title": "Profile",
     "subtitle": "Manage your account",

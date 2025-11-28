@@ -46,7 +46,7 @@ export const BackHeader: React.FC<BackHeaderProps> = ({
         {title && (
           <View style={styles.titleContainer}>
             <Typography
-              variant="h3"
+              variant="h5"
               color="textPrimary"
               text={title}
               style={styles.title}
@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   spacer: {
     width: wp(10),

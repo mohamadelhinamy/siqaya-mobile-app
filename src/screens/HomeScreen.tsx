@@ -7,6 +7,8 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {Colors} from '../constants';
 import {useLanguage} from '../context';
 import {HomeHeader} from '../components/HomeHeader';
@@ -23,6 +25,7 @@ import {
   WaterDeliveryBannerSkeleton,
 } from '../components/Skeletons';
 import {apiService, Product} from '../services/api';
+import {HomeStackParamList} from '../navigation/HomeNavigator';
 
 interface HomepageProduct {
   id: number;
@@ -53,12 +56,22 @@ interface HomepageProduct {
   updated_at: string;
 }
 
+type HomeScreenNavigationProp = StackNavigationProp<
+  HomeStackParamList,
+  'HomeScreen'
+>;
+
 export const HomeScreen: React.FC = () => {
   const {t} = useLanguage();
+  const navigation = useNavigation<HomeScreenNavigationProp>();
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [homepageProducts, setHomepageProducts] = React.useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = React.useState(false);
+
+  const handleCartPress = () => {
+    navigation.navigate('CartScreen');
+  };
 
   const fetchHomepageData = React.useCallback(async () => {
     try {
@@ -138,7 +151,11 @@ export const HomeScreen: React.FC = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }>
         {/* Header with Logo and Cart */}
-        {loading ? <HomeHeaderSkeleton /> : <HomeHeader />}
+        {loading ? (
+          <HomeHeaderSkeleton />
+        ) : (
+          <HomeHeader onCartPress={handleCartPress} />
+        )}
 
         {/* Search Bar */}
         {loading ? <SearchBarSkeleton /> : <SearchBar />}
