@@ -1,94 +1,119 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  useColorScheme,
-  Alert,
-} from 'react-native';
-import {
-  Button,
-  Card,
-  Header,
-  LanguageSelector,
-  Typography,
-} from '../components';
-import {useLanguage, useRTLStyles, useAuth} from '../context';
+import {View, StyleSheet, Alert, Modal, TouchableOpacity} from 'react-native';
+import {BackHeader} from '../components';
+import IconLabelButton from '../components/IconLabelButton';
+import FlagIcon from '../assets/icons/outlined/flag.svg';
+import StickyNoteIcon from '../assets/icons/outlined/stickynote.svg';
+import NoteIcon from '../assets/icons/outlined/note.svg';
+import TaskSquareIcon from '../assets/icons/outlined/task-square.svg';
+import LogoutIcon from '../assets/icons/outlined/logout.svg';
+import {useLanguage, useAuth} from '../context';
+import {LanguageSelector} from '../components/LanguageSelector';
+import {useNavigation} from '@react-navigation/native';
+import {Colors} from '../constants';
 
 export const SettingsScreen: React.FC = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-  const {t} = useLanguage();
-  const rtlStyles = useRTLStyles();
-  const {logout, user} = useAuth();
+  const {t, currentLanguage} = useLanguage();
+  const navigation = useNavigation();
+  const {logout} = useAuth();
+
+  const goToLanguage = () => {
+    setLanguageModalVisible(true);
+  };
+
+  const [languageModalVisible, setLanguageModalVisible] = React.useState(false);
+
+  const selectedLanguageLabel =
+    currentLanguage === 'ar' ? t('language.arabic') : t('language.english');
+
+  const goToPrivacy = () => {
+    navigation.navigate('PrivacyPolicyScreen' as never);
+  };
+
+  const goToTerms = () => {
+    navigation.navigate('TermsScreen' as never);
+  };
+
+  const goToFaqs = () => {
+    navigation.navigate('FaqsScreen' as never);
+  };
 
   const handleLogout = () => {
-    Alert.alert(t('auth.logout.title'), t('auth.logout.message'), [
-      {
-        text: t('auth.logout.cancel'),
-        style: 'cancel',
-      },
-      {
-        text: t('auth.logout.confirm'),
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await logout();
-          } catch (error) {
-            Alert.alert(t('common.error'), 'Logout failed');
-          }
+    Alert.alert(
+      t('auth.logout.title'),
+      t('auth.logout.message'),
+      [
+        {text: t('common.cancel'), style: 'cancel'},
+        {
+          text: t('auth.logout.confirm'),
+          onPress: async () => {
+            try {
+              await logout();
+            } catch (err) {
+              console.warn('Logout failed', err);
+            }
+          },
         },
-      },
-    ]);
+      ],
+      {cancelable: true},
+    );
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        {backgroundColor: isDarkMode ? '#1C1C1E' : '#F2F2F7'},
-      ]}>
-      <Header
-        title={t('navigation.settings')}
-        subtitle="Manage your preferences"
-      />
+    <View style={styles.container}>
+      <BackHeader title={t('settings.title')} backgroundColor={Colors.white} />
 
-      <ScrollView style={styles.scrollView}>
-        <View
-          style={[
-            styles.content,
-            {alignItems: rtlStyles.isRTL ? 'flex-end' : 'flex-start'},
-          ]}>
-          <Card title="User Account">
-            <View style={styles.userSection}>
-              <Typography
-                variant="body1"
-                color={isDarkMode ? 'white' : 'text'}
-                style={[styles.userInfo, {textAlign: rtlStyles.textAlign}]}
-                text={`${t('profile.userInfo.name')}: ${user?.name}`}
-              />
-              <Typography
-                variant="body1"
-                color="textSecondary"
-                style={[styles.userInfo, {textAlign: rtlStyles.textAlign}]}
-                text={`${t('profile.userInfo.email')}: ${user?.email}`}
-              />
-            </View>
-          </Card>
+      <Modal
+        visible={languageModalVisible}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setLanguageModalVisible(false)}>
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPressOut={() => setLanguageModalVisible(false)}>
+          <View style={styles.modalContent}>
+            <LanguageSelector />
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
-          <LanguageSelector />
+      <View style={styles.content}>
+        <IconLabelButton
+          icon={<FlagIcon width={24} height={24} />}
+          label={t('settings.language')}
+          secondaryLabel={selectedLanguageLabel}
+          onPress={goToLanguage}
+        />
+        <View style={styles.separator} />
 
-          <Card title="Account Actions">
-            <View style={styles.actionsContainer}>
-              <Button
-                title={t('auth.logout.title')}
-                onPress={handleLogout}
-                variant="secondary"
-                style={styles.logoutButton}
-              />
-            </View>
-          </Card>
-        </View>
-      </ScrollView>
+        <IconLabelButton
+          icon={<StickyNoteIcon width={24} height={24} />}
+          label={t('settings.privacyPolicy')}
+          onPress={goToPrivacy}
+        />
+        <View style={styles.separator} />
+
+        <IconLabelButton
+          icon={<NoteIcon width={24} height={24} />}
+          label={t('settings.terms')}
+          onPress={goToTerms}
+        />
+        <View style={styles.separator} />
+
+        <IconLabelButton
+          icon={<TaskSquareIcon width={24} height={24} />}
+          label={t('settings.faqs')}
+          onPress={goToFaqs}
+        />
+        <View style={styles.separator} />
+
+        <IconLabelButton
+          icon={<LogoutIcon width={24} height={24} />}
+          label={t('settings.logout')}
+          onPress={handleLogout}
+        />
+      </View>
     </View>
   );
 };
@@ -96,24 +121,29 @@ export const SettingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollView: {
-    flex: 1,
+    backgroundColor: Colors.white,
   },
   content: {
+    flexGrow: 1,
     padding: 16,
+    paddingBottom: 140,
   },
-  userSection: {
-    gap: 8,
+  separator: {
+    height: 1,
+    backgroundColor: Colors.lightGray,
+    marginVertical: 8,
   },
-  userInfo: {
-    fontSize: 16,
-    marginBottom: 4,
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.4)',
   },
-  actionsContainer: {
-    gap: 12,
-  },
-  logoutButton: {
-    marginTop: 8,
+  modalContent: {
+    backgroundColor: Colors.white,
+    padding: 16,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
   },
 });
+
+export default SettingsScreen;

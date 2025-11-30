@@ -13,6 +13,7 @@ import ArrowLeftIcon from '../../assets/icons/outlined/arrow-left.svg';
 interface IconLabelButtonProps {
   icon: React.ReactNode;
   label: string;
+  secondaryLabel?: string;
   onPress?: (event: GestureResponderEvent) => void;
   style?: any;
   iconRight?: React.ReactNode; // optional right-side icon override
@@ -25,6 +26,7 @@ const IconLabelButton: React.FC<IconLabelButtonProps> = ({
   onPress,
   style,
   iconRight,
+  secondaryLabel,
   disabled = false,
 }) => {
   return (
@@ -38,8 +40,14 @@ const IconLabelButton: React.FC<IconLabelButtonProps> = ({
         <Typography variant="body1" text={label} color="textPrimary" />
       </View>
 
-      <View style={styles.rightIcon}>
-        {iconRight ? iconRight : <ArrowLeftIcon width={wp(5)} height={wp(5)} />}
+      <View style={styles.rightIconRow}>
+        {secondaryLabel ? (
+          <Typography variant="body2" text={secondaryLabel} color="textSecondary" />
+        ) : null}
+
+        <View style={styles.rightIcon}>
+          {iconRight ? iconRight : <ArrowLeftIcon width={wp(5)} height={wp(5)} />}
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -64,6 +72,11 @@ const styles = StyleSheet.create({
     height: wp(8),
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  rightIconRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(3),
   },
   rightIcon: {},
 });

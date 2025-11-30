@@ -355,9 +355,55 @@ class ApiService {
     );
   }
 
+  /**
+   * Get current profile using /profile endpoint
+   */
+  async getProfile(userToken?: string): Promise<ApiResponse<any>> {
+    // Use the authenticated user endpoint which exists on the server
+    // (avoids 404s for `/profile` on some server configurations)
+    return this.makeRequest<any>(
+      '/profile',
+      {
+        method: 'GET',
+        headers: userToken
+          ? {
+              Authorization: `Bearer ${userToken}`,
+            }
+          : undefined,
+      },
+      true,
+    );
+  }
+
+  /**
+   * Update profile using PUT /profile
+   */
+  async updateProfile(
+    data: any,
+    userToken?: string,
+  ): Promise<ApiResponse<any>> {
+    // Use the authenticated user endpoint for updating profile data
+    return this.makeRequest<any>(
+      '/profile',
+      {
+        method: 'PUT',
+        data,
+        headers: userToken
+          ? {
+              Authorization: `Bearer ${userToken}`,
+            }
+          : undefined,
+      },
+      true,
+    );
+  }
+
   // Keep backward compatibility methods
-  async get<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endpoint, {method: 'GET'});
+  async get<T>(
+    endpoint: string,
+    headers?: Record<string, any>,
+  ): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endpoint, {method: 'GET', headers});
   }
 
   async post<T>(
@@ -372,10 +418,15 @@ class ApiService {
     });
   }
 
-  async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(
+    endpoint: string,
+    data?: any,
+    headers?: Record<string, any>,
+  ): Promise<ApiResponse<T>> {
     return this.makeRequest<T>(endpoint, {
       method: 'PUT',
       data: data,
+      headers: headers,
     });
   }
 

@@ -3,6 +3,7 @@
 
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 import {apiService} from '../services/api';
+import {useAuth} from '../context';
 
 // Example: User Profile Hook
 export const useUserProfile = (userId?: string) => {
@@ -25,10 +26,11 @@ export const useUserProfile = (userId?: string) => {
 // Example: Update User Profile Mutation
 export const useUpdateUserProfile = () => {
   const queryClient = useQueryClient();
+  const {token} = useAuth();
 
   return useMutation({
     mutationFn: async (userData: {name?: string; email?: string}) => {
-      const response = await apiService.put('/user/profile', userData);
+      const response = await apiService.updateProfile(userData, token);
       if (!response.success) {
         throw new Error(response.error);
       }

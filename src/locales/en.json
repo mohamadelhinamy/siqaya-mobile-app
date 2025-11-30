@@ -34,6 +34,14 @@
     "settings": "Settings",
     "about": "About"
   },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "privacyPolicy": "Privacy Policy",
+    "terms": "Terms & Conditions",
+    "faqs": "FAQs",
+    "logout": "Logout"
+  },
   "home": {
     "title": "Siqaya Mobile App",
     "subtitle": "Welcome to your new app",
@@ -73,6 +81,7 @@
       "title": "User Information",
       "name": "Name",
       "email": "Email",
+      "gender": "Gender",
       "memberSince": "Member since"
     },
     "actions": {
@@ -84,16 +93,28 @@
     "links": {
       "myDonations": "My Donations",
       "myProjects": "My Projects",
-      "personalData": "Personal Data"
-    ,
+      "personalData": "Personal Data",
       "mediaCenter": "Media Center",
       "aboutApp": "About the App",
       "support": "Support & Help"
+    },
+    "settings": {
+      "title": "Settings"
     },
     "sampleData": {
       "name": "John Doe",
       "email": "john.doe@example.com",
       "memberSince": "October 2025"
+    }
+    ,
+    "details": {
+      "title": "My Account Settings"
+    }
+    ,
+    "genderOptions": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other"
     }
   },
   "language": {

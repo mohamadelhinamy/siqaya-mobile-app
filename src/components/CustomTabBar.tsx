@@ -59,14 +59,16 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
   let hideTabBar = false;
   if (
     (focusedRootRoute.name === 'Home' ||
-      focusedRootRoute.name === 'Products') &&
+      focusedRootRoute.name === 'Products' ||
+      focusedRootRoute.name === 'Profile') &&
     (focusedRootRoute as any).state
   ) {
     const nestedState = (focusedRootRoute as any).state;
     const nestedFocusedRoute = nestedState.routes[nestedState.index];
     if (
       nestedFocusedRoute?.name === 'CartScreen' ||
-      nestedFocusedRoute?.name === 'ProductDetails'
+      nestedFocusedRoute?.name === 'ProductDetails' ||
+      nestedFocusedRoute?.name === 'ProfileDetailsScreen'
     ) {
       hideTabBar = true;
     }

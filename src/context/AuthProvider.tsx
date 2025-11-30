@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     }
   };
 
-  const login = async (authToken: string, userData: User) => {
+  const login = React.useCallback(async (authToken: string, userData: User) => {
     try {
       await Promise.all([
         AsyncStorage.setItem(AUTH_TOKEN_KEY, authToken),
@@ -87,9 +87,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       console.error('Error during login:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const logout = async () => {
+  const logout = React.useCallback(async () => {
     try {
       // Call the API logout if we have a token
       if (token) {
@@ -112,9 +112,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       console.error('Error during logout:', error);
       throw error;
     }
-  };
+  }, [token]);
 
-  const updateUser = async (userData: User) => {
+  const updateUser = React.useCallback(async (userData: User) => {
     try {
       await AsyncStorage.setItem(AUTH_USER_KEY, JSON.stringify(userData));
       setUser(userData);
@@ -122,9 +122,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       console.error('Error updating user:', error);
       throw error;
     }
-  };
+  }, []);
 
-  const setSkipLogin = async (skip: boolean) => {
+  const setSkipLogin = React.useCallback(async (skip: boolean) => {
     try {
       await AsyncStorage.setItem(SKIP_LOGIN_KEY, skip.toString());
       setSkipLoginState(skip);
@@ -132,7 +132,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
       console.error('Error setting skip login:', error);
       throw error;
     }
-  };
+  }, []);
 
   const clearAuthData = async () => {
     await Promise.all([
@@ -142,21 +142,32 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     ]);
   };
 
-  const contextValue: AuthContextType = {
-    isAuthenticated,
-    isLoading,
-    user,
-    token,
-    skipLogin,
-    login,
-    logout,
-    updateUser,
-    setSkipLogin,
-  };
-
-  return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+  const contextValue = React.useMemo(
+    () => ({
+      isAuthenticated,
+      isLoading,
+      user,
+      token,
+      skipLogin,
+      login,
+      logout,
+      updateUser,
+      setSkipLogin,
+    }),
+    [
+      isAuthenticated,
+      isLoading,
+      user,
+      token,
+      skipLogin,
+      login,
+      logout,
+      updateUser,
+      setSkipLogin,
+    ],
   );
+
+  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
 };
 
 // Custom hook to use the auth context

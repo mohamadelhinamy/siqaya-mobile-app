@@ -1,5 +1,5 @@
-import React from 'react';
-import {View, StyleSheet} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, StyleSheet, ActivityIndicator} from 'react-native';
 import {Header} from '../components';
 import IconLabelButton from '../components/IconLabelButton';
 import ShoppingCartIcon from '../assets/icons/outlined/shopping-cart.svg';
@@ -10,11 +10,13 @@ import InfoCircleIcon from '../assets/icons/outlined/info-circle.svg';
 import HeadphoneIcon from '../assets/icons/outlined/headphone.svg';
 import {useNavigation} from '@react-navigation/native';
 import {useLanguage, useAuth} from '../context';
+import {apiService} from '../services/api';
 import {Colors} from '../constants/Colors';
 
 export const ProfileScreen: React.FC = () => {
   const {t} = useLanguage();
-  const {user} = useAuth();
+  const {user, token, updateUser} = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
   const goToCart = () => {
@@ -29,9 +31,43 @@ export const ProfileScreen: React.FC = () => {
     navigation.navigate('ProjectsScreen' as never);
   };
 
-  const goToPersonalData = () => {
-    navigation.navigate('PersonalDataScreen' as never);
-  };
+  // personal data route currently unused — keep commented for future
+  // const goToPersonalData = () => {
+  //   navigation.navigate('PersonalDataScreen' as never);
+  // };
+
+  useEffect(() => {
+    let mounted = true;
+    const fetchProfile = async () => {
+      if (!token) {
+        return;
+      }
+      try {
+        setLoading(true);
+        const resp = await apiService.getProfile(token);
+        if (mounted && resp && resp.success && resp.data) {
+          // Only update auth context if the response contains expected fields
+          const candidate = resp.data as any;
+          if (candidate && (candidate.name || candidate.email || candidate.mobile)) {
+            await updateUser(candidate);
+          } else {
+            console.warn('Profile fetch returned unexpected payload, skipping update', resp);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to refresh profile in ProfileScreen', err);
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    fetchProfile();
+    return () => {
+      mounted = false;
+    };
+  }, [token, updateUser]);
 
   const goToMediaCenter = () => {
     navigation.navigate('MediaCenterScreen' as never);
@@ -54,8 +90,16 @@ export const ProfileScreen: React.FC = () => {
         email={user?.email}
         imageUri={user?.avatar}
         onSettingsPress={() => navigation.navigate('SettingsScreen' as never)}
-        onBackPress={() => navigation.goBack()}
+        onProfilePress={() =>
+          navigation.navigate('ProfileDetailsScreen' as never)
+        }
       />
+
+      {loading && (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="small" color={Colors.primary} />
+        </View>
+      )}
 
       <View style={styles.content}>
         <IconLabelButton
@@ -76,12 +120,12 @@ export const ProfileScreen: React.FC = () => {
           onPress={goToCart}
         />
         <View style={styles.separator} />
-        <IconLabelButton
+        {/* <IconLabelButton
           icon={<ProfileIcon width={24} height={24} />}
           label={t('profile.links.personalData')}
           onPress={goToPersonalData}
         />
-        <View style={styles.separator} />
+        <View style={styles.separator} /> */}
         <IconLabelButton
           icon={<VideoPlayIcon width={24} height={24} />}
           label={t('profile.links.mediaCenter')}
@@ -142,5 +186,8 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: Colors.lightGray,
     marginVertical: 8,
+  },
+  loaderContainer: {
+    padding: 12,
   },
 });

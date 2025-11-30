@@ -34,6 +34,14 @@
     "settings": "الإعدادات",
     "about": "حول التطبيق"
   },
+  "settings": {
+    "title": "الإعدادات",
+    "language": "اللغة",
+    "privacyPolicy": "سياسة الخصوصية",
+    "terms": "الشروط والأحكام",
+    "faqs": "الأسئلة الشائعة",
+    "logout": "تسجيل الخروج"
+  },
   "home": {
     "title": "تطبيق سقاية المحمول",
     "subtitle": "مرحباً بك في تطبيقك الجديد",
@@ -73,6 +81,7 @@
       "title": "معلومات المستخدم",
       "name": "الاسم",
       "email": "البريد الإلكتروني",
+      "gender": "الجنس",
       "memberSince": "عضو منذ"
     },
     "actions": {
@@ -84,16 +93,28 @@
     "links": {
       "myDonations": "تبرعاتي",
       "myProjects": "مشاريعي",
-      "personalData": "البيانات الشخصية"
-    ,
+      "personalData": "البيانات الشخصية",
       "mediaCenter": "المركز الإعلامي",
       "aboutApp": "عن التطبيق",
       "support": "الدعم والمساعدة"
+    },
+    "settings": {
+      "title": "الإعدادات"
     },
     "sampleData": {
       "name": "أحمد علي",
       "email": "ahmed.ali@example.com",
       "memberSince": "أكتوبر 2025"
+    }
+    ,
+    "details": {
+      "title": "اعدادات حسابي"
+    }
+    ,
+    "genderOptions": {
+      "male": "ذكر",
+      "female": "أنثى",
+      "other": "أخرى"
     }
   },
   "language": {

@@ -2,14 +2,15 @@ import React from 'react';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
 import {AppText} from './core/AppText';
 import {useLanguage} from '../context';
+import {Colors} from '../constants';
 
 export const LanguageSelector: React.FC = () => {
   const {currentLanguage, availableLanguages, changeLanguage, t, isRTL} =
     useLanguage();
 
-  const titleAlignStyle = isRTL ? styles.textRight : styles.textLeft;
-  const currentAlignStyle = isRTL ? styles.textRight : styles.textLeft;
-  const rowDirStyle = isRTL ? styles.rowReverse : styles.row;
+  const titleAlignStyle = styles.textLeft;
+  const currentAlignStyle = styles.textLeft;
+  const rowDirStyle = styles.row;
 
   return (
     <View style={styles.container}>
@@ -51,7 +52,7 @@ export const LanguageSelector: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: Colors.white,
     borderRadius: 12,
     marginVertical: 8,
     shadowColor: '#000',
@@ -94,17 +95,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: Colors.text.turquoise,
     backgroundColor: 'transparent',
   },
   activeButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.text.turquoise,
   },
   languageButtonText: {
     fontSize: 16,
-    color: '#007AFF',
+    color: Colors.text.turquoise,
   },
   activeButtonText: {
-    color: '#FFFFFF',
+    color: Colors.white,
   },
 });

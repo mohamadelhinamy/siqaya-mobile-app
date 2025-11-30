@@ -1,6 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {HomeScreen, ProfileScreen} from '../screens';
+import {HomeScreen} from '../screens';
+import {ProfileNavigator} from './ProfileNavigator';
 import {CustomTabBar} from '../components';
 import {HomeNavigator} from './HomeNavigator';
 import {ProductsNavigator} from './ProductsNavigator';
@@ -30,7 +31,7 @@ export const BottomTabNavigator: React.FC = () => {
       <Tab.Screen name="Products" component={ProductsNavigator} />
       <Tab.Screen name="Care" component={HomeScreen} />
       <Tab.Screen name="Paths" component={HomeScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Profile" component={ProfileNavigator} />
     </Tab.Navigator>
   );
 };

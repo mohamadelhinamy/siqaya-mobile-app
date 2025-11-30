@@ -21,7 +21,7 @@ interface HeaderProps {
   imageUri?: string;
   initials?: string; // fallback when imageUri unavailable
   onSettingsPress?: () => void;
-  onBackPress?: () => void;
+  onProfilePress?: () => void;
   rightComponent?: React.ReactNode;
   leftComponent?: React.ReactNode;
 }
@@ -34,9 +34,8 @@ export const Header: React.FC<HeaderProps> = ({
   imageUri,
   initials,
   onSettingsPress,
-  onBackPress,
+  onProfilePress,
   rightComponent,
-  leftComponent,
 }) => {
   const renderAvatar = () => {
     if (imageUri) {
@@ -91,36 +90,36 @@ export const Header: React.FC<HeaderProps> = ({
         </View>
 
         {/* Bottom row: avatar, name/email, back arrow */}
-        <View style={styles.bottomRow}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <View style={styles.avatarCol}>{renderAvatar()}</View>
+        <TouchableOpacity
+          onPress={onProfilePress}
+          hitSlop={{top: 8, left: 8, right: 8, bottom: 8}}>
+          <View style={styles.bottomRow}>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <View style={styles.avatarCol}>{renderAvatar()}</View>
 
-            <View style={styles.nameCol}>
-              <Typography
-                variant="h5"
-                text={name || title}
-                color="textPrimary"
-                style={styles.nameText}
-                numberOfLines={1}
-              />
-              <Typography
-                variant="subtitle2"
-                text={email || subtitle || ''}
-                color="textSecondary"
-                style={styles.emailText}
-                numberOfLines={1}
-              />
+              <View style={styles.nameCol}>
+                <Typography
+                  variant="h5"
+                  text={name || title}
+                  color="textPrimary"
+                  style={styles.nameText}
+                  numberOfLines={1}
+                />
+                <Typography
+                  variant="subtitle2"
+                  text={email || subtitle || ''}
+                  color="textSecondary"
+                  style={styles.emailText}
+                  numberOfLines={1}
+                />
+              </View>
+            </View>
+
+            <View style={styles.arrowCol}>
+              <ArrowLeftIcon width={28} height={28} />
             </View>
           </View>
-
-          <View style={styles.arrowCol}>
-            <TouchableOpacity
-              onPress={onBackPress}
-              hitSlop={{top: 8, left: 8, right: 8, bottom: 8}}>
-              <ArrowLeftIcon width={28} height={28} />
-            </TouchableOpacity>
-          </View>
-        </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

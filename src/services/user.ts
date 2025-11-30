@@ -8,8 +8,8 @@ export class UserService {
   /**
    * Get current user profile
    */
-  static async getCurrentUser(): Promise<ApiResponse<User>> {
-    return apiService.get<User>('/user/profile');
+  static async getCurrentUser(userToken?: string): Promise<ApiResponse<User>> {
+    return apiService.getProfile(userToken);
   }
 
   /**
@@ -17,8 +17,9 @@ export class UserService {
    */
   static async updateProfile(
     userData: Partial<User>,
+    userToken?: string,
   ): Promise<ApiResponse<User>> {
-    return apiService.put<User>('/user/profile', userData);
+    return apiService.updateProfile(userData, userToken);
   }
 
   /**
