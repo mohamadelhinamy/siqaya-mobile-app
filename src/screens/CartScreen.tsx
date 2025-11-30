@@ -32,6 +32,9 @@ export const CartScreen: React.FC = () => {
     const fetchCart = async () => {
       if (!token) {
         console.log('❌ No user token available for cart fetch');
+        // Ensure loader stops when there's no authenticated user
+        setCartData(null);
+        setLoading(false);
         return;
       }
 
@@ -126,7 +129,8 @@ export const CartScreen: React.FC = () => {
     );
   };
 
-  console.log(cartData?.items[0]?.product, 'cartData');
+  // safe debug: avoid indexing into undefined
+  console.log(cartData?.items?.[0]?.product, 'cartData');
 
   return (
     <SafeAreaView style={styles.container}>

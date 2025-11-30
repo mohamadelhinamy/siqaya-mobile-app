@@ -32,6 +32,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
 
   const [fullName, setFullName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneError, setPhoneError] = useState<string | null>(null);
   const [email, setEmail] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | ''>('');
   const [loading, setLoading] = useState(false);
@@ -47,16 +48,28 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
 
     // Limit to 10 digits (Saudi phone number format)
     const limited = cleaned.slice(0, 10);
+    // Format as XXX XXX XXXX without trailing spaces
+    const part1 = limited.slice(0, 3);
+    const part2 = limited.slice(3, 6);
+    const part3 = limited.slice(6);
+    return [part1, part2, part3].filter(Boolean).join(' ');
+  };
 
-    // Format as XXX XXX XXX
-    if (limited.length >= 6) {
-      return `${limited.slice(0, 3)} ${limited.slice(3, 6)} ${limited.slice(
-        6,
-      )}`;
-    } else if (limited.length >= 3) {
-      return `${limited.slice(0, 3)} ${limited.slice(3)}`;
+  const validatePhone = (cleanPhone: string): string | null => {
+    const phoneRegex = /^05(?!2)\d{8}$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      if (cleanPhone.length !== 10) {
+        return t('auth.register.validMobileRequired');
+      }
+      if (!cleanPhone.startsWith('05')) {
+        return t('auth.phoneEntry.invalidStart');
+      }
+      if (cleanPhone.startsWith('052')) {
+        return t('auth.phoneEntry.invalidPrefix');
+      }
+      return t('auth.register.validMobileRequired');
     }
-    return limited;
+    return null;
   };
 
   const validateForm = () => {
@@ -66,8 +79,10 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
     }
 
     const cleanPhone = phoneNumber.replace(/\D/g, '');
-    if (cleanPhone.length !== 10) {
-      Alert.alert(t('common.error'), t('auth.register.validMobileRequired'));
+    const phoneErr = validatePhone(cleanPhone);
+    if (phoneErr) {
+      // Show inline error on submit
+      setPhoneError(phoneErr);
       return false;
     }
 
@@ -180,13 +195,26 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({navigation}) => {
               label={t('auth.register.mobileNumber')}
               placeholder={t('auth.register.enterMobileNumber')}
               value={phoneNumber}
-              onChangeText={(text: string) =>
-                setPhoneNumber(formatPhoneNumber(text))
-              }
+              onChangeText={(text: string) => {
+                const formatted = formatPhoneNumber(text);
+                setPhoneNumber(formatted);
+                const clean = formatted.replace(/\D/g, '');
+                if (clean.length === 0) {
+                  setPhoneError(null);
+                }
+              }}
               keyboardType="phone-pad"
               returnKeyType="next"
               containerStyle={styles.inputContainer}
             />
+            {phoneError ? (
+              <Typography
+                variant="caption"
+                text={phoneError}
+                color="error"
+                style={styles.phoneError}
+              />
+            ) : null}
 
             {/* Email Input */}
             <CustomInput
@@ -301,6 +329,9 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: hp(3),
+  },
+  phoneError: {
+    marginTop: hp(0.8),
   },
 
   loginContainer: {

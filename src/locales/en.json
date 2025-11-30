@@ -138,6 +138,8 @@
       "sendCode": "Send Code",
       "demoPhone": "Use Demo Phone",
       "invalidPhone": "Please enter a valid 10-digit phone number",
+      "invalidPrefix": "Phone numbers starting with 052 are not allowed",
+      "invalidStart": "Phone number must start with 05",
       "passwordRequired": "Please enter your password",
       "sendError": "Failed to send verification code. Please try again.",
       "mobileNumber": "Mobile Number",

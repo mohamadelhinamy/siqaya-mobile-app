@@ -37,6 +37,7 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
   const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
 
   const formatPhoneNumber = (text: string) => {
     // Remove all non-digits
@@ -45,29 +46,51 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
     // Limit to 10 digits (Saudi phone number format)
     const limited = cleaned.slice(0, 10);
 
-    // Format as XXX XXX XXX
-    if (limited.length >= 6) {
-      return `${limited.slice(0, 3)} ${limited.slice(3, 6)} ${limited.slice(
-        6,
-      )}`;
-    } else if (limited.length >= 3) {
-      return `${limited.slice(0, 3)} ${limited.slice(3)}`;
+    // Format as XXX XXX XXXX without introducing trailing spaces
+    const part1 = limited.slice(0, 3);
+    const part2 = limited.slice(3, 6);
+    const part3 = limited.slice(6);
+    return [part1, part2, part3].filter(Boolean).join(' ');
+  };
+
+  const validatePhone = (cleanPhone: string): string | null => {
+    // Must be exactly 10 digits and start with '05'
+    // Also the digit after '05' must NOT be '2' (i.e., disallow '052...')
+    const phoneRegex = /^05(?!2)\d{8}$/;
+    if (!phoneRegex.test(cleanPhone)) {
+      if (cleanPhone.length !== 10) {
+        return t('auth.phoneEntry.invalidPhone');
+      }
+      if (!cleanPhone.startsWith('05')) {
+        return t('auth.phoneEntry.invalidStart');
+      }
+      if (cleanPhone.startsWith('052')) {
+        return t('auth.phoneEntry.invalidPrefix');
+      }
+      return t('auth.phoneEntry.invalidPhone');
     }
-    return limited;
+    return null;
+  };
+
+  const handlePhoneChange = (text: string) => {
+    const formatted = formatPhoneNumber(text);
+    setPhoneNumber(formatted);
+    const clean = formatted.replace(/\D/g, '');
+    // Only clear the error when the input is emptied. Do not validate on change.
+    if (clean.length === 0) {
+      setPhoneError(null);
+    }
   };
 
   const validateForm = () => {
     const cleanPhone = phoneNumber.replace(/\D/g, '');
-    if (cleanPhone.length !== 10) {
-      Alert.alert(t('common.error'), t('auth.phoneEntry.invalidPhone'));
+    const err = validatePhone(cleanPhone);
+    setPhoneError(err);
+    if (err) {
       return false;
     }
     if (!termsAccepted) {
-      Alert.alert(
-        t('common.error'),
-        t('auth.phoneEntry.termsAcceptanceRequired'),
-      );
-      return false;
+      return false; // button already disabled when terms not accepted
     }
     return true;
   };
@@ -145,13 +168,19 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
               label={t('auth.phoneEntry.mobileNumber')}
               placeholder={t('auth.phoneEntry.enterMobileNumber')}
               value={phoneNumber}
-              onChangeText={(text: string) =>
-                setPhoneNumber(formatPhoneNumber(text))
-              }
+              onChangeText={(text: string) => handlePhoneChange(text)}
               keyboardType="phone-pad"
               returnKeyType="done"
               containerStyle={styles.inputContainer}
             />
+            {phoneError ? (
+              <Typography
+                variant="caption"
+                text={phoneError}
+                color="error"
+                style={styles.phoneError}
+              />
+            ) : null}
 
             {/* Terms and Conditions Checkbox */}
             <View style={styles.termsContainer}>
@@ -197,7 +226,7 @@ export const PhoneEntryScreen: React.FC<PhoneEntryScreenProps> = ({
                 loading ? t('common.loading') : t('auth.phoneEntry.registerNow')
               }
               onPress={handleSendCode}
-              disabled={!termsAccepted}
+              disabled={loading || !termsAccepted}
               loading={loading}
               variant="primary"
               size="large"
@@ -262,8 +291,10 @@ const styles = StyleSheet.create({
   formContainer: {
     justifyContent: 'center',
   },
-  inputContainer: {
-    marginBottom: hp(4),
+  inputContainer: {},
+  phoneError: {
+    marginTop: hp(0.8),
+    textAlign: 'left',
   },
   label: {
     fontSize: 18,
@@ -285,6 +316,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
+    marginTop: hp(3),
     marginBottom: hp(3),
     gap: wp(1),
   },

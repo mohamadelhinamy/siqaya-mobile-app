@@ -141,12 +141,14 @@ const ProfileDetailsScreen: React.FC = () => {
               style={styles.label}
             />
             <TextInput
-              style={styles.input}
+              style={[styles.input, styles.disabledInput]}
               value={phone}
               onChangeText={setPhone}
               placeholder={t('auth.phoneEntry.phonePlaceholder')}
+              placeholderTextColor={Colors.text.secondary}
               keyboardType="phone-pad"
               editable={false}
+              caretHidden={true}
               returnKeyType="next"
             />
           </View>
@@ -287,6 +289,12 @@ const styles = StyleSheet.create({
   },
   genderLabel: {
     textTransform: 'capitalize',
+  },
+  disabledInput: {
+    backgroundColor: Colors.lighter,
+    borderColor: Colors.lightGray,
+    color: Colors.text.secondary,
+    opacity: 0.95,
   },
 });
 
