@@ -57,7 +57,11 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
   // Determine if we should hide the tab bar (e.g. CartScreen inside Home stack)
   const focusedRootRoute = state.routes[state.index];
   let hideTabBar = false;
-  if (focusedRootRoute.name === 'Home' && (focusedRootRoute as any).state) {
+  if (
+    (focusedRootRoute.name === 'Home' ||
+      focusedRootRoute.name === 'Products') &&
+    (focusedRootRoute as any).state
+  ) {
     const nestedState = (focusedRootRoute as any).state;
     const nestedFocusedRoute = nestedState.routes[nestedState.index];
     if (

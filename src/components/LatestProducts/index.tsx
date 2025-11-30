@@ -21,6 +21,11 @@ interface LatestProductsProps {
   loading?: boolean;
   title?: string;
   onProductPress?: (productId: string) => void;
+  onAddToCart?: (
+    productId: number,
+    productGuid: string,
+    title?: string,
+  ) => void;
 }
 
 // Map API Product to ProductCardProps
@@ -54,6 +59,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
   loading: externalLoading,
   title,
   onProductPress,
+  onAddToCart,
 }) => {
   const {t} = useLanguage();
 
@@ -81,6 +87,11 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
         {...product}
         onPress={
           onProductPress ? () => onProductPress(product.guid) : undefined
+        }
+        onAddToCart={
+          onAddToCart
+            ? () => onAddToCart(Number(product.id), product.guid, product.title)
+            : undefined
         }
       />
     );
@@ -115,7 +126,9 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContainer}
           style={styles.scrollView}>
-          {displayProducts.map(renderProductCard)}
+          {apiProducts && apiProducts.length > 0
+            ? apiProducts.map(p => renderProductCard(mapProductToCard(p)))
+            : displayProducts.map(renderProductCard)}
         </ScrollView>
       )}
     </View>

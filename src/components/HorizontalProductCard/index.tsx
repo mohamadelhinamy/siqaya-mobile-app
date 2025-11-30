@@ -21,6 +21,7 @@ export interface HorizontalProductCardProps {
   dealersCount: number;
   onDonate?: () => void;
   onViewDetails?: () => void;
+  onAddToCart?: () => void;
   onPress?: () => void;
   style?: any;
 }
@@ -37,6 +38,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
   dealersCount,
   onDonate,
   onViewDetails,
+  onAddToCart,
   onPress,
   style,
 }) => {
@@ -214,7 +216,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
                 height={wp(4.5)}
               />
             }
-            onPress={onViewDetails || defaultOnViewDetails}
+            onPress={onAddToCart || onViewDetails || defaultOnViewDetails}
             style={styles.cartButton}
           />
         </View>

@@ -176,7 +176,6 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
             <CustomButton
               title={t('products.addToCart')}
               variant="primary"
-              icon={<ShoppingCartIcon color={Colors.white} />}
               onPress={handleConfirm}
               loading={loading}
               disabled={loading}

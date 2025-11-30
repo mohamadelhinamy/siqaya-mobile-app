@@ -16,6 +16,7 @@ import {SearchBar} from '../components/SearchBar';
 import {HeroBanner} from '../components/HeroBanner';
 import {ServicesGrid} from '../components/ServicesGrid';
 import {LatestProducts} from '../components/LatestProducts';
+import {AddToCartModal} from '../components/AddToCartModal';
 import {WaterDeliveryBanner} from '../components/WaterDeliveryBanner';
 import {
   HomeHeaderSkeleton,
@@ -68,6 +69,11 @@ export const HomeScreen: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
   const [homepageProducts, setHomepageProducts] = React.useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = React.useState(false);
+  const [cartModalVisible, setCartModalVisible] = React.useState(false);
+  const [modalProductId, setModalProductId] = React.useState<number | null>(
+    null,
+  );
+  const [modalProductName, setModalProductName] = React.useState<string>('');
 
   const handleCartPress = () => {
     navigation.navigate('CartScreen');
@@ -75,6 +81,27 @@ export const HomeScreen: React.FC = () => {
 
   const handleProductPress = (productGuid: string) => {
     navigation.navigate('ProductDetails', {productGuid});
+  };
+
+  const handleOpenAddToCart = (
+    productId: number,
+    productGuid: string,
+    title?: string,
+  ) => {
+    setModalProductId(productId);
+    setModalProductName(title || '');
+    setCartModalVisible(true);
+  };
+
+  const handleCloseAddToCart = () => {
+    setCartModalVisible(false);
+    setModalProductId(null);
+    setModalProductName('');
+  };
+
+  const handleAddToCartSuccess = () => {
+    // Optional: refresh homepage products or show a toast
+    console.log('Added to cart from Home screen');
   };
 
   const fetchHomepageData = React.useCallback(async () => {
@@ -91,6 +118,7 @@ export const HomeScreen: React.FC = () => {
 
       if (response.success && response.data) {
         // Map homepage products to Product type
+        console.log('🔄 Mapping homepage products...', response?.data);
         const mappedProducts: Product[] = response.data.map(product => ({
           id: product.id,
           guid: product.guid || '',
@@ -102,7 +130,11 @@ export const HomeScreen: React.FC = () => {
           collected_amount: product.collected_amount,
           remaining_amount: product.remaining_amount,
           completion_percentage: product.completion_percentage,
-          association: product.association,
+          association: {
+            id: product.association.id,
+            name: product.association.name,
+            logo: '',
+          },
           category: {
             ...product.category,
             slug: product.category.slug || '',
@@ -179,6 +211,7 @@ export const HomeScreen: React.FC = () => {
           apiProducts={homepageProducts.slice(0, 3)}
           loading={productsLoading}
           onProductPress={handleProductPress}
+          onAddToCart={handleOpenAddToCart}
         />
 
         {/* Water Delivery Banner */}
@@ -197,14 +230,25 @@ export const HomeScreen: React.FC = () => {
             .slice(0, 3)}
           loading={productsLoading}
           onProductPress={handleProductPress}
+          onAddToCart={handleOpenAddToCart}
         />
 
         {/* Bottom Spacing for Tab Bar */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
+      {/* Add to Cart Modal (opened from product cards) */}
+      <AddToCartModal
+        visible={cartModalVisible && modalProductId !== null}
+        productId={modalProductId ?? 0}
+        productName={modalProductName}
+        onClose={handleCloseAddToCart}
+        onSuccess={handleAddToCartSuccess}
+      />
     </SafeAreaView>
   );
 };
+
+// Add modal outside the component return? Instead, we add it inside return near end —
 
 const styles = StyleSheet.create({
   container: {

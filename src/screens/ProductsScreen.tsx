@@ -13,6 +13,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useLanguage} from '../context';
 import {Typography, HorizontalProductCard} from '../components';
+import {AddToCartModal} from '../components/AddToCartModal';
 import {
   HorizontalProductCardSkeleton,
   FilterPillsSkeleton,
@@ -67,6 +68,9 @@ export const ProductsScreen: React.FC = () => {
   const [totalProducts, setTotalProducts] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [cartModalVisible, setCartModalVisible] = useState(false);
+  const [modalProductId, setModalProductId] = useState<number | null>(null);
+  const [modalProductName, setModalProductName] = useState<string>('');
 
   const fetchFilters = async () => {
     try {
@@ -277,12 +281,32 @@ export const ProductsScreen: React.FC = () => {
   };
 
   const handleCartPress = () => {
-    // Handle cart action
-    console.log('Cart pressed');
+    // Navigate to Cart screen
+    navigation.navigate('CartScreen' as never);
   };
 
   const handleProductPress = (productGuid: string) => {
     navigation.navigate('ProductDetails', {productGuid});
+  };
+
+  const handleOpenAddToCart = (
+    productId: number,
+    productGuid: string,
+    title?: string,
+  ) => {
+    setModalProductId(productId);
+    setModalProductName(title || '');
+    setCartModalVisible(true);
+  };
+
+  const handleCloseAddToCart = () => {
+    setCartModalVisible(false);
+    setModalProductId(null);
+    setModalProductName('');
+  };
+
+  const handleAddToCartSuccess = () => {
+    console.log('Added to cart from Products screen');
   };
 
   console.log('Selected Filter:', selectedFilter);
@@ -411,6 +435,13 @@ export const ProductsScreen: React.FC = () => {
               image={product.image ? {uri: product.image} : undefined}
               style={styles.productItem}
               onPress={() => handleProductPress(product.guid)}
+              onAddToCart={() =>
+                handleOpenAddToCart(
+                  product.id,
+                  product.guid,
+                  product.product_name,
+                )
+              }
             />
           )}
           ListEmptyComponent={
@@ -444,6 +475,14 @@ export const ProductsScreen: React.FC = () => {
           showsVerticalScrollIndicator={false}
         />
       </View>
+      {/* Add to Cart Modal (opened from product cards) */}
+      <AddToCartModal
+        visible={cartModalVisible && modalProductId !== null}
+        productId={modalProductId ?? 0}
+        productName={modalProductName}
+        onClose={handleCloseAddToCart}
+        onSuccess={handleAddToCartSuccess}
+      />
     </SafeAreaView>
   );
 };

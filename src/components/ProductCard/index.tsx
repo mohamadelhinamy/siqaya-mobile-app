@@ -22,6 +22,7 @@ export interface ProductCardProps {
   dealersCount: number;
   onDonate?: () => void;
   onViewDetails?: () => void;
+  onAddToCart?: () => void;
   onPress?: () => void;
   style?: any;
 }
@@ -38,6 +39,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   dealersCount,
   onDonate,
   onViewDetails,
+  onAddToCart,
   onPress,
   style,
 }) => {
@@ -59,7 +61,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
       <View style={styles.imageWrapper}>
         <View style={styles.imageContainer}>
           {image ? (
-            <Image source={image} style={styles.productImage} />
+            <Image source={{uri: image}} style={styles.productImage} />
           ) : (
             <View style={[styles.productImage, styles.placeholderImage]}>
               <Typography
@@ -197,13 +199,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           <CustomButton
             variant="icon"
             icon={<ShoppingCartIcon color={Colors.text.primary} />}
-            onPress={onViewDetails || defaultOnViewDetails}
+            onPress={onAddToCart || onViewDetails || defaultOnViewDetails}
             style={styles.cartButton}
           />
         </View>
 
         {/* View Details Link */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.detailsLink}
           onPress={onViewDetails || defaultOnViewDetails}>
           <Typography
@@ -212,7 +214,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             text={t('products.viewDetails')}
             style={styles.detailsText}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </TouchableOpacity>
   );
@@ -384,7 +386,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: wp(3),
-    height: hp(5.5),
+    height: hp(4.5),
+    marginBottom: hp(1),
   },
   donateButton: {
     flex: 1, // Use flex instead of percentage for better alignment
