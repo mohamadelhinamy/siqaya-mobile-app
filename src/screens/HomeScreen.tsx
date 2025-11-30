@@ -69,6 +69,7 @@ export const HomeScreen: React.FC = () => {
   const [loading, setLoading] = React.useState(true);
   const [homepageProducts, setHomepageProducts] = React.useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = React.useState(false);
+  const [sliders, setSliders] = React.useState<any[]>([]);
   const [cartModalVisible, setCartModalVisible] = React.useState(false);
   const [modalProductId, setModalProductId] = React.useState<number | null>(
     null,
@@ -111,6 +112,32 @@ export const HomeScreen: React.FC = () => {
       const response = await apiService.get<HomepageProduct[]>(
         '/products/homepage',
       );
+      // Fetch active sliders
+      try {
+        const slidersResp = await apiService.get<any>('/sliders/active');
+        if (
+          slidersResp &&
+          slidersResp.success &&
+          Array.isArray(slidersResp.data)
+        ) {
+          const mappedSlides = slidersResp.data.map((s: any) => ({
+            id: String(s.id),
+            image: s.images?.mobile
+              ? {uri: s.images.mobile}
+              : {uri: s.images?.web},
+            title: s.title,
+            summary: s.summary,
+            button_text: s.button_text,
+            link: s.link,
+            link_type: s.link_type,
+            link_target: s.link_target,
+          }));
+          setSliders(mappedSlides);
+          console.log('✅ Fetched sliders:', mappedSlides.length);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch sliders:', err);
+      }
       console.log(
         '✅ Homepage API Response:',
         JSON.stringify(response, null, 2),
@@ -199,9 +226,12 @@ export const HomeScreen: React.FC = () => {
         {/* Hero Banner */}
         {loading ? (
           <HeroBannerSkeleton />
-        ) : (
-          <HeroBanner onPress={() => console.log('Hero banner pressed')} />
-        )}
+        ) : sliders && sliders.length > 0 ? (
+          <HeroBanner
+            slides={sliders}
+            onPress={() => console.log('Hero banner pressed')}
+          />
+        ) : null}
 
         {/* Services Grid */}
         {loading ? <ServicesGridSkeleton /> : <ServicesGrid />}

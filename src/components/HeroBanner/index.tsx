@@ -9,17 +9,25 @@ import {
 import Carousel from 'react-native-snap-carousel';
 import {Colors} from '../../constants';
 import {useLanguage} from '../../context';
+import {wp} from '../../utils/responsive';
+import {Typography, CustomButton} from '../index';
 
 const {width: screenWidth} = Dimensions.get('window');
 
 interface HeroSlide {
   id: string;
   image: any;
+  title?: string;
+  summary?: string;
+  button_text?: string;
+  link?: string;
+  link_type?: number;
+  link_target?: string;
 }
 
 interface HeroBannerProps {
   slides?: HeroSlide[];
-  onPress?: () => void;
+  onPress?: (slide?: HeroSlide) => void;
 }
 
 const defaultSlides: HeroSlide[] = [
@@ -39,11 +47,14 @@ const defaultSlides: HeroSlide[] = [
 
 export const HeroBanner: React.FC<HeroBannerProps> = ({
   slides = defaultSlides,
+  onPress,
 }) => {
   const [activeSlide, setActiveSlide] = useState(0);
   const {isRTL} = useLanguage();
 
   const safeSlides = slides && slides.length > 0 ? slides : defaultSlides;
+
+  const stripHtml = (html = '') => html.replace(/<[^>]*>/g, '');
 
   const renderSlide = ({item}: any) => {
     if (!item) {
@@ -63,8 +74,41 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
         <ImageBackground
           source={item.image}
           style={containerStyle}
-          imageStyle={styles.backgroundImage}
-        />
+          imageStyle={styles.backgroundImage}>
+          <View style={styles.imageOverlay} />
+          <View style={styles.slideContent}>
+            <View>
+              {item.title ? (
+                <Typography
+                  variant="h5"
+                  text={stripHtml(item.title)}
+                  color="white"
+                  style={styles.slideTitle}
+                />
+              ) : null}
+              {item.summary ? (
+                <Typography
+                  variant="body2"
+                  text={stripHtml(item.summary)}
+                  color="white"
+                  style={styles.slideSummary}
+                />
+              ) : null}
+            </View>
+
+            {item.button_text ? (
+              <View style={styles.slideButtonWrap}>
+                <CustomButton
+                  title={item.button_text}
+                  onPress={() => onPress && onPress(item)}
+                  variant="primary"
+                  size="small"
+                  style={styles.slideButton}
+                />
+              </View>
+            ) : null}
+          </View>
+        </ImageBackground>
       </View>
     );
   };
@@ -124,10 +168,39 @@ const styles = StyleSheet.create({
     height: 180,
     justifyContent: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 24,
+    paddingVertical: 18,
   },
   backgroundImage: {
     borderRadius: 16,
+  },
+  imageOverlay: {
+    height: '100%',
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0,0,0,0.35)',
+    borderRadius: 16,
+  },
+  slideContent: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+  },
+  slideSummary: {
+    marginTop: 8,
+    marginBottom: 8,
+    textAlign: 'left',
+  },
+  slideButtonWrap: {
+    alignSelf: 'flex-start',
+    width: wp(36),
+  },
+  slideTitle: {
+    textAlign: 'left',
+    fontWeight: 'bold',
+  },
+  slideButton: {
+    marginBottom: 0,
   },
   textContainer: {
     zIndex: 1,
