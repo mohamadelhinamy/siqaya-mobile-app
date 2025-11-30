@@ -30,6 +30,7 @@
     "care": "الرعاية",
     "paths": "المسارات",
     "profile": "حسابي",
+    "cart": "سلة التسوق",
     "settings": "الإعدادات",
     "about": "حول التطبيق"
   },
@@ -66,7 +67,7 @@
     "checkout": "تبرع الآن"
   },
   "profile": {
-    "title": "الملف الشخصي",
+    "title": "حسابي",
     "subtitle": "إدارة حسابك",
     "userInfo": {
       "title": "معلومات المستخدم",
@@ -79,6 +80,15 @@
       "editProfile": "تعديل الملف الشخصي",
       "settings": "الإعدادات",
       "logout": "تسجيل الخروج"
+    },
+    "links": {
+      "myDonations": "تبرعاتي",
+      "myProjects": "مشاريعي",
+      "personalData": "البيانات الشخصية"
+    ,
+      "mediaCenter": "المركز الإعلامي",
+      "aboutApp": "عن التطبيق",
+      "support": "الدعم والمساعدة"
     },
     "sampleData": {
       "name": "أحمد علي",

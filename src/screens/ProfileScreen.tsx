@@ -1,144 +1,105 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  useColorScheme,
-  Alert,
-} from 'react-native';
-import {
-  Button,
-  Card,
-  Header,
-  LanguageSelector,
-  Typography,
-} from '../components';
+import {View, StyleSheet} from 'react-native';
+import {Header} from '../components';
+import IconLabelButton from '../components/IconLabelButton';
+import ShoppingCartIcon from '../assets/icons/outlined/shopping-cart.svg';
+import HeartIcon from '../assets/icons/outlined/heart.svg';
+import ProfileIcon from '../assets/icons/outlined/profile.svg';
+import VideoPlayIcon from '../assets/icons/outlined/video-play.svg';
+import InfoCircleIcon from '../assets/icons/outlined/info-circle.svg';
+import HeadphoneIcon from '../assets/icons/outlined/headphone.svg';
+import {useNavigation} from '@react-navigation/native';
 import {useLanguage, useAuth} from '../context';
+import {Colors} from '../constants/Colors';
 
 export const ProfileScreen: React.FC = () => {
-  const isDarkMode = useColorScheme() === 'dark';
   const {t} = useLanguage();
-  const {logout, user, isAuthenticated, skipLogin, setSkipLogin} = useAuth();
+  const {user} = useAuth();
+  const navigation = useNavigation();
 
-  const handleLogout = () => {
-    Alert.alert(t('auth.logout.title'), t('auth.logout.message'), [
-      {
-        text: t('auth.logout.cancel'),
-        style: 'cancel',
-      },
-      {
-        text: t('auth.logout.confirm'),
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await logout();
-          } catch (error) {
-            console.error('Logout error:', error);
-          }
-        },
-      },
-    ]);
+  const goToCart = () => {
+    navigation.navigate('CartScreen' as never);
   };
 
-  const handleExitGuestMode = () => {
-    Alert.alert(t('auth.guest.exitGuestMode'), t('auth.guest.exitMessage'), [
-      {
-        text: t('common.cancel'),
-        style: 'cancel',
-      },
-      {
-        text: t('auth.guest.signIn'),
-        onPress: async () => {
-          try {
-            await setSkipLogin(false);
-          } catch (error) {
-            console.error('Error exiting guest mode:', error);
-          }
-        },
-      },
-    ]);
+  const goToDonations = () => {
+    navigation.navigate('DonationsScreen' as never);
+  };
+
+  const goToProjects = () => {
+    navigation.navigate('ProjectsScreen' as never);
+  };
+
+  const goToPersonalData = () => {
+    navigation.navigate('PersonalDataScreen' as never);
+  };
+
+  const goToMediaCenter = () => {
+    navigation.navigate('MediaCenterScreen' as never);
+  };
+
+  const goToAboutApp = () => {
+    navigation.navigate('AboutAppScreen' as never);
+  };
+
+  const goToSupport = () => {
+    navigation.navigate('SupportScreen' as never);
   };
 
   return (
-    <View
-      style={[
-        styles.container,
-        isDarkMode ? styles.darkContainer : styles.lightContainer,
-      ]}>
-      <Header title={t('profile.title')} subtitle={t('profile.subtitle')} />
+    <View style={[styles.container, styles.lightContainer]}>
+      <Header
+        title={t('profile.title')}
+        subtitle={t('profile.subtitle')}
+        name={user?.name}
+        email={user?.email}
+        imageUri={user?.avatar}
+        onSettingsPress={() => navigation.navigate('SettingsScreen' as never)}
+        onBackPress={() => navigation.goBack()}
+      />
 
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        bounces={false}>
-        {/* User Information Card */}
-        {isAuthenticated && user ? (
-          <Card title={t('profile.userInfo.title')}>
-            <View style={styles.userInfo}>
-              <View>
-                <Typography
-                  variant="body2"
-                  color="textPrimary"
-                  text={t('profile.userInfo.name')}
-                  style={styles.label}
-                />
-                <Typography
-                  variant="body1"
-                  color="textPrimary"
-                  text={user.name}
-                  style={styles.value}
-                />
-              </View>
-              <View>
-                <Typography
-                  variant="body2"
-                  color="textPrimary"
-                  text={t('profile.userInfo.email')}
-                  style={styles.label}
-                />
-                <Typography
-                  variant="body1"
-                  color="textPrimary"
-                  text={user.email}
-                  style={styles.value}
-                />
-              </View>
-            </View>
-          </Card>
-        ) : skipLogin ? (
-          <Card title={t('auth.guest.mode')}>
-            <View style={styles.userInfo}>
-              <Typography
-                variant="body1"
-                color="textSecondary"
-                text={t('auth.guest.message')}
-                style={styles.value}
-              />
-            </View>
-          </Card>
-        ) : null}
-
-        <Card title={t('profile.actions.title')}>
-          <View style={styles.buttonContainer}>
-            {isAuthenticated ? (
-              <Button
-                title={t('profile.actions.logout')}
-                onPress={handleLogout}
-                variant="secondary"
-              />
-            ) : skipLogin ? (
-              <Button
-                title={t('auth.guest.signIn')}
-                onPress={handleExitGuestMode}
-                variant="primary"
-              />
-            ) : null}
-          </View>
-        </Card>
-
-        <LanguageSelector />
-      </ScrollView>
+      <View style={styles.content}>
+        <IconLabelButton
+          icon={<HeartIcon width={24} height={24} />}
+          label={t('profile.links.myDonations')}
+          onPress={goToDonations}
+        />
+        <View style={styles.separator} />
+        <IconLabelButton
+          icon={<HeartIcon width={24} height={24} />}
+          label={t('profile.links.myProjects')}
+          onPress={goToProjects}
+        />
+        <View style={styles.separator} />
+        <IconLabelButton
+          icon={<ShoppingCartIcon width={24} height={24} />}
+          label={t('navigation.cart')}
+          onPress={goToCart}
+        />
+        <View style={styles.separator} />
+        <IconLabelButton
+          icon={<ProfileIcon width={24} height={24} />}
+          label={t('profile.links.personalData')}
+          onPress={goToPersonalData}
+        />
+        <View style={styles.separator} />
+        <IconLabelButton
+          icon={<VideoPlayIcon width={24} height={24} />}
+          label={t('profile.links.mediaCenter')}
+          onPress={goToMediaCenter}
+        />
+        <View style={styles.separator} />
+        <IconLabelButton
+          icon={<InfoCircleIcon width={24} height={24} />}
+          label={t('profile.links.aboutApp')}
+          onPress={goToAboutApp}
+        />
+        <View style={styles.separator} />
+        <IconLabelButton
+          icon={<HeadphoneIcon width={24} height={24} />}
+          label={t('profile.links.support')}
+          onPress={goToSupport}
+        />
+      </View>
     </View>
   );
 };
@@ -148,10 +109,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   lightContainer: {
-    backgroundColor: '#F2F2F7',
-  },
-  darkContainer: {
-    backgroundColor: '#000000',
+    backgroundColor: Colors.white,
   },
   scrollView: {
     flex: 1,
@@ -179,5 +137,10 @@ const styles = StyleSheet.create({
   },
   button: {
     marginVertical: 4,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: Colors.lightGray,
+    marginVertical: 8,
   },
 });

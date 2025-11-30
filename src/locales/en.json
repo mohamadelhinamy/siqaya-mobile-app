@@ -30,6 +30,7 @@
     "care": "Care", 
     "paths": "Paths",
     "profile": "My Account",
+    "cart": "Cart",
     "settings": "Settings",
     "about": "About"
   },
@@ -79,6 +80,15 @@
       "editProfile": "Edit Profile",
       "settings": "Settings",
       "logout": "Logout"
+    },
+    "links": {
+      "myDonations": "My Donations",
+      "myProjects": "My Projects",
+      "personalData": "Personal Data"
+    ,
+      "mediaCenter": "Media Center",
+      "aboutApp": "About the App",
+      "support": "Support & Help"
     },
     "sampleData": {
       "name": "John Doe",
