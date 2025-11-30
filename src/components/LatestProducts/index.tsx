@@ -20,32 +20,8 @@ interface LatestProductsProps {
   apiProducts?: Product[];
   loading?: boolean;
   title?: string;
+  onProductPress?: (productId: string) => void;
 }
-
-const getDefaultProducts = (t: any): ProductCardProps[] => [
-  {
-    id: '1',
-    title: t('products.samples.waterWellTitle'),
-    raisedAmount: '10,215 ر.س',
-    remainingAmount: '350,971 ر.س',
-    progress: 0.2,
-    category: t('products.samples.wellsCategory'),
-    location: t('cities.riyadh'),
-    dealersCount: 5,
-    image: require('../../assets/images/card_image.png'),
-  },
-  {
-    id: '2',
-    title: t('products.samples.waterWellTitleShort'),
-    raisedAmount: '15,000 ر.س',
-    remainingAmount: '285,000 ر.س',
-    progress: 0.35,
-    category: t('products.samples.wellsCategory'),
-    location: t('cities.jeddah'),
-    dealersCount: 8,
-    image: require('../../assets/images/small_card_image.png'),
-  },
-];
 
 // Map API Product to ProductCardProps
 const mapProductToCard = (product: Product): ProductCardProps => {
@@ -60,6 +36,7 @@ const mapProductToCard = (product: Product): ProductCardProps => {
 
   return {
     id: String(product.id),
+    guid: product.guid,
     title: product.product_name || product.product_brief || '—',
     raisedAmount: `${raised.toLocaleString('ar-SA')} ر.س`,
     remainingAmount: `${remaining.toLocaleString('ar-SA')} ر.س`,
@@ -76,6 +53,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
   apiProducts,
   loading: externalLoading,
   title,
+  onProductPress,
 }) => {
   const {t} = useLanguage();
 
@@ -87,10 +65,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
     return [];
   }, [apiProducts]);
 
-  const displayProducts =
-    products || mappedApiProducts.length > 0
-      ? mappedApiProducts
-      : getDefaultProducts(t);
+  const displayProducts = products || mappedApiProducts;
 
   const isLoading = externalLoading || false;
 
@@ -100,7 +75,15 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
   };
 
   const renderProductCard = (product: ProductCardProps) => {
-    return <ProductCard key={product.id} {...product} />;
+    return (
+      <ProductCard
+        key={product.id}
+        {...product}
+        onPress={
+          onProductPress ? () => onProductPress(product.guid) : undefined
+        }
+      />
+    );
   };
 
   return (

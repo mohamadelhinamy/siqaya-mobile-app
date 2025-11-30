@@ -11,6 +11,7 @@ import ShoppingCartIcon from '../../assets/icons/outlined/shopping-cart.svg';
 
 export interface ProductCardProps {
   id: string;
+  guid: string;
   title: string;
   raisedAmount: string;
   remainingAmount: string;

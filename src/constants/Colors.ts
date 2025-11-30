@@ -8,6 +8,7 @@ export const Colors = {
   dark: '#48484A',
   lighter: '#F2F2F7',
   darker: '#1C1C1E',
+  lightGray: '#E8EFFA',
 
   // Brand colors
   primary: '#134691',

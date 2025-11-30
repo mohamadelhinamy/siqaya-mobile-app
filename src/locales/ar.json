@@ -3,6 +3,8 @@
     "welcome": "مرحباً",
     "loading": "جاري التحميل...",
     "error": "خطأ",
+    "success": "نجاح",
+    "ok": "حسناً",
     "retry": "إعادة المحاولة",
     "cancel": "إلغاء",
     "save": "حفظ",
@@ -58,6 +60,8 @@
     "title": "سلة التسوق",
     "empty": "سلة التبرع الخاصة بك فارغة",
     "continueShopping": "التبرع الآن",
+    "removeConfirmTitle": "إزالة العنصر",
+    "removeConfirm": "هل أنت متأكد أنك تريد إزالة هذا العنصر من سلة التسوق؟",
     "total": "اجمالى مبلغ التبرع",
     "checkout": "تبرع الآن"
   },
@@ -148,7 +152,8 @@
       "signIn": "تسجيل الدخول",
       "demoLogin": "استخدام تسجيل الدخول التجريبي",
       "fillAllFields": "يرجى ملء جميع الحقول",
-      "loginError": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى."
+      "loginError": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+      "loginRequired": "الرجاء تسجيل الدخول للمتابعة"
     },
     "register": {
       "title": "حساب جديد",
@@ -202,8 +207,22 @@
     "comingSoon": "قريباً",
     "catalog": "كتالوج المنتجات سيكون متوفراً هنا",
     "donateNow": "تبرع الآن",
+    "addToCart": "أضف للسلة",
+    "enterAmount": "أدخل المبلغ",
+    "amountRequired": "المبلغ مطلوب",
+    "invalidAmount": "المبلغ غير صحيح",
+    "addedToCart": "تمت الإضافة إلى السلة بنجاح",
     "viewDetails": "عرض التفاصيل",
-    "dependents": "المعالين"
+    "dependents": "المعالين",
+    "details": {
+      "city": "المدينة المنورة",
+      "citizens": "المواطنون",
+      "beneficiaries": "مستفيد",
+      "beneficiariesCount": "{{count}} مستفيد",
+      "totalDonations": "إجمالي التبرعات",
+      "views": "زيارة",
+      "lastDonation": "آخر تبرع"
+    }
   },
   "services": {
     "title": "مسارات الخير",

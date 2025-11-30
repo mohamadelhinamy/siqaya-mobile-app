@@ -60,12 +60,22 @@ export interface Product {
   association: {
     id: number;
     name: string;
+    logo: string;
   };
   category: {
     id: number;
     name: string;
     slug: string;
   };
+  city?: {
+    id: number;
+    name: string;
+  };
+  province?: {
+    id: number;
+    name: string;
+  };
+  number_of_beneficiaries?: number;
   stage: {
     stage_target: number;
     stage_collected: number;
@@ -75,6 +85,13 @@ export interface Product {
   current_stage?: {
     stage_number: number;
     target_amount: number | null;
+  };
+  summary?: {
+    donations_count: number;
+    last_donation_amount: number | null;
+    last_donation_at: string | null;
+    last_donation_human: string | null;
+    views_count: number;
   };
   image: string | null;
   created_at: string;
@@ -91,7 +108,18 @@ export interface CartItem {
   updated_at: string;
 }
 
-export type CartResponse = any[];
+export interface CartData {
+  id: number;
+  user_id: number;
+  item_count: number;
+  items: CartItem[];
+  total_amount: number;
+  created_at: string;
+  updated_at: string;
+  expires_at?: string | null;
+}
+
+export type CartResponse = CartData;
 
 /**
  * Sokya API service class with app token management
@@ -332,10 +360,15 @@ class ApiService {
     return this.makeRequest<T>(endpoint, {method: 'GET'});
   }
 
-  async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(
+    endpoint: string,
+    data?: any,
+    headers?: Record<string, any>,
+  ): Promise<ApiResponse<T>> {
     return this.makeRequest<T>(endpoint, {
       method: 'POST',
       data: data,
+      headers: headers,
     });
   }
 
@@ -346,8 +379,14 @@ class ApiService {
     });
   }
 
-  async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
-    return this.makeRequest<T>(endpoint, {method: 'DELETE'});
+  async delete<T>(
+    endpoint: string,
+    headers?: Record<string, any>,
+  ): Promise<ApiResponse<T>> {
+    return this.makeRequest<T>(endpoint, {
+      method: 'DELETE',
+      headers: headers,
+    });
   }
 }
 

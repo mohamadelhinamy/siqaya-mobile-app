@@ -9,6 +9,8 @@ import {
   ActivityIndicator,
   FlatList,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {useLanguage} from '../context';
 import {Typography, HorizontalProductCard} from '../components';
 import {
@@ -23,6 +25,7 @@ import FilterIcon from '../assets/icons/outlined/filter.svg';
 import {Colors} from '../constants';
 import {wp, hp} from '../utils/responsive';
 import {apiService, Product} from '../services/api';
+import {ProductsStackParamList} from '../navigation/ProductsNavigator';
 
 interface Filter {
   id: number;
@@ -44,9 +47,15 @@ interface ApiResponseWithMeta<T> {
   message?: string;
 }
 
+type ProductsScreenNavigationProp = StackNavigationProp<
+  ProductsStackParamList,
+  'ProductsList'
+>;
+
 export const ProductsScreen: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
   const {t} = useLanguage();
+  const navigation = useNavigation<ProductsScreenNavigationProp>();
   const align = 'left';
 
   const [filters, setFilters] = useState<Filter[]>([]);
@@ -272,6 +281,10 @@ export const ProductsScreen: React.FC = () => {
     console.log('Cart pressed');
   };
 
+  const handleProductPress = (productGuid: string) => {
+    navigation.navigate('ProductDetails', {productGuid});
+  };
+
   console.log('Selected Filter:', selectedFilter);
   console.log('Current Page:', currentPage);
   console.log('Total Products:', totalProducts);
@@ -397,6 +410,7 @@ export const ProductsScreen: React.FC = () => {
               dealersCount={0}
               image={product.image ? {uri: product.image} : undefined}
               style={styles.productItem}
+              onPress={() => handleProductPress(product.guid)}
             />
           )}
           ListEmptyComponent={

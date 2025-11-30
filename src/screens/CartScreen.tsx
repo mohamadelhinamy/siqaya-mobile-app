@@ -1,10 +1,13 @@
 import React, {useCallback, useState, useEffect} from 'react';
 import {
   View,
+  Image,
   StyleSheet,
   SafeAreaView,
   StatusBar,
   ScrollView,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
 import EmptyCart from '../assets/icons/filled/empty-cart.svg';
 import Trash from '../assets/icons/outlined/trash.svg';
@@ -16,13 +19,13 @@ import {useLanguage, useAuth} from '../context';
 import {BackHeader, Typography, CustomButton} from '../components';
 import {CartItemSkeleton} from '../components/Skeletons';
 import {wp, hp} from '../utils/responsive';
-import {apiService} from '../services/api';
+import {apiService, CartData, CartItem} from '../services/api';
 
 export const CartScreen: React.FC = () => {
   const {t} = useLanguage();
   const navigation = useNavigation();
   const {token} = useAuth();
-  const [cartData, setCartData] = useState<any[] | null>(null);
+  const [cartData, setCartData] = useState<CartData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,7 +48,7 @@ export const CartScreen: React.FC = () => {
           setCartData(response.data);
         } else {
           console.log('⚠️ Cart fetch failed:', response.error);
-          setCartData([]);
+          setCartData(null);
         }
       } catch (error) {
         console.error('❌ Error fetching cart:', error);
@@ -77,6 +80,54 @@ export const CartScreen: React.FC = () => {
     navigation.goBack();
   };
 
+  const handleRemoveItem = async (itemId: number) => {
+    if (!token) {
+      Alert.alert(
+        'Login required',
+        'Please sign in to remove items from cart.',
+      );
+      return;
+    }
+
+    Alert.alert(
+      t('cart.removeConfirmTitle') || 'Remove item',
+      t('cart.removeConfirm') ||
+        'Are you sure you want to remove this item from your cart?',
+      [
+        {text: t('common.cancel') || 'Cancel', style: 'cancel'},
+        {
+          text: t('common.ok') || 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              setLoading(true);
+              const delResp = await apiService.delete(`/cart/items/${itemId}`, {
+                Authorization: `Bearer ${token}`,
+              });
+              console.log('Delete item response:', delResp);
+
+              // Refresh cart after deletion
+              const refreshed = await apiService.getCart(token);
+              if (refreshed.success && refreshed.data) {
+                setCartData(refreshed.data);
+              } else {
+                setCartData(null);
+              }
+            } catch (error) {
+              console.error('Failed to delete cart item:', error);
+              Alert.alert('Error', 'Failed to remove item. Please try again.');
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ],
+      {cancelable: true},
+    );
+  };
+
+  console.log(cartData?.items[0]?.product, 'cartData');
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -93,7 +144,7 @@ export const CartScreen: React.FC = () => {
               <CartItemSkeleton key={index} />
             ))}
           </View>
-        ) : !cartData || cartData.length === 0 ? (
+        ) : !cartData || (cartData.items?.length ?? 0) === 0 ? (
           <View style={styles.emptyContainer}>
             <EmptyCart width={wp(10)} height={wp(10)} />
             <Typography
@@ -107,9 +158,8 @@ export const CartScreen: React.FC = () => {
                 title={t('cart.continueShopping')}
                 onPress={() => {
                   navigation.goBack();
-                  navigation.navigate({
-                    name: 'Products',
-                  });
+                  // Navigation types are broad in this workspace; use a safe-any cast
+                  (navigation as any).navigate('Products');
                 }}
                 variant="primary"
                 size="large"
@@ -120,15 +170,29 @@ export const CartScreen: React.FC = () => {
           </View>
         ) : (
           <View style={styles.productsContainer}>
-            {cartData?.map((item, index) => (
+            {cartData?.items?.map((item: CartItem, index: number) => (
               <View
-                key={index}
+                key={item.id}
                 style={[
                   styles.productContainer,
-                  index !== cartData.length - 1 && styles.productSeparator,
+                  index !== (cartData.items?.length ?? 0) - 1 &&
+                    styles.productSeparator,
                 ]}>
                 {/* Product Image */}
-                <View style={styles.productImage} />
+                {item.product?.image ? (
+                  <Image
+                    source={{uri: item.product.image}}
+                    style={styles.productImage}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <View
+                    style={[
+                      styles.productImage,
+                      styles.productImagePlaceholder,
+                    ]}
+                  />
+                )}
 
                 {/* Details Container */}
                 <View style={styles.detailsContainer}>
@@ -136,11 +200,13 @@ export const CartScreen: React.FC = () => {
                   <View style={styles.rowContainer}>
                     <Typography
                       variant="body1"
-                      text={item.name}
+                      text={item.product?.product_name || t('products.unknown')}
                       color="textPrimary"
                       style={styles.name}
                     />
-                    <Trash width={wp(5)} height={wp(5)} />
+                    <TouchableOpacity onPress={() => handleRemoveItem(item.id)}>
+                      <Trash width={wp(5)} height={wp(5)} />
+                    </TouchableOpacity>
                   </View>
 
                   {/* Bottom Row: Donation Amount + Gift Icon Button */}
@@ -148,7 +214,7 @@ export const CartScreen: React.FC = () => {
                     <View style={styles.donationAmountContainer}>
                       <Typography
                         variant="body2"
-                        text={item.amount}
+                        text={String(item.amount ?? item.quantity ?? '')}
                         color="textSecondary"
                         style={styles.donationAmount}
                       />
@@ -239,6 +305,10 @@ const styles = StyleSheet.create({
     height: wp(20),
     borderRadius: wp(2),
     backgroundColor: Colors.light,
+  },
+  productImagePlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   detailsContainer: {
     flex: 1,

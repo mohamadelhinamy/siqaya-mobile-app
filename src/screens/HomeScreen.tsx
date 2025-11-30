@@ -73,6 +73,10 @@ export const HomeScreen: React.FC = () => {
     navigation.navigate('CartScreen');
   };
 
+  const handleProductPress = (productGuid: string) => {
+    navigation.navigate('ProductDetails', {productGuid});
+  };
+
   const fetchHomepageData = React.useCallback(async () => {
     try {
       setProductsLoading(true);
@@ -174,6 +178,7 @@ export const HomeScreen: React.FC = () => {
         <LatestProducts
           apiProducts={homepageProducts.slice(0, 3)}
           loading={productsLoading}
+          onProductPress={handleProductPress}
         />
 
         {/* Water Delivery Banner */}
@@ -191,6 +196,7 @@ export const HomeScreen: React.FC = () => {
             .filter(p => p.stage.stage_percentage >= 80)
             .slice(0, 3)}
           loading={productsLoading}
+          onProductPress={handleProductPress}
         />
 
         {/* Bottom Spacing for Tab Bar */}

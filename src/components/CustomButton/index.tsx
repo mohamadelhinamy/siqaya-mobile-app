@@ -21,6 +21,7 @@ interface CustomButtonProps {
   style?: StyleProp<ViewStyle>;
   fullWidth?: boolean;
   icon?: React.ReactNode;
+  iconLabel?: string;
 }
 
 export const CustomButton: React.FC<CustomButtonProps> = ({
@@ -33,6 +34,7 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
   style,
   fullWidth = true,
   icon,
+  iconLabel,
 }) => {
   const isDisabled = disabled || loading;
 
@@ -100,7 +102,34 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
     }
 
     if (variant === 'icon' && icon) {
+      if (iconLabel) {
+        return (
+          <View style={styles.iconWithLabelContainer}>
+            <View style={styles.iconContainer}>{icon}</View>
+            <Typography
+              variant="caption"
+              color="textPrimary"
+              text={iconLabel}
+              style={styles.iconLabelText}
+            />
+          </View>
+        );
+      }
       return <View style={styles.iconContainer}>{icon}</View>;
+    }
+
+    if (title && icon) {
+      return (
+        <View style={styles.iconWithLabelContainer}>
+          <View style={styles.iconContainer}>{icon}</View>
+          <Typography
+            variant="button"
+            color={getTextColor()}
+            text={title}
+            style={styles.buttonText}
+          />
+        </View>
+      );
     }
 
     if (title) {
@@ -188,7 +217,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  iconWithLabelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(2),
+  },
+  iconLabelText: {
+    fontSize: wp(3.5),
+    fontWeight: '500',
+  },
   buttonText: {
     textAlign: 'center',
+    fontWeight: '500',
   },
 });

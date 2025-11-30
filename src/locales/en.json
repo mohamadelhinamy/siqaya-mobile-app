@@ -3,6 +3,8 @@
     "welcome": "Welcome",
     "loading": "Loading...",
     "error": "Error",
+    "success": "Success",
+    "ok": "OK",
     "retry": "Retry",
     "cancel": "Cancel",
     "save": "Save",
@@ -58,6 +60,8 @@
     "title": "Shopping Cart",
     "empty": "Your donation cart is empty",
     "continueShopping": "Donate Now",
+    "removeConfirmTitle": "Remove item",
+    "removeConfirm": "Are you sure you want to remove this item from your cart?",
     "total": "Total Donation Amount",
     "checkout": "Donate Now"
   },
@@ -150,6 +154,7 @@
       "fillAllFields": "Please fill in all fields",
       "loginError": "Login failed. Please try again."
     },
+    "loginRequired": "Please sign in to continue",
     "register": {
       "title": "New Account",
       "subtitle": "Thank you for joining Siqaya Foundation, please enter your information to continue",
@@ -202,8 +207,22 @@
     "comingSoon": "Coming Soon",
     "catalog": "Product catalog will be available here",
     "donateNow": "Donate Now",
+    "addToCart": "Add to Cart",
+    "enterAmount": "Enter Amount",
+    "amountRequired": "Amount is required",
+    "invalidAmount": "Invalid amount",
+    "addedToCart": "Successfully added to cart",
     "viewDetails": "View Details",
-    "dependents": "Dependents"
+    "dependents": "Dependents",
+    "details": {
+      "city": "Madinah",
+      "citizens": "Citizens",
+      "beneficiaries": "Beneficiary",
+      "beneficiariesCount": "{{count}} Beneficiaries",
+      "totalDonations": "Total Donations",
+      "views": "Views",
+      "lastDonation": "Last Donation"
+    }
   },
   "services": {
     "title": "Charity Paths",
