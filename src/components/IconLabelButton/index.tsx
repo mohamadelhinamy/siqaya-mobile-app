@@ -42,11 +42,19 @@ const IconLabelButton: React.FC<IconLabelButtonProps> = ({
 
       <View style={styles.rightIconRow}>
         {secondaryLabel ? (
-          <Typography variant="body2" text={secondaryLabel} color="textSecondary" />
+          <Typography
+            variant="body2"
+            text={secondaryLabel}
+            color="textSecondary"
+          />
         ) : null}
 
         <View style={styles.rightIcon}>
-          {iconRight ? iconRight : <ArrowLeftIcon width={wp(5)} height={wp(5)} />}
+          {iconRight ? (
+            iconRight
+          ) : (
+            <ArrowLeftIcon width={wp(5)} height={wp(5)} />
+          )}
         </View>
       </View>
     </TouchableOpacity>

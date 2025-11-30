@@ -167,7 +167,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({children}) => {
     ],
   );
 
-  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+  );
 };
 
 // Custom hook to use the auth context

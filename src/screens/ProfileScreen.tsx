@@ -48,10 +48,16 @@ export const ProfileScreen: React.FC = () => {
         if (mounted && resp && resp.success && resp.data) {
           // Only update auth context if the response contains expected fields
           const candidate = resp.data as any;
-          if (candidate && (candidate.name || candidate.email || candidate.mobile)) {
+          if (
+            candidate &&
+            (candidate.name || candidate.email || candidate.mobile)
+          ) {
             await updateUser(candidate);
           } else {
-            console.warn('Profile fetch returned unexpected payload, skipping update', resp);
+            console.warn(
+              'Profile fetch returned unexpected payload, skipping update',
+              resp,
+            );
           }
         }
       } catch (err) {
