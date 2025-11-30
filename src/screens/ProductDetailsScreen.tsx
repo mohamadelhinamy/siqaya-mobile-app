@@ -21,6 +21,7 @@ import {
   CustomButton,
   AddToCartModal,
 } from '../components';
+import {ProductDetailsSkeleton} from '../components/Skeletons';
 import {wp, hp} from '../utils/responsive';
 import {apiService, Product} from '../services/api';
 import {useLanguage} from '../context';
@@ -132,9 +133,7 @@ export const ProductDetailsScreen: React.FC = () => {
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}>
         {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Colors.primary} />
-          </View>
+          <ProductDetailsSkeleton />
         ) : error ? (
           <View style={styles.errorContainer}>
             <Typography
