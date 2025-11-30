@@ -230,6 +230,38 @@ export const CartScreen: React.FC = () => {
           </View>
         )}
       </ScrollView>
+
+      {/* Footer: show total and donate button when cart has items */}
+      {!loading && cartData && (cartData.items?.length ?? 0) > 0 && (
+        <View style={styles.footerContainer}>
+          <View style={styles.totalRow}>
+            <Typography
+              variant="body1"
+              text={t('cart.total')}
+              color="textSecondary"
+            />
+            <View style={styles.totalAmountWrapper}>
+              <Typography
+                variant="h2"
+                text={Number(cartData.total_amount).toLocaleString()}
+                color="textPrimary"
+                style={styles.totalAmount}
+              />
+              <Riyal width={wp(6)} height={wp(6)} />
+            </View>
+          </View>
+
+          <View style={styles.footerButtonWrapper}>
+            <CustomButton
+              title={t('cart.checkout')}
+              onPress={() => (navigation as any).navigate('Checkout')}
+              variant="primary"
+              size="large"
+              fullWidth={true}
+            />
+          </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -343,5 +375,29 @@ const styles = StyleSheet.create({
   },
   donationAmount: {
     marginBottom: 0,
+  },
+  footerContainer: {
+    padding: wp(4),
+    paddingBottom: 0,
+    backgroundColor: Colors.background.light,
+    borderTopWidth: 1,
+    borderTopColor: Colors.lighter,
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: hp(2),
+  },
+  totalAmountWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: wp(2),
+  },
+  totalAmount: {
+    fontWeight: '700',
+  },
+  footerButtonWrapper: {
+    width: '100%',
   },
 });
