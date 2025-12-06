@@ -54,7 +54,6 @@ type ProductsScreenNavigationProp = StackNavigationProp<
 >;
 
 export const ProductsScreen: React.FC = () => {
-  const isDarkMode = useColorScheme() === 'dark';
   const {t} = useLanguage();
   const navigation = useNavigation<ProductsScreenNavigationProp>();
   const align = 'left';
@@ -79,6 +78,7 @@ export const ProductsScreen: React.FC = () => {
         '/filters',
       );
       if (response.success && response.data) {
+        console.log('Fetched filters:', response.data);
         setFilters(response.data?.productCategory);
       }
     } catch (error) {
@@ -159,13 +159,20 @@ export const ProductsScreen: React.FC = () => {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: isDarkMode ? '#1C1C1E' : Colors.white,
+      backgroundColor: Colors.white,
     },
     mainScrollView: {
       flex: 1,
     },
     header: {
       paddingHorizontal: wp(5),
+      width: '100%',
+      paddingVertical: hp(1),
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    innerHeader: {
       width: '100%',
       paddingVertical: hp(1),
       flexDirection: 'row',
@@ -190,7 +197,7 @@ export const ProductsScreen: React.FC = () => {
     },
     subtitle: {
       fontSize: 16,
-      color: isDarkMode ? '#8E8E93' : '#8E8E93',
+      color: '#8E8E93',
       marginBottom: hp(3),
       textAlign: align,
     },
@@ -386,7 +393,7 @@ export const ProductsScreen: React.FC = () => {
           ListHeaderComponent={
             <>
               {/* Second Header */}
-              <View style={styles.header}>
+              <View style={styles.innerHeader}>
                 <Typography
                   variant="h5"
                   text={

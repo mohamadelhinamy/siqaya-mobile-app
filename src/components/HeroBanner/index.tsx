@@ -174,7 +174,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   imageOverlay: {
-    height: '100%',
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.35)',
     borderRadius: 16,

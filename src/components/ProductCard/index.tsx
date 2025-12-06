@@ -52,6 +52,14 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     console.log('View details pressed for product:', id);
   };
 
+  const formatAmount = (amount: string) => {
+    // Handle both Arabic and English numbers, remove currency symbols and spaces
+    const numericValue = amount
+      .replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString())
+      .replace(/[^\d]/g, '');
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   return (
     <TouchableOpacity
       style={[styles.productCard, style]}
@@ -144,7 +152,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 <Typography
                   variant="h6"
                   color="textPrimary"
-                  text={raisedAmount.replace('ر.س', '').trim()}
+                  text={formatAmount(raisedAmount)}
                   style={styles.raisedAmount}
                 />
                 {React.createElement(riyalIcon, {width: wp(4), height: wp(4)})}
@@ -162,7 +170,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 <Typography
                   variant="h6"
                   color="textPrimary"
-                  text={remainingAmount.replace('ر.س', '').trim()}
+                  text={formatAmount(remainingAmount)}
                   style={styles.remainingAmount}
                 />
                 {React.createElement(riyalIcon, {width: wp(4), height: wp(4)})}

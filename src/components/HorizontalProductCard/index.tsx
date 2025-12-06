@@ -2,7 +2,7 @@ import React from 'react';
 import {View, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {Typography} from '../Typography';
 import {CustomButton} from '../CustomButton';
-import {riyalIcon, LocationIcon, ProfileTwoUsersIcon} from '../Icons';
+import {riyalIcon} from '../Icons';
 import {Colors} from '../../constants';
 import {hp, wp} from '../../utils/responsive';
 import {useLanguage} from '../../context';
@@ -33,9 +33,6 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
   remainingAmount,
   progress,
   image,
-  category,
-  location,
-  dealersCount,
   onDonate,
   onViewDetails,
   onAddToCart,
@@ -49,6 +46,14 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
 
   const defaultOnViewDetails = () => {
     console.log('View details pressed for product:', id);
+  };
+
+  const formatAmount = (amount: string) => {
+    // Handle both Arabic and English numbers, remove currency symbols and spaces
+    const numericValue = amount
+      .replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString())
+      .replace(/[^\d]/g, '');
+    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   return (
@@ -70,54 +75,6 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
               />
             </View>
           )}
-
-          {/* Location Info at Top of Image */}
-          <View style={styles.locationContainer}>
-            <View style={styles.locationBadge}>
-              <View style={styles.badgeContent}>
-                <LocationIcon
-                  width={wp(3)}
-                  height={wp(3)}
-                  color={Colors.primary}
-                />
-                <Typography
-                  variant="caption"
-                  color="primary"
-                  text={location}
-                  style={styles.locationText}
-                />
-              </View>
-            </View>
-          </View>
-
-          {/* Dealers Badge */}
-          <View style={styles.dealersContainer}>
-            <View style={styles.dealersBadge}>
-              <View style={styles.badgeContent}>
-                <ProfileTwoUsersIcon
-                  width={wp(3)}
-                  height={wp(3)}
-                  color={Colors.primary}
-                />
-                <Typography
-                  variant="caption"
-                  color="primary"
-                  text={`${dealersCount}`}
-                  style={styles.dealersText}
-                />
-              </View>
-            </View>
-          </View>
-
-          {/* Category Badge */}
-          <View style={styles.categoryBadge}>
-            <Typography
-              variant="caption"
-              color="white"
-              text={category}
-              style={styles.categoryText}
-            />
-          </View>
         </View>
       </View>
 
@@ -147,7 +104,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
                 <Typography
                   variant="h6"
                   color="textPrimary"
-                  text={raisedAmount.replace('ر.س', '').trim()}
+                  text={formatAmount(raisedAmount)}
                   style={styles.amount}
                 />
                 {React.createElement(riyalIcon, {
@@ -168,7 +125,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
                 <Typography
                   variant="h6"
                   color="textPrimary"
-                  text={remainingAmount.replace('ر.س', '').trim()}
+                  text={formatAmount(remainingAmount)}
                   style={styles.amount}
                 />
                 {React.createElement(riyalIcon, {
@@ -246,7 +203,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   rightImage: {
-    width: wp(40),
+    width: wp(35),
+    height: hp(18),
     paddingTop: wp(4),
     paddingLeft: wp(4),
     paddingBottom: wp(4),
@@ -259,6 +217,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     position: 'relative',
     width: '100%',
+    height: '100%',
     borderRadius: wp(3),
     overflow: 'hidden',
   },
@@ -335,7 +294,7 @@ const styles = StyleSheet.create({
     textAlign: 'left',
   },
   progressSection: {
-    backgroundColor: '#F8F9FA',
+    backgroundColor: 'rgba(3, 169, 244, 0.1)',
     borderRadius: wp(3),
     padding: wp(2.5),
     marginBottom: hp(0.8),
@@ -346,12 +305,13 @@ const styles = StyleSheet.create({
     marginBottom: hp(1),
   },
   fundingColumn: {
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   fundingLabel: {
     fontSize: wp(2.5),
     color: Colors.text.secondary,
     marginBottom: hp(0.3),
+    textAlign: 'left',
   },
   amountRow: {
     flexDirection: 'row',
