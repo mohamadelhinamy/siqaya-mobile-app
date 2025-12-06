@@ -302,7 +302,10 @@
     "donateToFamilies": "أهدي هذا المنتج الى الأهل والأصحاب",
     "infoMessage": "سيذهب تبرعك تلقائيا للحالات الارشد احتياجا",
     "donateButton": "تبرع الآن",
+    "submitting": "جاري الإرسال...",
     "termsLink": "سياسات التبرع و لشروط والأحكام",
+    "successTitle": "شكراً لك!",
+    "successMessage": "تم تبرعك بنجاح. جزاك الله خيراً.",
     "giftForm": {
       "giftTo": "أهدي الى",
       "selectGiftTo": "اختر",

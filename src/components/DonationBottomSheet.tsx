@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,6 +6,9 @@ import {
   TouchableOpacity,
   TextInput,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Alert,
 } from 'react-native';
 import {Typography} from './Typography';
 import {CustomButton} from './CustomButton';
@@ -13,6 +16,7 @@ import {riyalIcon} from './Icons';
 import {Colors} from '../constants';
 import {useLanguage} from '../context';
 import {hp, wp} from '../utils/responsive';
+import {apiService} from '../services/api';
 
 // Import icons
 import CloseCircleIcon from '../assets/icons/outlined/close-circle.svg';
@@ -35,6 +39,11 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
   const [customAmount, setCustomAmount] = useState<string>('');
   const [quickAmount, setQuickAmount] = useState<number | null>(null);
   const [donateToFamilies, setDonateToFamilies] = useState<boolean>(false);
+  const [categories, setCategories] = useState<
+    Array<{value: string; label: string}>
+  >([{value: 'all', label: t('donation.categories.all')}]);
+  const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
+  const [submitting, setSubmitting] = useState<boolean>(false);
 
   // Gift form fields
   const [giftTo, setGiftTo] = useState<string>('');
@@ -51,6 +60,37 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     {value: 'other', label: t('donation.giftForm.options.other')},
   ];
 
+  const fetchPaymentTypes = async () => {
+    try {
+      setLoadingCategories(true);
+      const response = await apiService.get<any>('/payment-types');
+      console.log('Payment types response:', response?.data?.payment_types);
+
+      if (
+        response.success &&
+        response.data?.payment_types &&
+        Array.isArray(response.data.payment_types)
+      ) {
+        const mappedCategories = response.data.payment_types.map(
+          (type: any) => ({
+            value: type.id.toString(),
+            label: type.name,
+          }),
+        );
+
+        setCategories([
+          {value: 'all', label: t('donation.categories.all')},
+          ...mappedCategories,
+        ]);
+      }
+    } catch (error) {
+      console.error('Failed to fetch payment types:', error);
+      // Keep default categories on error
+    } finally {
+      setLoadingCategories(false);
+    }
+  };
+
   const handleSelectGiftTo = (value: string) => {
     setGiftTo(value);
     setGiftToModalVisible(false);
@@ -61,27 +101,57 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     return selected ? selected.label : t('donation.giftForm.selectGiftTo');
   };
 
-  const categories = [
-    {value: 'all', label: t('donation.categories.all')},
-    {value: 'interview', label: t('donation.categories.interview')},
-    {value: 'path', label: t('donation.categories.path')},
-    {value: 'wallet', label: t('donation.categories.wallet')},
-    {value: 'box', label: t('donation.categories.box')},
-  ];
+  useEffect(() => {
+    if (visible) {
+      fetchPaymentTypes();
+    } else {
+      // Reset form when modal closes
+      resetForm();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible]);
 
   const quickAmounts = [100, 200, 300];
 
-  const handleDonate = () => {
+  const resetForm = () => {
+    setSelectedCategory('all');
+    setCustomAmount('');
+    setQuickAmount(null);
+    setDonateToFamilies(false);
+    setGiftTo('');
+    setRecipientName('');
+    setRecipientPhone('');
+    setYourName('');
+    setGiftMessage('');
+    setRememberName(false);
+  };
+
+  const handleDonate = async () => {
     const amount = quickAmount || parseInt(customAmount, 10) || 0;
     if (amount > 0) {
-      onDonate?.(amount, selectedCategory);
-      onClose();
-      // Reset state
-      setSelectedCategory('all');
-      setCustomAmount('');
-      setQuickAmount(null);
-      setDonateToFamilies(false);
+      setSubmitting(true);
+
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      setSubmitting(false);
+
+      // Show success alert
+      Alert.alert(t('donation.successTitle'), t('donation.successMessage'), [
+        {
+          text: t('common.ok'),
+          onPress: () => {
+            onDonate?.(amount, selectedCategory);
+            onClose();
+          },
+        },
+      ]);
     }
+  };
+
+  const handleClose = () => {
+    resetForm();
+    onClose();
   };
 
   const handleQuickAmountPress = (amount: number) => {
@@ -96,147 +166,167 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     setQuickAmount(null);
   };
 
+  const isGiftFormValid = () => {
+    if (!donateToFamilies) {
+      return true; // Gift form not shown, so it's valid
+    }
+    // When gift form is shown, validate required fields
+    return (
+      recipientPhone.trim() !== '' &&
+      recipientName.trim() !== '' &&
+      yourName.trim() !== ''
+    );
+  };
+
   const isValid =
-    (quickAmount !== null && quickAmount > 0) ||
-    (customAmount !== '' && parseInt(customAmount, 10) > 0);
+    ((quickAmount !== null && quickAmount > 0) ||
+      (customAmount !== '' && parseInt(customAmount, 10) > 0)) &&
+    isGiftFormValid();
 
   return (
     <Modal
       visible={visible}
       animationType="slide"
       transparent
-      onRequestClose={onClose}>
-      <TouchableOpacity
-        style={styles.modalOverlay}
-        activeOpacity={1}
-        onPressOut={onClose}>
+      onRequestClose={handleClose}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardAvoidingView}>
         <TouchableOpacity
+          style={styles.modalOverlay}
           activeOpacity={1}
-          onPress={e => e.stopPropagation()}
-          style={styles.modalContent}>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            bounces={false}
-            contentContainerStyle={styles.scrollContent}>
-            {/* Header */}
-            <View style={styles.header}>
-              <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                <CloseCircleIcon
-                  width={20}
-                  height={20}
-                  color={Colors.text.primary}
+          onPressOut={handleClose}>
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={e => e.stopPropagation()}
+            style={styles.modalContent}>
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              bounces={false}
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={styles.scrollContent}>
+              {/* Header */}
+              <View style={styles.header}>
+                <TouchableOpacity
+                  onPress={handleClose}
+                  style={styles.closeButton}>
+                  <CloseCircleIcon
+                    width={20}
+                    height={20}
+                    color={Colors.text.primary}
+                  />
+                </TouchableOpacity>
+                <Typography
+                  variant="h5"
+                  text={t('donation.title')}
+                  color="textPrimary"
+                  style={styles.title}
                 />
-              </TouchableOpacity>
-              <Typography
-                variant="h5"
-                text={t('donation.title')}
-                color="textPrimary"
-                style={styles.title}
-              />
-            </View>
-
-            {/* Subtitle */}
-            <Typography
-              variant="body2"
-              text={t('donation.subtitle')}
-              color="textSecondary"
-              style={styles.subtitle}
-            />
-
-            {/* Category Chips */}
-            <View style={styles.categoryContainer}>
-              {categories.map(category => (
-                <TouchableOpacity
-                  key={category.value}
-                  onPress={() => setSelectedCategory(category.value)}
-                  style={[
-                    styles.categoryChip,
-                    selectedCategory === category.value &&
-                      styles.categoryChipSelected,
-                  ]}>
-                  <Typography
-                    variant="body2"
-                    text={category.label}
-                    color={
-                      selectedCategory === category.value
-                        ? 'white'
-                        : 'textSecondary'
-                    }
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Quick Amount Buttons */}
-            <View style={styles.quickAmountContainer}>
-              {quickAmounts.map(amount => (
-                <TouchableOpacity
-                  key={amount}
-                  onPress={() => handleQuickAmountPress(amount)}
-                  style={[
-                    styles.quickAmountButton,
-                    quickAmount === amount && styles.quickAmountButtonSelected,
-                  ]}>
-                  <Typography
-                    variant="h4"
-                    text={`${amount}`}
-                    color={quickAmount === amount ? 'black' : 'textSecondary'}
-                    style={styles.currencyText}
-                  />
-                  {React.createElement(riyalIcon, {
-                    width: wp(4),
-                    height: wp(4),
-                    color: 'black',
-                  })}
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            {/* Custom Amount Input */}
-            <View style={styles.customAmountContainer}>
-              <TextInput
-                style={styles.customAmountInput}
-                placeholder={t('donation.customAmountPlaceholder')}
-                value={customAmount}
-                onChangeText={handleCustomAmountChange}
-                keyboardType="numeric"
-                placeholderTextColor={Colors.text.secondary}
-              />
-              <View style={styles.inputCurrency}>
-                {React.createElement(riyalIcon, {
-                  width: wp(5),
-                  height: wp(5),
-                  color: Colors.black,
-                })}
               </View>
-            </View>
 
-            {/* Donate to Families Checkbox */}
-            <TouchableOpacity
-              onPress={() => setDonateToFamilies(!donateToFamilies)}
-              style={styles.checkboxContainer}>
-              <View
-                style={[
-                  styles.checkbox,
-                  donateToFamilies && styles.checkboxChecked,
-                ]}>
-                {donateToFamilies && (
-                  <Typography variant="caption" color="white" text="✓" />
-                )}
-              </View>
+              {/* Subtitle */}
               <Typography
                 variant="body2"
-                text={t('donation.donateToFamilies')}
-                color="textPrimary"
-                style={styles.checkboxLabel}
+                text={t('donation.subtitle')}
+                color="textSecondary"
+                style={styles.subtitle}
               />
-            </TouchableOpacity>
 
-            {/* Gift Form - Show when donateToFamilies is checked */}
-            {donateToFamilies && (
-              <View style={styles.giftFormContainer}>
-                {/* Gift To Dropdown */}
-                <View style={styles.formField}>
+              {/* Category Chips */}
+              <View style={styles.categoryContainer}>
+                {categories.map(category => (
+                  <TouchableOpacity
+                    key={category.value}
+                    onPress={() => setSelectedCategory(category.value)}
+                    style={[
+                      styles.categoryChip,
+                      selectedCategory === category.value &&
+                        styles.categoryChipSelected,
+                    ]}>
+                    <Typography
+                      variant="body2"
+                      text={category.label}
+                      color={
+                        selectedCategory === category.value
+                          ? 'white'
+                          : 'textSecondary'
+                      }
+                    />
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Quick Amount Buttons */}
+              <View style={styles.quickAmountContainer}>
+                {quickAmounts.map(amount => (
+                  <TouchableOpacity
+                    key={amount}
+                    onPress={() => handleQuickAmountPress(amount)}
+                    style={[
+                      styles.quickAmountButton,
+                      quickAmount === amount &&
+                        styles.quickAmountButtonSelected,
+                    ]}>
+                    <Typography
+                      variant="h6"
+                      text={`${amount}`}
+                      color={quickAmount === amount ? 'black' : 'textSecondary'}
+                      style={styles.currencyText}
+                    />
+                    {React.createElement(riyalIcon, {
+                      width: wp(4),
+                      height: wp(4),
+                      color: 'black',
+                    })}
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              {/* Custom Amount Input */}
+              <View style={styles.customAmountContainer}>
+                <TextInput
+                  style={styles.customAmountInput}
+                  placeholder={t('donation.customAmountPlaceholder')}
+                  value={customAmount}
+                  onChangeText={handleCustomAmountChange}
+                  keyboardType="numeric"
+                  placeholderTextColor={Colors.text.secondary}
+                />
+                <View style={styles.inputCurrency}>
+                  {React.createElement(riyalIcon, {
+                    width: wp(5),
+                    height: wp(5),
+                    color: Colors.black,
+                  })}
+                </View>
+              </View>
+
+              {/* Donate to Families Checkbox */}
+              <TouchableOpacity
+                onPress={() => setDonateToFamilies(!donateToFamilies)}
+                style={styles.checkboxContainer}>
+                <View
+                  style={[
+                    styles.checkbox,
+                    donateToFamilies && styles.checkboxChecked,
+                  ]}>
+                  {donateToFamilies && (
+                    <Typography variant="caption" color="white" text="✓" />
+                  )}
+                </View>
+                <Typography
+                  variant="body2"
+                  text={t('donation.donateToFamilies')}
+                  color="textPrimary"
+                  style={styles.checkboxLabel}
+                />
+              </TouchableOpacity>
+
+              {/* Gift Form - Show when donateToFamilies is checked */}
+              {donateToFamilies && (
+                <View style={styles.giftFormContainer}>
+                  {/* Gift To Dropdown */}
+                  {/* <View style={styles.formField}>
                   <Typography
                     variant="body2"
                     text={t('donation.giftForm.giftTo')}
@@ -258,45 +348,45 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                       color={Colors.text.secondary}
                     />
                   </TouchableOpacity>
-                </View>
+                </View> */}
 
-                {/* Recipient Phone */}
-                <View style={styles.formField}>
-                  <Typography
-                    variant="body2"
-                    text={t('donation.giftForm.recipientPhone')}
-                    color="textPrimary"
-                    style={styles.formLabel}
-                  />
-                  <TextInput
-                    style={styles.formInput}
-                    placeholder={t('donation.giftForm.enterPhone')}
-                    value={recipientPhone}
-                    onChangeText={setRecipientPhone}
-                    keyboardType="phone-pad"
-                    placeholderTextColor={Colors.text.secondary}
-                  />
-                </View>
+                  {/* Recipient Phone */}
+                  <View style={styles.formField}>
+                    <Typography
+                      variant="body2"
+                      text={t('donation.giftForm.recipientPhone')}
+                      color="textPrimary"
+                      style={styles.formLabel}
+                    />
+                    <TextInput
+                      style={styles.formInput}
+                      placeholder={t('donation.giftForm.enterPhone')}
+                      value={recipientPhone}
+                      onChangeText={setRecipientPhone}
+                      keyboardType="phone-pad"
+                      placeholderTextColor={Colors.text.secondary}
+                    />
+                  </View>
 
-                {/* Recipient Name */}
-                <View style={styles.formField}>
-                  <Typography
-                    variant="body2"
-                    text={t('donation.giftForm.recipientName')}
-                    color="textPrimary"
-                    style={styles.formLabel}
-                  />
-                  <TextInput
-                    style={styles.formInput}
-                    placeholder={t('donation.giftForm.enterRecipientName')}
-                    value={recipientName}
-                    onChangeText={setRecipientName}
-                    placeholderTextColor={Colors.text.secondary}
-                  />
-                </View>
+                  {/* Recipient Name */}
+                  <View style={styles.formField}>
+                    <Typography
+                      variant="body2"
+                      text={t('donation.giftForm.recipientName')}
+                      color="textPrimary"
+                      style={styles.formLabel}
+                    />
+                    <TextInput
+                      style={styles.formInput}
+                      placeholder={t('donation.giftForm.enterRecipientName')}
+                      value={recipientName}
+                      onChangeText={setRecipientName}
+                      placeholderTextColor={Colors.text.secondary}
+                    />
+                  </View>
 
-                {/* Gift Message */}
-                <View style={styles.formField}>
+                  {/* Gift Message */}
+                  {/* <View style={styles.formField}>
                   <Typography
                     variant="body2"
                     text={t('donation.giftForm.message')}
@@ -313,10 +403,10 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                     textAlignVertical="top"
                     placeholderTextColor={Colors.text.secondary}
                   />
-                </View>
+                </View> */}
 
-                {/* Remember Name Checkbox */}
-                <TouchableOpacity
+                  {/* Remember Name Checkbox */}
+                  {/* <TouchableOpacity
                   onPress={() => setRememberName(!rememberName)}
                   style={styles.checkboxContainer}>
                   <View
@@ -334,65 +424,71 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                     color="textPrimary"
                     style={styles.checkboxLabel}
                   />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
 
-                {/* Your Name */}
-                <View style={styles.formField}>
-                  <Typography
-                    variant="body2"
-                    text={t('donation.giftForm.yourName')}
-                    color="textPrimary"
-                    style={styles.formLabel}
-                  />
-                  <TextInput
-                    style={styles.formInput}
-                    placeholder={t('donation.giftForm.enterYourName')}
-                    value={yourName}
-                    onChangeText={setYourName}
-                    placeholderTextColor={Colors.text.secondary}
-                  />
+                  {/* Your Name */}
+                  <View style={styles.formField}>
+                    <Typography
+                      variant="body2"
+                      text={t('donation.giftForm.yourName')}
+                      color="textPrimary"
+                      style={styles.formLabel}
+                    />
+                    <TextInput
+                      style={styles.formInput}
+                      placeholder={t('donation.giftForm.enterYourName')}
+                      value={yourName}
+                      onChangeText={setYourName}
+                      placeholderTextColor={Colors.text.secondary}
+                    />
+                  </View>
                 </View>
+              )}
+
+              {/* Info Message */}
+              <View style={styles.infoContainer}>
+                <InfoIcon
+                  width={20}
+                  height={20}
+                  color={Colors.primary}
+                  style={styles.infoIcon}
+                />
+                <Typography
+                  variant="caption"
+                  text={t('donation.infoMessage')}
+                  color="textSecondary"
+                  style={styles.infoText}
+                />
               </View>
-            )}
 
-            {/* Info Message */}
-            <View style={styles.infoContainer}>
-              <InfoIcon
-                width={20}
-                height={20}
-                color={Colors.primary}
-                style={styles.infoIcon}
+              {/* Donate Button */}
+              <CustomButton
+                title={
+                  submitting
+                    ? t('donation.submitting')
+                    : t('donation.donateButton')
+                }
+                onPress={handleDonate}
+                disabled={!isValid || submitting}
+                variant="primary"
+                size="large"
+                style={styles.donateButton}
+                loading={submitting}
               />
-              <Typography
-                variant="caption"
-                text={t('donation.infoMessage')}
-                color="textSecondary"
-                style={styles.infoText}
-              />
-            </View>
 
-            {/* Donate Button */}
-            <CustomButton
-              title={t('donation.donateButton')}
-              onPress={handleDonate}
-              disabled={!isValid}
-              variant="primary"
-              size="large"
-              style={styles.donateButton}
-            />
-
-            {/* Terms Link */}
-            <TouchableOpacity style={styles.termsContainer}>
-              <Typography
-                variant="caption"
-                text={t('donation.termsLink')}
-                color="turquoise"
-                style={styles.termsLink}
-              />
-            </TouchableOpacity>
-          </ScrollView>
+              {/* Terms Link */}
+              <TouchableOpacity style={styles.termsContainer}>
+                <Typography
+                  variant="caption"
+                  text={t('donation.termsLink')}
+                  color="turquoise"
+                  style={styles.termsLink}
+                />
+              </TouchableOpacity>
+            </ScrollView>
+          </TouchableOpacity>
         </TouchableOpacity>
-      </TouchableOpacity>
+      </KeyboardAvoidingView>
 
       {/* Gift To Selection Modal */}
       {giftToModalVisible && (
@@ -432,6 +528,9 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
 };
 
 const styles = StyleSheet.create({
+  keyboardAvoidingView: {
+    flex: 1,
+  },
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -490,8 +589,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: hp(0.7),
-    borderRadius: 16,
+    paddingVertical: hp(0.5),
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: Colors.light,
     backgroundColor: Colors.white,

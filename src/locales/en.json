@@ -302,7 +302,10 @@
     "donateToFamilies": "Gift this product to the neediest families and win its reward",
     "infoMessage": "Siqaya will send you text messages for the most needy cases",
     "donateButton": "Donate Now",
+    "submitting": "Submitting...",
     "termsLink": "Donation policies and terms & conditions",
+    "successTitle": "Thank You!",
+    "successMessage": "Your donation was successful. May God reward you with goodness.",
     "giftForm": {
       "giftTo": "Gift To",
       "selectGiftTo": "Select",
