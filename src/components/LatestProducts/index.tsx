@@ -26,6 +26,7 @@ interface LatestProductsProps {
     productGuid: string,
     title?: string,
   ) => void;
+  onViewAll?: () => void;
 }
 
 // Map API Product to ProductCardProps
@@ -60,6 +61,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
   title,
   onProductPress,
   onAddToCart,
+  onViewAll,
 }) => {
   const {t} = useLanguage();
 
@@ -106,7 +108,10 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
           text={title ?? t('products.latest')}
           style={styles.sectionTitle}
         />
-        <TouchableOpacity activeOpacity={0.7} style={styles.viewAllButton}>
+        <TouchableOpacity
+          activeOpacity={0.7}
+          style={styles.viewAllButton}
+          onPress={onViewAll}>
           <Typography
             variant="subtitle2"
             color="primary"

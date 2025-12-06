@@ -281,6 +281,12 @@ export const HomeScreen: React.FC = () => {
           loading={productsLoading}
           onProductPress={handleProductPress}
           onAddToCart={handleOpenAddToCart}
+          onViewAll={() =>
+            navigation.navigate('ProductListScreen', {
+              products: homepageProducts,
+              title: t('products.latest'),
+            })
+          }
         />
 
         {/* Water Delivery Banner */}
@@ -298,6 +304,12 @@ export const HomeScreen: React.FC = () => {
           loading={productsLoading}
           onProductPress={handleProductPress}
           onAddToCart={handleOpenAddToCart}
+          onViewAll={() =>
+            navigation.navigate('ProductListScreen', {
+              products: completedProducts,
+              title: t('home.projectsNearCompletion'),
+            })
+          }
         />
 
         {/* Bottom Spacing for Tab Bar */}
