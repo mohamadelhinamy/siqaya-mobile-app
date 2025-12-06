@@ -47,10 +47,16 @@ const TabIcon: React.FC<TabIconProps> = ({name, focused, size}) => {
   }
 };
 
-export const CustomTabBar: React.FC<BottomTabBarProps> = ({
+interface CustomTabBarProps extends BottomTabBarProps {
+  onCenterButtonPress?: () => void;
+  style?: any;
+}
+
+export const CustomTabBar: React.FC<CustomTabBarProps> = ({
   state,
   navigation,
-  style, // 👈 this is important
+  onCenterButtonPress,
+  style,
 }) => {
   const {t} = useLanguage();
 
@@ -88,6 +94,11 @@ export const CustomTabBar: React.FC<BottomTabBarProps> = ({
             const isCenterTab = route.name === 'Care';
 
             const onPress = () => {
+              if (isCenterTab && onCenterButtonPress) {
+                onCenterButtonPress();
+                return;
+              }
+
               const event = navigation.emit({
                 type: 'tabPress',
                 target: route.key,

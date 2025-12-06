@@ -68,6 +68,9 @@ export const HomeScreen: React.FC = () => {
   const [refreshing, setRefreshing] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const [homepageProducts, setHomepageProducts] = React.useState<Product[]>([]);
+  const [completedProducts, setCompletedProducts] = React.useState<Product[]>(
+    [],
+  );
   const [productsLoading, setProductsLoading] = React.useState(false);
   const [sliders, setSliders] = React.useState<any[]>([]);
   const [cartModalVisible, setCartModalVisible] = React.useState(false);
@@ -109,10 +112,11 @@ export const HomeScreen: React.FC = () => {
     try {
       setProductsLoading(true);
       console.log('🔄 Fetching homepage data...');
-      const response = await apiService.get<HomepageProduct[]>(
-        '/products/homepage',
-      );
-      // Fetch active sliders
+
+      // Fetch homepage products
+      const response = await apiService.get<any>('/products/homepage');
+
+      // Fetch active sliders separately
       try {
         const slidersResp = await apiService.get<any>('/sliders/active');
         if (
@@ -138,15 +142,17 @@ export const HomeScreen: React.FC = () => {
       } catch (err) {
         console.warn('Failed to fetch sliders:', err);
       }
-      console.log(
-        '✅ Homepage API Response:',
-        JSON.stringify(response, null, 2),
-      );
 
       if (response.success && response.data) {
-        // Map homepage products to Product type
-        console.log('🔄 Mapping homepage products...', response?.data);
-        const mappedProducts: Product[] = response.data.map(product => ({
+        const homepageData = response.data.homepage || [];
+        const nearlyCompletedData = response.data.nearlyCompleted || [];
+        console.log('🔄 Mapping homepage products...', homepageData.length);
+        console.log(
+          '🔄 Mapping nearly completed products...',
+          nearlyCompletedData.length,
+        );
+
+        const mappedHomepage: Product[] = homepageData.map((product: any) => ({
           id: product.id,
           guid: product.guid || '',
           product_name: product.product_name,
@@ -172,8 +178,41 @@ export const HomeScreen: React.FC = () => {
           updated_at: product.updated_at || '',
         }));
 
-        setHomepageProducts(mappedProducts);
-        console.log('✅ Mapped homepage products:', mappedProducts.length);
+        const mappedNearlyCompleted: Product[] = nearlyCompletedData.map(
+          (product: any) => ({
+            id: product.id,
+            guid: product.guid || '',
+            product_name: product.product_name,
+            product_brief: product.product_brief,
+            product_description: null,
+            target_amount: product.target_amount,
+            received_amount: product.received_amount,
+            collected_amount: product.collected_amount,
+            remaining_amount: product.remaining_amount,
+            completion_percentage: product.completion_percentage,
+            association: {
+              id: product.association.id,
+              name: product.association.name,
+              logo: '',
+            },
+            category: {
+              ...product.category,
+              slug: product.category.slug || '',
+            },
+            stage: product.stage,
+            image: product.image,
+            created_at: product.created_at || '',
+            updated_at: product.updated_at || '',
+          }),
+        );
+
+        setHomepageProducts(mappedHomepage);
+        setCompletedProducts(mappedNearlyCompleted);
+        console.log('✅ Mapped homepage products:', mappedHomepage.length);
+        console.log(
+          '✅ Mapped nearly completed products:',
+          mappedNearlyCompleted.length,
+        );
       }
     } catch (error) {
       console.error('❌ Failed to fetch homepage data:', error);
@@ -255,9 +294,7 @@ export const HomeScreen: React.FC = () => {
 
         <LatestProducts
           title={t('home.projectsNearCompletion')}
-          apiProducts={homepageProducts
-            .filter(p => p.stage.stage_percentage >= 80)
-            .slice(0, 3)}
+          apiProducts={completedProducts.slice(0, 3)}
           loading={productsLoading}
           onProductPress={handleProductPress}
           onAddToCart={handleOpenAddToCart}

@@ -20,3 +20,4 @@ export {ProductCard} from './ProductCard';
 export {HorizontalProductCard} from './HorizontalProductCard';
 export {CloseHeader} from './CloseHeader';
 export {AddToCartModal} from './AddToCartModal';
+export {DonationBottomSheet} from './DonationBottomSheet';

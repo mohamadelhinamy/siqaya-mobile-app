@@ -287,5 +287,39 @@
     "mecca": "Mecca",
     "medina": "Medina",
     "dammam": "Dammam"
+  },
+  "donation": {
+    "title": "Quick Donation",
+    "subtitle": "Choose the path and amount you wish to donate to help us help others",
+    "categories": {
+      "all": "All",
+      "interview": "Interview",
+      "path": "Path, Siqaya",
+      "wallet": "Wallet",
+      "box": "Box"
+    },
+    "customAmountPlaceholder": "Enter donation amount",
+    "donateToFamilies": "Gift this product to the neediest families and win its reward",
+    "infoMessage": "Siqaya will send you text messages for the most needy cases",
+    "donateButton": "Donate Now",
+    "termsLink": "Donation policies and terms & conditions",
+    "giftForm": {
+      "giftTo": "Gift To",
+      "selectGiftTo": "Select",
+      "options": {
+        "friend": "Friend",
+        "family": "Family",
+        "other": "Other"
+      },
+      "recipientPhone": "Recipient Mobile Number",
+      "enterPhone": "Enter mobile number",
+      "recipientName": "Recipient Name",
+      "enterRecipientName": "Enter recipient name",
+      "message": "Your Message",
+      "messagePlaceholder": "Example: Gift from your loved ones",
+      "rememberName": "Remember My Name",
+      "yourName": "Your Name",
+      "enterYourName": "Write your name here"
+    }
   }
 }

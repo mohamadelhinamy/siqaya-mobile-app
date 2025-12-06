@@ -287,5 +287,39 @@
     "mecca": "مكة المكرمة",
     "medina": "المدينة المنورة",
     "dammam": "الدمام"
+  },
+  "donation": {
+    "title": "التبرع السريع",
+    "subtitle": "اختر المسار وحدد المبلغ فارسل تبرعك لمساعدة غيرك",
+    "categories": {
+      "all": "الكل",
+      "interview": "مقابلة عطاء",
+      "path": "مسار",
+      "wallet": "صناديق، سقاية",
+      "box": "محافظ"
+    },
+    "customAmountPlaceholder": "ادخل مبلغ التبرع",
+    "donateToFamilies": "أهدي هذا المنتج الى الأهل والأصحاب",
+    "infoMessage": "سيذهب تبرعك تلقائيا للحالات الارشد احتياجا",
+    "donateButton": "تبرع الآن",
+    "termsLink": "سياسات التبرع و لشروط والأحكام",
+    "giftForm": {
+      "giftTo": "أهدي الى",
+      "selectGiftTo": "اختر",
+      "options": {
+        "friend": "صديق",
+        "family": "عائلة",
+        "other": "آخر"
+      },
+      "recipientPhone": "رقم جوال المهدى الية",
+      "enterPhone": "ادخل رقم الجوال",
+      "recipientName": "اسم المهدى الية",
+      "enterRecipientName": "اسم المهدى الية",
+      "message": "توقيعك",
+      "messagePlaceholder": "مثال: إهداء من أحباءك",
+      "rememberName": "اذكر اسمي",
+      "yourName": "اسمك",
+      "enterYourName": "اكتب اسمك هنا"
+    }
   }
 }
