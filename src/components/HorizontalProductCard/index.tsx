@@ -51,7 +51,7 @@ export const HorizontalProductCard: React.FC<HorizontalProductCardProps> = ({
   const formatAmount = (amount: string) => {
     // Handle both Arabic and English numbers, remove currency symbols and spaces
     const numericValue = amount
-      .replace(/[٠-٩]/g, (d) => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString())
+      .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString())
       .replace(/[^\d]/g, '');
     return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
