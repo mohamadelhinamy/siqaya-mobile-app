@@ -53,6 +53,13 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
 
   const quickAmounts = [100, 200, 300];
 
+  React.useEffect(() => {
+    if (!visible) {
+      // Reset form when modal closes
+      resetForm();
+    }
+  }, [visible]);
+
   const resetForm = () => {
     setCustomAmount('');
     setQuickAmount(null);
@@ -351,13 +358,14 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
         url={paymentUrl}
         onClose={() => {
           setPaymentUrl('');
+          resetForm();
           onClose();
         }}
         onSuccess={() => {
           setPaymentUrl('');
           onSuccess?.();
-          onClose();
           resetForm();
+          onClose();
         }}
       />
     </Modal>

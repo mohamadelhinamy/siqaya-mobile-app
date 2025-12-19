@@ -570,6 +570,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
         url={paymentUrl}
         onClose={() => {
           setPaymentUrl('');
+          resetForm();
           onClose();
         }}
         onSuccess={() => {
@@ -578,6 +579,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
             quickAmount || parseInt(customAmount, 10) || 0,
             selectedCategory,
           );
+          resetForm();
           onClose();
         }}
       />
