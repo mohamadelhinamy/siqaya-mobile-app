@@ -16,7 +16,12 @@ import Riyal from '../assets/icons/outlined/riyal.svg';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {Colors} from '../constants';
 import {useLanguage, useAuth} from '../context';
-import {BackHeader, Typography, CustomButton, PaymentWebView} from '../components';
+import {
+  BackHeader,
+  Typography,
+  CustomButton,
+  PaymentWebView,
+} from '../components';
 import {CartItemSkeleton} from '../components/Skeletons';
 import {wp, hp} from '../utils/responsive';
 import {apiService, CartData, CartItem} from '../services/api';
