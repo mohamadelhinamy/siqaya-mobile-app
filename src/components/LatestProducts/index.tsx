@@ -26,6 +26,7 @@ interface LatestProductsProps {
     productGuid: string,
     title?: string,
   ) => void;
+  onDonate?: (productId: number, productGuid: string, title?: string) => void;
   onViewAll?: () => void;
 }
 
@@ -61,6 +62,7 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
   title,
   onProductPress,
   onAddToCart,
+  onDonate,
   onViewAll,
 }) => {
   const {t} = useLanguage();
@@ -93,6 +95,11 @@ export const LatestProducts: React.FC<LatestProductsProps> = ({
         onAddToCart={
           onAddToCart
             ? () => onAddToCart(Number(product.id), product.guid, product.title)
+            : undefined
+        }
+        onDonate={
+          onDonate
+            ? () => onDonate(Number(product.id), product.guid, product.title)
             : undefined
         }
       />

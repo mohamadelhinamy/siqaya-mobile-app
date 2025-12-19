@@ -16,10 +16,11 @@ import Riyal from '../assets/icons/outlined/riyal.svg';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {Colors} from '../constants';
 import {useLanguage, useAuth} from '../context';
-import {BackHeader, Typography, CustomButton} from '../components';
+import {BackHeader, Typography, CustomButton, PaymentWebView} from '../components';
 import {CartItemSkeleton} from '../components/Skeletons';
 import {wp, hp} from '../utils/responsive';
 import {apiService, CartData, CartItem} from '../services/api';
+import {paymentService} from '../services/payment';
 
 export const CartScreen: React.FC = () => {
   const {t} = useLanguage();
@@ -27,6 +28,8 @@ export const CartScreen: React.FC = () => {
   const {token} = useAuth();
   const [cartData, setCartData] = useState<CartData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [paymentUrl, setPaymentUrl] = useState<string>('');
 
   useEffect(() => {
     const fetchCart = async () => {
@@ -127,6 +130,34 @@ export const CartScreen: React.FC = () => {
       ],
       {cancelable: true},
     );
+  };
+
+  const handleCheckout = async () => {
+    if (!cartData || !cartData.total_amount) {
+      return;
+    }
+
+    setCheckingOut(true);
+
+    try {
+      const response = await paymentService.initiatePayment({
+        amount: Number(cartData.total_amount),
+        order_type: 'cart',
+        payment_method: 'visa', // Default to visa for now
+      });
+
+      if (response.success && response.webview_url) {
+        // Open payment webview
+        setPaymentUrl(response.webview_url);
+      } else {
+        Alert.alert(t('common.error'), response.error || 'Payment failed');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      Alert.alert(t('common.error'), 'Failed to process checkout');
+    } finally {
+      setCheckingOut(false);
+    }
   };
 
   // safe debug: avoid indexing into undefined
@@ -258,14 +289,33 @@ export const CartScreen: React.FC = () => {
           <View style={styles.footerButtonWrapper}>
             <CustomButton
               title={t('cart.checkout')}
-              onPress={() => (navigation as any).navigate('Checkout')}
+              onPress={handleCheckout}
               variant="primary"
               size="large"
               fullWidth={true}
+              loading={checkingOut}
+              disabled={checkingOut}
             />
           </View>
         </View>
       )}
+
+      {/* Payment WebView */}
+      <PaymentWebView
+        visible={!!paymentUrl}
+        url={paymentUrl}
+        onClose={() => {
+          setPaymentUrl('');
+          setCheckingOut(false);
+        }}
+        onSuccess={() => {
+          setPaymentUrl('');
+          setCheckingOut(false);
+          // Refresh cart after successful payment
+          fetchCart();
+          Alert.alert(t('common.success'), 'Payment completed successfully');
+        }}
+      />
     </SafeAreaView>
   );
 };

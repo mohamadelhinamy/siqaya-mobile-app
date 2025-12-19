@@ -17,6 +17,7 @@ import {HeroBanner} from '../components/HeroBanner';
 import {ServicesGrid} from '../components/ServicesGrid';
 import {LatestProducts} from '../components/LatestProducts';
 import {AddToCartModal} from '../components/AddToCartModal';
+import {ProductDonationModal} from '../components/ProductDonationModal';
 import {WaterDeliveryBanner} from '../components/WaterDeliveryBanner';
 import {
   HomeHeaderSkeleton,
@@ -74,10 +75,12 @@ export const HomeScreen: React.FC = () => {
   const [productsLoading, setProductsLoading] = React.useState(false);
   const [sliders, setSliders] = React.useState<any[]>([]);
   const [cartModalVisible, setCartModalVisible] = React.useState(false);
+  const [donationModalVisible, setDonationModalVisible] = React.useState(false);
   const [modalProductId, setModalProductId] = React.useState<number | null>(
     null,
   );
   const [modalProductName, setModalProductName] = React.useState<string>('');
+  const [modalProductGuid, setModalProductGuid] = React.useState<string>('');
 
   const handleCartPress = () => {
     navigation.navigate('CartScreen');
@@ -93,6 +96,7 @@ export const HomeScreen: React.FC = () => {
     title?: string,
   ) => {
     setModalProductId(productId);
+    setModalProductGuid(productGuid);
     setModalProductName(title || '');
     setCartModalVisible(true);
   };
@@ -100,12 +104,35 @@ export const HomeScreen: React.FC = () => {
   const handleCloseAddToCart = () => {
     setCartModalVisible(false);
     setModalProductId(null);
+    setModalProductGuid('');
     setModalProductName('');
   };
 
   const handleAddToCartSuccess = () => {
     // Optional: refresh homepage products or show a toast
     console.log('Added to cart from Home screen');
+  };
+
+  const handleOpenDonation = (
+    productId: number,
+    productGuid: string,
+    title?: string,
+  ) => {
+    setModalProductId(productId);
+    setModalProductGuid(productGuid);
+    setModalProductName(title || '');
+    setDonationModalVisible(true);
+  };
+
+  const handleCloseDonation = () => {
+    setDonationModalVisible(false);
+    setModalProductId(null);
+    setModalProductGuid('');
+    setModalProductName('');
+  };
+
+  const handleDonationSuccess = () => {
+    console.log('Donation completed from Home screen');
   };
 
   const fetchHomepageData = React.useCallback(async () => {
@@ -281,6 +308,7 @@ export const HomeScreen: React.FC = () => {
           loading={productsLoading}
           onProductPress={handleProductPress}
           onAddToCart={handleOpenAddToCart}
+          onDonate={handleOpenDonation}
           onViewAll={() =>
             navigation.navigate('ProductListScreen', {
               products: homepageProducts,
@@ -304,6 +332,7 @@ export const HomeScreen: React.FC = () => {
           loading={productsLoading}
           onProductPress={handleProductPress}
           onAddToCart={handleOpenAddToCart}
+          onDonate={handleOpenDonation}
           onViewAll={() =>
             navigation.navigate('ProductListScreen', {
               products: completedProducts,
@@ -322,6 +351,15 @@ export const HomeScreen: React.FC = () => {
         productName={modalProductName}
         onClose={handleCloseAddToCart}
         onSuccess={handleAddToCartSuccess}
+      />
+      {/* Product Donation Modal */}
+      <ProductDonationModal
+        visible={donationModalVisible}
+        productId={modalProductId ?? 0}
+        productGuid={modalProductGuid}
+        productName={modalProductName}
+        onClose={handleCloseDonation}
+        onSuccess={handleDonationSuccess}
       />
     </SafeAreaView>
   );

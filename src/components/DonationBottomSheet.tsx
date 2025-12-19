@@ -12,11 +12,13 @@ import {
 } from 'react-native';
 import {Typography} from './Typography';
 import {CustomButton} from './CustomButton';
+import {PaymentWebView} from './PaymentWebView';
 import {riyalIcon} from './Icons';
 import {Colors} from '../constants';
 import {useLanguage} from '../context';
 import {hp, wp} from '../utils/responsive';
 import {apiService} from '../services/api';
+import {paymentService} from '../services/payment';
 
 // Import icons
 import CloseCircleIcon from '../assets/icons/outlined/close-circle.svg';
@@ -44,12 +46,14 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
   >([{value: 'all', label: t('donation.categories.all')}]);
   const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
+  const [paymentUrl, setPaymentUrl] = useState<string>('');
 
   // Gift form fields
   const [giftTo, setGiftTo] = useState<string>('');
   const [recipientName, setRecipientName] = useState<string>('');
   const [recipientPhone, setRecipientPhone] = useState<string>('');
   const [yourName, setYourName] = useState<string>('');
+  const [senderPhone, setSenderPhone] = useState<string>('');
   const [giftMessage, setGiftMessage] = useState<string>('');
   const [rememberName, setRememberName] = useState<boolean>(false);
   const [giftToModalVisible, setGiftToModalVisible] = useState<boolean>(false);
@@ -122,8 +126,10 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     setRecipientName('');
     setRecipientPhone('');
     setYourName('');
+    setSenderPhone('');
     setGiftMessage('');
     setRememberName(false);
+    setPaymentUrl('');
   };
 
   const handleDonate = async () => {
@@ -131,21 +137,36 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     if (amount > 0) {
       setSubmitting(true);
 
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      try {
+        const paymentData: any = {
+          amount,
+          order_type: 'public_donation',
+          payment_method: 'visa', // Default to visa for now
+        };
 
-      setSubmitting(false);
+        if (donateToFamilies) {
+          paymentData.gift_sender_name = yourName;
+          paymentData.gift_sender_mobile = senderPhone;
+          paymentData.gift_receiver_name = recipientName;
+          paymentData.gift_receiver_mobile = recipientPhone;
+        }
 
-      // Show success alert
-      Alert.alert(t('donation.successTitle'), t('donation.successMessage'), [
-        {
-          text: t('common.ok'),
-          onPress: () => {
-            onDonate?.(amount, selectedCategory);
-            onClose();
-          },
-        },
-      ]);
+        const response = await paymentService.initiatePayment(paymentData);
+
+        setSubmitting(false);
+        console.log('Payment initiation response:', response);
+
+        if (response.success && response.webview_url) {
+          // Open payment webview
+          setPaymentUrl(response.webview_url);
+        } else {
+          Alert.alert(t('common.error'), response.error || 'Payment failed');
+        }
+      } catch (error) {
+        setSubmitting(false);
+        console.error('Donation error:', error);
+        Alert.alert(t('common.error'), 'Failed to process donation');
+      }
     }
   };
 
@@ -174,7 +195,8 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     return (
       recipientPhone.trim() !== '' &&
       recipientName.trim() !== '' &&
-      yourName.trim() !== ''
+      yourName.trim() !== '' &&
+      senderPhone.trim() !== ''
     );
   };
 
@@ -442,6 +464,24 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                       placeholderTextColor={Colors.text.secondary}
                     />
                   </View>
+
+                  {/* Sender Phone */}
+                  <View style={styles.formField}>
+                    <Typography
+                      variant="body2"
+                      text={t('donation.giftForm.senderPhone')}
+                      color="textPrimary"
+                      style={styles.formLabel}
+                    />
+                    <TextInput
+                      style={styles.formInput}
+                      placeholder={t('donation.giftForm.enterPhone')}
+                      value={senderPhone}
+                      onChangeText={setSenderPhone}
+                      keyboardType="phone-pad"
+                      placeholderTextColor={Colors.text.secondary}
+                    />
+                  </View>
                 </View>
               )}
 
@@ -523,6 +563,24 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
           </View>
         </View>
       )}
+
+      {/* Payment WebView */}
+      <PaymentWebView
+        visible={!!paymentUrl}
+        url={paymentUrl}
+        onClose={() => {
+          setPaymentUrl('');
+          onClose();
+        }}
+        onSuccess={() => {
+          setPaymentUrl('');
+          onDonate?.(
+            quickAmount || parseInt(customAmount, 10) || 0,
+            selectedCategory,
+          );
+          onClose();
+        }}
+      />
     </Modal>
   );
 };

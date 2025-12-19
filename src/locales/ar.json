@@ -288,6 +288,13 @@
     "medina": "المدينة المنورة",
     "dammam": "الدمام"
   },
+  "payment": {
+    "title": "الدفع",
+    "processing": "جاري معالجة الدفع...",
+    "success": "تم الدفع بنجاح!",
+    "failed": "فشل الدفع",
+    "cancelled": "تم إلغاء الدفع"
+  },
   "donation": {
     "title": "التبرع السريع",
     "subtitle": "اختر المسار وحدد المبلغ فارسل تبرعك لمساعدة غيرك",
@@ -318,6 +325,7 @@
       "enterPhone": "ادخل رقم الجوال",
       "recipientName": "اسم المهدى الية",
       "enterRecipientName": "اسم المهدى الية",
+      "senderPhone": "رقم جوالك",
       "message": "توقيعك",
       "messagePlaceholder": "مثال: إهداء من أحباءك",
       "rememberName": "اذكر اسمي",

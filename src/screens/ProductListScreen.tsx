@@ -4,6 +4,7 @@ import {useRoute, RouteProp, useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {HorizontalProductCard, BackHeader} from '../components';
 import {AddToCartModal} from '../components/AddToCartModal';
+import {ProductDonationModal} from '../components/ProductDonationModal';
 import {Colors} from '../constants';
 import {wp, hp} from '../utils/responsive';
 import {Product} from '../services/api';
@@ -29,6 +30,8 @@ export const ProductListScreen: React.FC = () => {
     null,
   );
   const [modalProductName, setModalProductName] = React.useState<string>('');
+  const [modalProductGuid, setModalProductGuid] = React.useState<string>('');
+  const [donationModalVisible, setDonationModalVisible] = React.useState(false);
 
   const handleProductPress = (productGuid: string) => {
     navigation.navigate('ProductDetails', {productGuid});
@@ -40,6 +43,7 @@ export const ProductListScreen: React.FC = () => {
     productTitle?: string,
   ) => {
     setModalProductId(productId);
+    setModalProductGuid(productGuid);
     setModalProductName(productTitle || '');
     setCartModalVisible(true);
   };
@@ -47,11 +51,34 @@ export const ProductListScreen: React.FC = () => {
   const handleCloseAddToCart = () => {
     setCartModalVisible(false);
     setModalProductId(null);
+    setModalProductGuid('');
     setModalProductName('');
   };
 
   const handleAddToCartSuccess = () => {
     console.log('✅ Product added to cart successfully');
+  };
+
+  const handleOpenDonation = (
+    productId: number,
+    productGuid: string,
+    productTitle?: string,
+  ) => {
+    setModalProductId(productId);
+    setModalProductGuid(productGuid);
+    setModalProductName(productTitle || '');
+    setDonationModalVisible(true);
+  };
+
+  const handleCloseDonation = () => {
+    setDonationModalVisible(false);
+    setModalProductId(null);
+    setModalProductGuid('');
+    setModalProductName('');
+  };
+
+  const handleDonationSuccess = () => {
+    console.log('✅ Donation completed successfully');
   };
 
   const renderProduct = ({item}: {item: Product}) => {
@@ -79,6 +106,9 @@ export const ProductListScreen: React.FC = () => {
           onAddToCart={() =>
             handleOpenAddToCart(item.id, item.guid, item.product_name || '')
           }
+          onDonate={() =>
+            handleOpenDonation(item.id, item.guid, item.product_name || '')
+          }
         />
       </View>
     );
@@ -104,6 +134,16 @@ export const ProductListScreen: React.FC = () => {
         productName={modalProductName}
         onClose={handleCloseAddToCart}
         onSuccess={handleAddToCartSuccess}
+      />
+
+      {/* Product Donation Modal */}
+      <ProductDonationModal
+        visible={donationModalVisible && modalProductId !== null}
+        productId={modalProductId ?? 0}
+        productGuid={modalProductGuid}
+        productName={modalProductName}
+        onClose={handleCloseDonation}
+        onSuccess={handleDonationSuccess}
       />
     </SafeAreaView>
   );

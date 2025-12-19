@@ -288,6 +288,13 @@
     "medina": "Medina",
     "dammam": "Dammam"
   },
+  "payment": {
+    "title": "Payment",
+    "processing": "Processing payment...",
+    "success": "Payment successful!",
+    "failed": "Payment failed",
+    "cancelled": "Payment cancelled"
+  },
   "donation": {
     "title": "Quick Donation",
     "subtitle": "Choose the path and amount you wish to donate to help us help others",
@@ -318,6 +325,7 @@
       "enterPhone": "Enter mobile number",
       "recipientName": "Recipient Name",
       "enterRecipientName": "Enter recipient name",
+      "senderPhone": "Your Mobile Number",
       "message": "Your Message",
       "messagePlaceholder": "Example: Gift from your loved ones",
       "rememberName": "Remember My Name",

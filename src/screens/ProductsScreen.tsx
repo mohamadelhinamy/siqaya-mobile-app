@@ -14,6 +14,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {useLanguage} from '../context';
 import {Typography, HorizontalProductCard} from '../components';
 import {AddToCartModal} from '../components/AddToCartModal';
+import {ProductDonationModal} from '../components/ProductDonationModal';
 import {
   HorizontalProductCardSkeleton,
   FilterPillsSkeleton,
@@ -70,6 +71,8 @@ export const ProductsScreen: React.FC = () => {
   const [cartModalVisible, setCartModalVisible] = useState(false);
   const [modalProductId, setModalProductId] = useState<number | null>(null);
   const [modalProductName, setModalProductName] = useState<string>('');
+  const [modalProductGuid, setModalProductGuid] = useState<string>('');
+  const [donationModalVisible, setDonationModalVisible] = useState(false);
 
   const fetchFilters = async () => {
     try {
@@ -302,6 +305,7 @@ export const ProductsScreen: React.FC = () => {
     title?: string,
   ) => {
     setModalProductId(productId);
+    setModalProductGuid(productGuid);
     setModalProductName(title || '');
     setCartModalVisible(true);
   };
@@ -309,11 +313,34 @@ export const ProductsScreen: React.FC = () => {
   const handleCloseAddToCart = () => {
     setCartModalVisible(false);
     setModalProductId(null);
+    setModalProductGuid('');
     setModalProductName('');
   };
 
   const handleAddToCartSuccess = () => {
     console.log('Added to cart from Products screen');
+  };
+
+  const handleOpenDonation = (
+    productId: number,
+    productGuid: string,
+    title?: string,
+  ) => {
+    setModalProductId(productId);
+    setModalProductGuid(productGuid);
+    setModalProductName(title || '');
+    setDonationModalVisible(true);
+  };
+
+  const handleCloseDonation = () => {
+    setDonationModalVisible(false);
+    setModalProductId(null);
+    setModalProductGuid('');
+    setModalProductName('');
+  };
+
+  const handleDonationSuccess = () => {
+    console.log('✅ Donation completed successfully');
   };
 
   console.log('Selected Filter:', selectedFilter);
@@ -449,6 +476,13 @@ export const ProductsScreen: React.FC = () => {
                   product.product_name,
                 )
               }
+              onDonate={() =>
+                handleOpenDonation(
+                  product.id,
+                  product.guid,
+                  product.product_name,
+                )
+              }
             />
           )}
           ListEmptyComponent={
@@ -489,6 +523,16 @@ export const ProductsScreen: React.FC = () => {
         productName={modalProductName}
         onClose={handleCloseAddToCart}
         onSuccess={handleAddToCartSuccess}
+      />
+
+      {/* Product Donation Modal */}
+      <ProductDonationModal
+        visible={donationModalVisible && modalProductId !== null}
+        productId={modalProductId ?? 0}
+        productGuid={modalProductGuid}
+        productName={modalProductName}
+        onClose={handleCloseDonation}
+        onSuccess={handleDonationSuccess}
       />
     </SafeAreaView>
   );
