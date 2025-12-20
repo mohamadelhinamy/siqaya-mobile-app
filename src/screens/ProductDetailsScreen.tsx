@@ -48,6 +48,10 @@ export const ProductDetailsScreen: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const formatAmount = (amount: number) => {
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   const handleBack = () => {
     navigation.goBack();
   };
@@ -227,9 +231,9 @@ export const ProductDetailsScreen: React.FC = () => {
                       <Typography
                         variant="h6"
                         color="textPrimary"
-                        text={Number(
-                          product.stage.stage_collected,
-                        ).toLocaleString('ar-SA')}
+                        text={formatAmount(
+                          Number(product.stage.stage_collected),
+                        )}
                         style={styles.raisedAmount}
                       />
                       {React.createElement(riyalIcon, {
@@ -250,10 +254,12 @@ export const ProductDetailsScreen: React.FC = () => {
                       <Typography
                         variant="h6"
                         color="textPrimary"
-                        text={Number(
-                          product.stage.stage_target -
-                            product.stage.stage_collected,
-                        ).toLocaleString('ar-SA')}
+                        text={formatAmount(
+                          Number(
+                            product.stage.stage_target -
+                              product.stage.stage_collected,
+                          ),
+                        )}
                         style={styles.remainingAmount}
                       />
                       {React.createElement(riyalIcon, {
