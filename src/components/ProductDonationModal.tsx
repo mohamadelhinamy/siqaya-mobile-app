@@ -117,7 +117,7 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
 
   const handleQuickAmountPress = (amount: number) => {
     setQuickAmount(amount);
-    setCustomAmount('');
+    setCustomAmount(amount.toString());
   };
 
   const handleCustomAmountChange = (text: string) => {

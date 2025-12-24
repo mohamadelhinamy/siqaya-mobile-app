@@ -179,7 +179,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
 
   const handleQuickAmountPress = (amount: number) => {
     setQuickAmount(amount);
-    setCustomAmount('');
+    setCustomAmount(amount.toString());
   };
 
   const handleCustomAmountChange = (text: string) => {

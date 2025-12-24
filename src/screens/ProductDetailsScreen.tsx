@@ -20,6 +20,7 @@ import {
   Typography,
   CustomButton,
   AddToCartModal,
+  ProductDonationModal,
 } from '../components';
 import {ProductDetailsSkeleton} from '../components/Skeletons';
 import {wp, hp} from '../utils/responsive';
@@ -47,6 +48,7 @@ export const ProductDetailsScreen: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isDonationModalVisible, setIsDonationModalVisible] = useState(false);
 
   const formatAmount = (amount: number) => {
     return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -71,6 +73,18 @@ export const ProductDetailsScreen: React.FC = () => {
   const handleCartSuccess = () => {
     // Optionally refresh product data or navigate to cart
     console.log('Item added to cart successfully');
+  };
+
+  const handleOpenDonationModal = () => {
+    setIsDonationModalVisible(true);
+  };
+
+  const handleCloseDonationModal = () => {
+    setIsDonationModalVisible(false);
+  };
+
+  const handleDonationSuccess = () => {
+    console.log('Donation completed successfully');
   };
 
   const handleCart = () => {
@@ -428,7 +442,7 @@ export const ProductDetailsScreen: React.FC = () => {
           <CustomButton
             title={t('products.donateNow')}
             variant="primary"
-            onPress={() => console.log('Donate pressed')}
+            onPress={handleOpenDonationModal}
             style={styles.donateButton}
           />
         </View>
@@ -442,6 +456,18 @@ export const ProductDetailsScreen: React.FC = () => {
           productName={product.product_brief || product.product_name}
           onClose={handleCloseCartModal}
           onSuccess={handleCartSuccess}
+        />
+      )}
+
+      {/* Product Donation Modal */}
+      {product && (
+        <ProductDonationModal
+          visible={isDonationModalVisible}
+          productId={product.id}
+          productGuid={product.guid}
+          productName={product.product_brief || product.product_name}
+          onClose={handleCloseDonationModal}
+          onSuccess={handleDonationSuccess}
         />
       )}
     </SafeAreaView>
