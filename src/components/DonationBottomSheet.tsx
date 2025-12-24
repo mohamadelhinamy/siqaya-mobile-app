@@ -149,6 +149,8 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
           paymentData.gift_sender_mobile = senderPhone;
           paymentData.gift_receiver_name = recipientName;
           paymentData.gift_receiver_mobile = recipientPhone;
+          paymentData.is_gift = true;
+          paymentData.gift_type_id = 1;
         }
 
         const response = await paymentService.initiatePayment(paymentData);

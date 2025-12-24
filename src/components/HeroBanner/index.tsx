@@ -5,6 +5,7 @@ import {
   ViewStyle,
   ImageBackground,
   Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import Carousel from 'react-native-snap-carousel';
 import {Colors} from '../../constants';
@@ -23,6 +24,15 @@ interface HeroSlide {
   link?: string;
   link_type?: number;
   link_target?: string;
+  action_type?: string;
+  mobile_navigation_component?: {
+    id: number;
+    name: string;
+    value: string;
+  };
+  attribute_value?: string;
+  sms_phone_number?: string;
+  sms_message?: string;
 }
 
 interface HeroBannerProps {
@@ -71,44 +81,48 @@ export const HeroBanner: React.FC<HeroBannerProps> = ({
 
     return (
       <View style={wrapper}>
-        <ImageBackground
-          source={item.image}
-          style={containerStyle}
-          imageStyle={styles.backgroundImage}>
-          <View style={styles.imageOverlay} />
-          <View style={styles.slideContent}>
-            <View>
-              {item.title ? (
-                <Typography
-                  variant="h5"
-                  text={stripHtml(item.title)}
-                  color="white"
-                  style={styles.slideTitle}
-                />
-              ) : null}
-              {item.summary ? (
-                <Typography
-                  variant="body2"
-                  text={stripHtml(item.summary)}
-                  color="white"
-                  style={styles.slideSummary}
-                />
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={() => onPress && onPress(item)}>
+          <ImageBackground
+            source={item.image}
+            style={containerStyle}
+            imageStyle={styles.backgroundImage}>
+            <View style={styles.imageOverlay} />
+            <View style={styles.slideContent}>
+              <View>
+                {item.title ? (
+                  <Typography
+                    variant="h5"
+                    text={stripHtml(item.title)}
+                    color="white"
+                    style={styles.slideTitle}
+                  />
+                ) : null}
+                {item.summary ? (
+                  <Typography
+                    variant="body2"
+                    text={stripHtml(item.summary)}
+                    color="white"
+                    style={styles.slideSummary}
+                  />
+                ) : null}
+              </View>
+
+              {item.button_text ? (
+                <View style={styles.slideButtonWrap}>
+                  <CustomButton
+                    title={item.button_text}
+                    onPress={() => onPress && onPress(item)}
+                    variant="primary"
+                    size="small"
+                    style={styles.slideButton}
+                  />
+                </View>
               ) : null}
             </View>
-
-            {item.button_text ? (
-              <View style={styles.slideButtonWrap}>
-                <CustomButton
-                  title={item.button_text}
-                  onPress={() => onPress && onPress(item)}
-                  variant="primary"
-                  size="small"
-                  style={styles.slideButton}
-                />
-              </View>
-            ) : null}
-          </View>
-        </ImageBackground>
+          </ImageBackground>
+        </TouchableOpacity>
       </View>
     );
   };

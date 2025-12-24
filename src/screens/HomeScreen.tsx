@@ -6,6 +6,9 @@ import {
   RefreshControl,
   StyleSheet,
   View,
+  Linking,
+  Alert,
+  Platform,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -18,6 +21,7 @@ import {ServicesGrid} from '../components/ServicesGrid';
 import {LatestProducts} from '../components/LatestProducts';
 import {AddToCartModal} from '../components/AddToCartModal';
 import {ProductDonationModal} from '../components/ProductDonationModal';
+import {DonationBottomSheet} from '../components/DonationBottomSheet';
 import {WaterDeliveryBanner} from '../components/WaterDeliveryBanner';
 import {
   HomeHeaderSkeleton,
@@ -76,6 +80,8 @@ export const HomeScreen: React.FC = () => {
   const [sliders, setSliders] = React.useState<any[]>([]);
   const [cartModalVisible, setCartModalVisible] = React.useState(false);
   const [donationModalVisible, setDonationModalVisible] = React.useState(false);
+  const [publicDonationVisible, setPublicDonationVisible] =
+    React.useState(false);
   const [modalProductId, setModalProductId] = React.useState<number | null>(
     null,
   );
@@ -135,6 +141,72 @@ export const HomeScreen: React.FC = () => {
     console.log('Donation completed from Home screen');
   };
 
+  const handleSliderPress = (slide?: any) => {
+    if (!slide?.action_type) {
+      console.log('Hero banner pressed - no action');
+      return;
+    }
+
+    console.log('Slider action:', slide.action_type, slide);
+
+    switch (slide.action_type) {
+      case 'navigate_in_app':
+        if (slide.mobile_navigation_component?.value === 'publicDonation') {
+          // Open public donation bottom sheet
+          setPublicDonationVisible(true);
+        } else if (
+          slide.mobile_navigation_component?.value === 'ProductDonation'
+        ) {
+          // Navigate to product details with attribute_value as product GUID
+          if (slide.attribute_value) {
+            navigation.navigate('ProductDetails', {
+              productGuid: slide.attribute_value,
+            });
+          }
+        }
+        break;
+
+      case 'send_sms':
+        // Open SMS app with pre-filled number and message
+        if (slide.sms_phone_number && slide.sms_message) {
+          const smsUrl = `sms:${slide.sms_phone_number}${
+            Platform.OS === 'ios' ? '&' : '?'
+          }body=${encodeURIComponent(slide.sms_message)}`;
+          Linking.canOpenURL(smsUrl)
+            .then(supported => {
+              if (supported) {
+                Linking.openURL(smsUrl);
+              } else {
+                Alert.alert(
+                  t('common.error'),
+                  'SMS app is not available on this device',
+                );
+              }
+            })
+            .catch(err => console.error('Error opening SMS app:', err));
+        }
+        break;
+
+      case 'navigate_to_web':
+        // Open browser with the provided link
+        if (slide.link) {
+          Linking.canOpenURL(slide.link)
+            .then(supported => {
+              if (supported) {
+                Linking.openURL(slide.link);
+              } else {
+                Alert.alert(t('common.error'), 'Cannot open URL');
+              }
+            })
+            .catch(err => console.error('Error opening URL:', err));
+        }
+        break;
+
+      default:
+        console.log('Unknown action type:', slide.action_type);
+    }
+  };
+
   const fetchHomepageData = React.useCallback(async () => {
     try {
       setProductsLoading(true);
@@ -145,23 +217,27 @@ export const HomeScreen: React.FC = () => {
 
       // Fetch active sliders separately
       try {
-        const slidersResp = await apiService.get<any>('/sliders/active');
+        const slidersResp = await apiService.get<any>('/sliders');
         if (
           slidersResp &&
           slidersResp.success &&
           Array.isArray(slidersResp.data)
         ) {
+          console.log('🔄 Mapping sliders...', slidersResp.data);
           const mappedSlides = slidersResp.data.map((s: any) => ({
             id: String(s.id),
-            image: s.images?.mobile
-              ? {uri: s.images.mobile}
-              : {uri: s.images?.web},
+            image: {uri: s.image},
             title: s.title,
             summary: s.summary,
             button_text: s.button_text,
             link: s.link,
             link_type: s.link_type,
             link_target: s.link_target,
+            action_type: s.action_type,
+            mobile_navigation_component: s.mobile_navigation_component,
+            attribute_value: s.attribute_value,
+            sms_phone_number: s.sms_phone_number,
+            sms_message: s.sms_message,
           }));
           setSliders(mappedSlides);
           console.log('✅ Fetched sliders:', mappedSlides.length);
@@ -286,17 +362,11 @@ export const HomeScreen: React.FC = () => {
           <HomeHeader onCartPress={handleCartPress} />
         )}
 
-        {/* Search Bar */}
-        {loading ? <SearchBarSkeleton /> : <SearchBar />}
-
         {/* Hero Banner */}
         {loading ? (
           <HeroBannerSkeleton />
         ) : sliders && sliders.length > 0 ? (
-          <HeroBanner
-            slides={sliders}
-            onPress={() => console.log('Hero banner pressed')}
-          />
+          <HeroBanner slides={sliders} onPress={handleSliderPress} />
         ) : null}
 
         {/* Services Grid */}
@@ -360,6 +430,15 @@ export const HomeScreen: React.FC = () => {
         productName={modalProductName}
         onClose={handleCloseDonation}
         onSuccess={handleDonationSuccess}
+      />
+      {/* Public Donation Bottom Sheet */}
+      <DonationBottomSheet
+        visible={publicDonationVisible}
+        onClose={() => setPublicDonationVisible(false)}
+        onDonate={(amount, category) => {
+          console.log('Public donation:', {amount, category});
+          setPublicDonationVisible(false);
+        }}
       />
     </SafeAreaView>
   );
