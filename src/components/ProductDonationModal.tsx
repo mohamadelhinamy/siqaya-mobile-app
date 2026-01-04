@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Image,
 } from 'react-native';
 import {Typography} from './Typography';
 import {CustomButton} from './CustomButton';
@@ -18,9 +19,11 @@ import {Colors} from '../constants';
 import {useLanguage, useAuth} from '../context';
 import {hp, wp} from '../utils/responsive';
 import {paymentService} from '../services/payment';
+import {apiService} from '../services/api';
 
 // Import icons
 import CloseCircleIcon from '../assets/icons/outlined/close-circle.svg';
+import ArrowDownIcon from '../assets/icons/outlined/arrow-down.svg';
 
 interface ProductDonationModalProps {
   visible: boolean;
@@ -52,13 +55,45 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
   const [receiverName, setReceiverName] = useState<string>('');
   const [receiverPhone, setReceiverPhone] = useState<string>('');
 
+  // Gift types from API
+  const [giftTypes, setGiftTypes] = useState<
+    Array<{id: number; title: string; gift_card_url: string}>
+  >([]);
+  const [selectedGiftType, setSelectedGiftType] = useState<number | null>(null);
+  const [giftTypeModalVisible, setGiftTypeModalVisible] =
+    useState<boolean>(false);
+  const [loadingGiftTypes, setLoadingGiftTypes] = useState<boolean>(false);
+
   const quickAmounts = [100, 200, 300];
 
-  React.useEffect(() => {
-    if (!visible) {
+  const fetchGiftTypes = async () => {
+    try {
+      setLoadingGiftTypes(true);
+      const response = await apiService.get<any>('/gift-types');
+      console.log('Gift types response:', response);
+
+      if (
+        response.success &&
+        response.data?.gift_types &&
+        Array.isArray(response.data.gift_types)
+      ) {
+        setGiftTypes(response.data.gift_types);
+      }
+    } catch (error) {
+      console.error('Failed to fetch gift types:', error);
+    } finally {
+      setLoadingGiftTypes(false);
+    }
+  };
+
+  useEffect(() => {
+    if (visible) {
+      fetchGiftTypes();
+    } else {
       // Reset form when modal closes
       resetForm();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const resetForm = () => {
@@ -70,6 +105,7 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
     setReceiverName('');
     setReceiverPhone('');
     setPaymentUrl('');
+    setSelectedGiftType(null);
   };
 
   const handleDonate = async () => {
@@ -93,6 +129,8 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
         paymentData.gift_sender_mobile = senderPhone;
         paymentData.gift_receiver_name = receiverName;
         paymentData.gift_receiver_mobile = receiverPhone;
+        paymentData.is_gift = true;
+        paymentData.gift_type_id = selectedGiftType;
       }
 
       const response = await paymentService.initiatePayment(
@@ -265,6 +303,54 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
               {/* Gift Form */}
               {donateAsGift && (
                 <View style={styles.giftFormContainer}>
+                  {/* Gift Type Dropdown */}
+                  <View style={styles.formField}>
+                    <Typography
+                      variant="body2"
+                      text={t('donation.giftForm.giftType')}
+                      color="textPrimary"
+                      style={styles.formLabel}
+                    />
+                    <TouchableOpacity
+                      style={styles.giftTypeDropdown}
+                      onPress={() => setGiftTypeModalVisible(true)}>
+                      {selectedGiftType ? (
+                        <View style={styles.giftTypeSelected}>
+                          <Image
+                            source={{
+                              uri: giftTypes.find(
+                                g => g.id === selectedGiftType,
+                              )?.gift_card_url,
+                            }}
+                            style={styles.giftCardThumbnail}
+                            resizeMode="cover"
+                          />
+                          <Typography
+                            variant="body2"
+                            text={
+                              giftTypes.find(g => g.id === selectedGiftType)
+                                ?.title || ''
+                            }
+                            color="textPrimary"
+                            style={styles.giftTypeSelectedText}
+                          />
+                        </View>
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          text={t('donation.giftForm.selectGiftType')}
+                          color="textSecondary"
+                          style={styles.dropdownText}
+                        />
+                      )}
+                      <ArrowDownIcon
+                        width={16}
+                        height={16}
+                        color={Colors.text.secondary}
+                      />
+                    </TouchableOpacity>
+                  </View>
+
                   {/* Sender Name */}
                   <View style={styles.formField}>
                     <Typography
@@ -355,6 +441,69 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
           </TouchableOpacity>
         </TouchableOpacity>
       </KeyboardAvoidingView>
+
+      {/* Gift Type Selection Modal */}
+      {giftTypeModalVisible && (
+        <View style={styles.selectionModalOverlay}>
+          <TouchableOpacity
+            style={styles.selectionModalBackdrop}
+            activeOpacity={1}
+            onPress={() => setGiftTypeModalVisible(false)}
+          />
+          <View style={styles.giftTypeModalContent}>
+            <Typography
+              variant="h5"
+              text={t('donation.giftForm.giftType')}
+              color="textPrimary"
+              style={styles.selectionModalTitle}
+            />
+            {loadingGiftTypes ? (
+              <Typography
+                variant="body1"
+                text={t('common.loading')}
+                color="textSecondary"
+                style={{textAlign: 'center', padding: hp(2)}}
+              />
+            ) : (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.giftTypeScrollContent}>
+                {giftTypes.map(giftType => (
+                  <TouchableOpacity
+                    key={giftType.id}
+                    style={[
+                      styles.giftTypeOption,
+                      selectedGiftType === giftType.id &&
+                        styles.giftTypeOptionSelected,
+                    ]}
+                    onPress={() => {
+                      setSelectedGiftType(giftType.id);
+                      setGiftTypeModalVisible(false);
+                    }}>
+                    <Image
+                      source={{uri: giftType.gift_card_url}}
+                      style={styles.giftCardImage}
+                      resizeMode="cover"
+                    />
+                    <Typography
+                      variant="caption"
+                      text={giftType.title}
+                      color="textPrimary"
+                      style={styles.giftTypeTitle}
+                    />
+                    {selectedGiftType === giftType.id && (
+                      <View style={styles.giftTypeCheckmark}>
+                        <Typography variant="caption" text="✓" color="white" />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
+          </View>
+        </View>
+      )}
 
       {/* Payment WebView */}
       <PaymentWebView
@@ -507,5 +656,103 @@ const styles = StyleSheet.create({
     color: Colors.text.primary,
     backgroundColor: Colors.white,
     textAlign: 'right',
+  },
+  dropdownText: {
+    flex: 1,
+    textAlign: 'left',
+  },
+  selectionModalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  selectionModalBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  selectionModalTitle: {
+    marginBottom: hp(2),
+    textAlign: 'center',
+  },
+  // Gift Type specific styles
+  giftTypeDropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: Colors.light,
+    borderRadius: 16,
+    paddingHorizontal: wp(4),
+    paddingVertical: hp(1.5),
+    backgroundColor: Colors.white,
+    minHeight: hp(8),
+  },
+  giftTypeSelected: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  giftCardThumbnail: {
+    width: wp(12),
+    height: hp(5),
+    borderRadius: 8,
+    marginRight: wp(3),
+  },
+  giftTypeSelectedText: {
+    flex: 1,
+    textAlign: 'left',
+  },
+  giftTypeModalContent: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: wp(6),
+    width: '90%',
+    maxWidth: 500,
+  },
+  giftTypeScrollContent: {
+    paddingVertical: hp(1),
+    gap: wp(3),
+  },
+  giftTypeOption: {
+    width: wp(40),
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'transparent',
+    backgroundColor: Colors.white,
+  },
+  giftTypeOptionSelected: {
+    borderColor: Colors.primary,
+  },
+  giftCardImage: {
+    width: '100%',
+    height: hp(15),
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  giftTypeTitle: {
+    textAlign: 'center',
+    padding: hp(1),
+    backgroundColor: Colors.background.light,
+  },
+  giftTypeCheckmark: {
+    position: 'absolute',
+    top: hp(1),
+    right: wp(2),
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

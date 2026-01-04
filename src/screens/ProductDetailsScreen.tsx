@@ -290,13 +290,19 @@ export const ProductDetailsScreen: React.FC = () => {
                     <View
                       style={[
                         styles.progressFill,
-                        {width: `${product.stage.stage_percentage}%`},
+                        {
+                          width: `${Math.round(
+                            product.stage.stage_percentage,
+                          )}%`,
+                        },
                       ]}>
                       <View style={styles.progressTextOverlay}>
                         <Typography
                           variant="caption"
                           color="white"
-                          text={`${product.stage.stage_percentage}%`}
+                          text={`${Math.round(
+                            product.stage.stage_percentage,
+                          )}%`}
                           style={styles.progressText}
                         />
                       </View>

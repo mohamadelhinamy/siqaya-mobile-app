@@ -28,7 +28,7 @@ export const ProfileScreen: React.FC = () => {
   };
 
   const goToProjects = () => {
-    navigation.navigate('ProjectsScreen' as never);
+    navigation.navigate('MyProductsScreen' as never);
   };
 
   // personal data route currently unused — keep commented for future

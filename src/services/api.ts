@@ -132,6 +132,7 @@ class ApiService {
     endpoint: string,
     options: AxiosRequestConfig = {},
     requiresAppToken: boolean = true,
+    isRetry: boolean = false,
   ): Promise<ApiResponse<T>> {
     try {
       // Ensure we have a valid app token for requests that require it
@@ -179,21 +180,58 @@ class ApiService {
 
       console.log(data, 'data');
 
+      // Check if response body contains auth error (some APIs return 200 with error in body)
+      if (
+        requiresAppToken &&
+        !isRetry &&
+        data &&
+        (data.code === 401 ||
+          data.code === 403 ||
+          (data.message &&
+            (data.message.toLowerCase().includes('token') ||
+              data.message.toLowerCase().includes('unauthenticated') ||
+              data.message.toLowerCase().includes('unauthorized'))))
+      ) {
+        console.log('🔄 Token issue detected in response body, refreshing...');
+        this.appToken = null;
+        this.appTokenExpiry = null;
+        return this.makeRequest<T>(endpoint, options, requiresAppToken, true);
+      }
+
       return data;
     } catch (error: any) {
       console.error('API Request failed:', error);
 
       // Handle axios errors
       if (error.response) {
+        const status = error.response.status;
+        const responseData = error.response.data;
+        const errorCode = responseData?.code;
+        const errorMessage = responseData?.message || '';
+
         console.error('❌ Server error response:', {
-          status: error.response.status,
-          data: error.response.data,
+          status: status,
+          code: errorCode,
+          data: responseData,
           headers: error.response.headers,
         });
-        const errorMessage =
-          error.response.data?.message ||
-          `HTTP error! status: ${error.response.status}`;
-        throw new Error(errorMessage);
+
+        // Retry once on 401 (token expired) - check both HTTP status and response code
+        if (
+          requiresAppToken &&
+          !isRetry &&
+          (status === 401 ||
+            errorCode === 401 ||
+            errorMessage.toLowerCase().includes('unauthenticated') ||
+            errorMessage.toLowerCase().includes('token'))
+        ) {
+          console.log('🔄 Token expired, refreshing and retrying...');
+          this.appToken = null;
+          this.appTokenExpiry = null;
+          return this.makeRequest<T>(endpoint, options, requiresAppToken, true);
+        }
+
+        throw new Error(errorMessage || `HTTP error! status: ${status}`);
       }
 
       throw error;
@@ -438,6 +476,14 @@ class ApiService {
       method: 'DELETE',
       headers: headers,
     });
+  }
+
+  /**
+   * Get the current app token (ensures it's valid first)
+   */
+  async getAppToken(): Promise<string | null> {
+    await this.ensureValidAppToken();
+    return this.appToken;
   }
 }
 

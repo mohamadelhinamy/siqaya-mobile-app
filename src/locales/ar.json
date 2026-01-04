@@ -92,7 +92,7 @@
     },
     "links": {
       "myDonations": "تبرعاتي",
-      "myProjects": "مشاريعي",
+      "myProjects": "منتجاتى",
       "personalData": "البيانات الشخصية",
       "mediaCenter": "المركز الإعلامي",
       "aboutApp": "عن التطبيق",
@@ -316,6 +316,8 @@
     "giftForm": {
       "giftTo": "أهدي الى",
       "selectGiftTo": "اختر",
+      "giftType": "نوع البطاقة",
+      "selectGiftType": "اختر نوع البطاقة",
       "options": {
         "friend": "صديق",
         "family": "عائلة",
@@ -337,6 +339,54 @@
     "totalDonations": "إجمالي التبرعات",
     "totalAmount": "المبلغ الإجمالي",
     "myDonationsList": "تبرعاتي",
-    "noDonations": "لا توجد تبرعات بعد"
+    "noDonations": "لا توجد تبرعات بعد",
+    "status": {
+      "paid": "مدفوع",
+      "pending": "قيد الانتظار",
+      "failed": "فشل"
+    },
+    "labels": {
+      "item": "البند",
+      "amount": "المبلغ",
+      "total": "الإجمالي",
+      "productDonation": "تبرع للمنتج",
+      "publicDonation": "تبرع عام",
+      "productDetails": "تفاصيل المنتج"
+    }
+  },
+  "myProducts": {
+    "title": "منتجاتى",
+    "emptyTitle": "ليس لديك منتجات بعد",
+    "addNew": "اضافة منتج جديد",
+    "form": {
+      "title": "اضافة منتج جديد",
+      "subtitle": "ادخل البيانات التاليه لاضافة منتج جديد الى قائمه منتجاتك",
+      "productName": "اسم المنتج",
+      "productNamePlaceholder": "ادخل اسم المنتج",
+      "productType": "المسار",
+      "selectType": "اختر",
+      "productValue": "قيمة المنتج",
+      "productValuePlaceholder": "ادخل قيمة المنتج",
+      "productDetails": "تفاصيل المنتج",
+      "productDetailsPlaceholder": "ادخل التفاصيل",
+      "uploadImage": "ارفع صورة المنتج او حمل من ",
+      "uploadImageLink": "هنا",
+      "submit": "اضافة المنتج"
+    },
+    "success": {
+      "title": "تم اضافة المنتج بنجاح",
+      "subtitle": "يمكنك الآن متابعة منتجك والتبرعات المستلمة من قائمة منتجاتى",
+      "goToProducts": "الذهاب لمنتجاتى",
+      "goToHome": "العودة للرئيسية"
+    },
+    "errors": {
+      "nameRequired": "يرجى إدخال اسم المنتج",
+      "typeRequired": "يرجى اختيار نوع المنتج",
+      "valueRequired": "يرجى إدخال قيمة المنتج",
+      "detailsRequired": "يرجى إدخال تفاصيل المنتج",
+      "imageFailed": "فشل في اختيار الصورة",
+      "submitFailed": "فشل في إضافة المنتج",
+      "notAuthenticated": "يرجى تسجيل الدخول أولاً"
+    }
   }
 }

@@ -56,8 +56,16 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     // Handle both Arabic and English numbers, remove currency symbols and spaces
     const numericValue = amount
       .replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d).toString())
-      .replace(/[^\d]/g, '');
-    return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      .replace(/[^\d.]/g, '');
+
+    // Parse as number to handle "0.00" -> 0
+    const num = parseFloat(numericValue) || 0;
+    if (num === 0) {
+      return '0';
+    }
+
+    // Format with commas
+    return num.toLocaleString('en-US');
   };
 
   return (
@@ -80,39 +88,45 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </View>
           )}
 
-          {/* Location Info at Top of Image */}
-          <View style={styles.locationContainer}>
-            <View style={styles.locationBadge}>
-              <View style={styles.badgeContent}>
-                <LocationIcon
-                  width={wp(3)}
-                  height={wp(3)}
-                  color={Colors.primary}
-                />
-                <Typography
-                  variant="caption"
-                  color="primary"
-                  text={location}
-                  style={styles.locationText}
-                />
-              </View>
+          {/* Location Info at Top of Image - Only show if location or dealersCount exists */}
+          {(location || dealersCount > 0) && (
+            <View style={styles.locationContainer}>
+              {location ? (
+                <View style={styles.locationBadge}>
+                  <View style={styles.badgeContent}>
+                    <LocationIcon
+                      width={wp(3)}
+                      height={wp(3)}
+                      color={Colors.primary}
+                    />
+                    <Typography
+                      variant="caption"
+                      color="primary"
+                      text={location}
+                      style={styles.locationText}
+                    />
+                  </View>
+                </View>
+              ) : null}
+              {dealersCount > 0 ? (
+                <View style={styles.dealersBadge}>
+                  <View style={styles.badgeContent}>
+                    <ProfileTwoUsersIcon
+                      width={wp(3)}
+                      height={wp(3)}
+                      color={Colors.primary}
+                    />
+                    <Typography
+                      variant="caption"
+                      color="primary"
+                      text={`${t('products.dependents')}: ${dealersCount}`}
+                      style={styles.dealersText}
+                    />
+                  </View>
+                </View>
+              ) : null}
             </View>
-            <View style={styles.dealersBadge}>
-              <View style={styles.badgeContent}>
-                <ProfileTwoUsersIcon
-                  width={wp(3)}
-                  height={wp(3)}
-                  color={Colors.primary}
-                />
-                <Typography
-                  variant="caption"
-                  color="primary"
-                  text={`${t('products.dependents')}: ${dealersCount}`}
-                  style={styles.dealersText}
-                />
-              </View>
-            </View>
-          </View>
+          )}
 
           {/* Category Badge on Image */}
           <View style={styles.categoryBadge}>

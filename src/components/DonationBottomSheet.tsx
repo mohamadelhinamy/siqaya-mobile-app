@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
+  Image,
 } from 'react-native';
 import {Typography} from './Typography';
 import {CustomButton} from './CustomButton';
@@ -61,6 +62,15 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
   const [rememberName, setRememberName] = useState<boolean>(false);
   const [giftToModalVisible, setGiftToModalVisible] = useState<boolean>(false);
 
+  // Gift types from API
+  const [giftTypes, setGiftTypes] = useState<
+    Array<{id: number; title: string; gift_card_url: string}>
+  >([]);
+  const [selectedGiftType, setSelectedGiftType] = useState<number | null>(null);
+  const [giftTypeModalVisible, setGiftTypeModalVisible] =
+    useState<boolean>(false);
+  const [loadingGiftTypes, setLoadingGiftTypes] = useState<boolean>(false);
+
   const giftToOptions = [
     {value: 'friend', label: t('donation.giftForm.options.friend')},
     {value: 'family', label: t('donation.giftForm.options.family')},
@@ -104,6 +114,26 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     }
   };
 
+  const fetchGiftTypes = async () => {
+    try {
+      setLoadingGiftTypes(true);
+      const response = await apiService.get<any>('/gift-types');
+      console.log('Gift types response:', response?.data?.gift_types);
+
+      if (
+        response.success &&
+        response.data &&
+        Array.isArray(response.data?.gift_types)
+      ) {
+        setGiftTypes(response.data.gift_types);
+      }
+    } catch (error) {
+      console.error('Failed to fetch gift types:', error);
+    } finally {
+      setLoadingGiftTypes(false);
+    }
+  };
+
   const handleSelectGiftTo = (value: string) => {
     setGiftTo(value);
     setGiftToModalVisible(false);
@@ -117,6 +147,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
   useEffect(() => {
     if (visible) {
       fetchPaths();
+      fetchGiftTypes();
     } else {
       // Reset form when modal closes
       resetForm();
@@ -139,6 +170,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     setGiftMessage('');
     setRememberName(false);
     setPaymentUrl('');
+    setSelectedGiftType(null);
   };
 
   const handleDonate = async () => {
@@ -164,7 +196,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
           paymentData.gift_receiver_name = recipientName;
           paymentData.gift_receiver_mobile = recipientPhone;
           paymentData.is_gift = true;
-          paymentData.gift_type_id = 1;
+          paymentData.gift_type_id = selectedGiftType;
         }
 
         const response = await paymentService.initiatePayment(
@@ -364,30 +396,53 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
               {/* Gift Form - Show when donateToFamilies is checked */}
               {donateToFamilies && (
                 <View style={styles.giftFormContainer}>
-                  {/* Gift To Dropdown */}
-                  {/* <View style={styles.formField}>
-                  <Typography
-                    variant="body2"
-                    text={t('donation.giftForm.giftTo')}
-                    color="textPrimary"
-                    style={styles.formLabel}
-                  />
-                  <TouchableOpacity
-                    style={styles.dropdownContainer}
-                    onPress={() => setGiftToModalVisible(true)}>
+                  {/* Gift Type Dropdown */}
+                  <View style={styles.formField}>
                     <Typography
                       variant="body2"
-                      text={getGiftToLabel()}
-                      color={giftTo ? 'textPrimary' : 'textSecondary'}
-                      style={styles.dropdownText}
+                      text={t('donation.giftForm.giftType')}
+                      color="textPrimary"
+                      style={styles.formLabel}
                     />
-                    <ArrowDownIcon
-                      width={16}
-                      height={16}
-                      color={Colors.text.secondary}
-                    />
-                  </TouchableOpacity>
-                </View> */}
+                    <TouchableOpacity
+                      style={styles.giftTypeDropdown}
+                      onPress={() => setGiftTypeModalVisible(true)}>
+                      {selectedGiftType ? (
+                        <View style={styles.giftTypeSelected}>
+                          <Image
+                            source={{
+                              uri: giftTypes.find(
+                                g => g.id === selectedGiftType,
+                              )?.gift_card_url,
+                            }}
+                            style={styles.giftCardThumbnail}
+                            resizeMode="cover"
+                          />
+                          <Typography
+                            variant="body2"
+                            text={
+                              giftTypes.find(g => g.id === selectedGiftType)
+                                ?.title || ''
+                            }
+                            color="textPrimary"
+                            style={styles.giftTypeSelectedText}
+                          />
+                        </View>
+                      ) : (
+                        <Typography
+                          variant="body2"
+                          text={t('donation.giftForm.selectGiftType')}
+                          color="textSecondary"
+                          style={styles.dropdownText}
+                        />
+                      )}
+                      <ArrowDownIcon
+                        width={16}
+                        height={16}
+                        color={Colors.text.secondary}
+                      />
+                    </TouchableOpacity>
+                  </View>
 
                   {/* Recipient Phone */}
                   <View style={styles.formField}>
@@ -577,6 +632,69 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                 )}
               </TouchableOpacity>
             ))}
+          </View>
+        </View>
+      )}
+
+      {/* Gift Type Selection Modal */}
+      {giftTypeModalVisible && (
+        <View style={styles.selectionModalOverlay}>
+          <TouchableOpacity
+            style={styles.selectionModalBackdrop}
+            activeOpacity={1}
+            onPress={() => setGiftTypeModalVisible(false)}
+          />
+          <View style={styles.giftTypeModalContent}>
+            <Typography
+              variant="h5"
+              text={t('donation.giftForm.giftType')}
+              color="textPrimary"
+              style={styles.selectionModalTitle}
+            />
+            {loadingGiftTypes ? (
+              <Typography
+                variant="body1"
+                text={t('common.loading')}
+                color="textSecondary"
+                style={{textAlign: 'center', padding: hp(2)}}
+              />
+            ) : (
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.giftTypeScrollContent}>
+                {giftTypes.map(giftType => (
+                  <TouchableOpacity
+                    key={giftType.id}
+                    style={[
+                      styles.giftTypeOption,
+                      selectedGiftType === giftType.id &&
+                        styles.giftTypeOptionSelected,
+                    ]}
+                    onPress={() => {
+                      setSelectedGiftType(giftType.id);
+                      setGiftTypeModalVisible(false);
+                    }}>
+                    <Image
+                      source={{uri: giftType.gift_card_url}}
+                      style={styles.giftCardImage}
+                      resizeMode="cover"
+                    />
+                    <Typography
+                      variant="caption"
+                      text={giftType.title}
+                      color="textPrimary"
+                      style={styles.giftTypeTitle}
+                    />
+                    {selectedGiftType === giftType.id && (
+                      <View style={styles.giftTypeCheckmark}>
+                        <Typography variant="caption" text="✓" color="white" />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            )}
           </View>
         </View>
       )}
@@ -833,5 +951,77 @@ const styles = StyleSheet.create({
     paddingVertical: hp(2),
     borderBottomWidth: 1,
     borderBottomColor: Colors.light,
+  },
+  // Gift Type specific styles
+  giftTypeDropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: Colors.light,
+    borderRadius: 16,
+    paddingHorizontal: wp(4),
+    paddingVertical: hp(1.5),
+    backgroundColor: Colors.white,
+    minHeight: hp(8),
+  },
+  giftTypeSelected: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  giftCardThumbnail: {
+    width: wp(12),
+    height: hp(5),
+    borderRadius: 8,
+    marginRight: wp(3),
+  },
+  giftTypeSelectedText: {
+    flex: 1,
+    textAlign: 'left',
+  },
+  giftTypeModalContent: {
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: wp(6),
+    width: '90%',
+    maxWidth: 500,
+  },
+  giftTypeScrollContent: {
+    paddingVertical: hp(1),
+    gap: wp(3),
+  },
+  giftTypeOption: {
+    width: wp(40),
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'transparent',
+    backgroundColor: Colors.white,
+  },
+  giftTypeOptionSelected: {
+    borderColor: Colors.primary,
+  },
+  giftCardImage: {
+    width: '100%',
+    height: hp(15),
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+  },
+  giftTypeTitle: {
+    textAlign: 'center',
+    padding: hp(1),
+    backgroundColor: Colors.background.light,
+  },
+  giftTypeCheckmark: {
+    position: 'absolute',
+    top: hp(1),
+    right: wp(2),
+    backgroundColor: Colors.primary,
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

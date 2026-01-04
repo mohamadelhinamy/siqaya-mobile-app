@@ -8,6 +8,7 @@ import {
 } from '../screens';
 import ProfileDetailsScreen from '../screens/ProfileDetailsScreen';
 import {MyDonationsScreen} from '../screens/MyDonationsScreen';
+import {MyProductsScreen} from '../screens/MyProductsScreen';
 
 export type ProfileStackParamList = {
   ProfileScreen: undefined;
@@ -15,6 +16,7 @@ export type ProfileStackParamList = {
   SettingsScreen: undefined;
   ProfileDetailsScreen: undefined;
   DonationsScreen: undefined;
+  MyProductsScreen: undefined;
   ProductDetails: {productGuid: string};
 };
 
@@ -34,6 +36,7 @@ export const ProfileNavigator: React.FC = () => {
         component={ProfileDetailsScreen}
       />
       <Stack.Screen name="DonationsScreen" component={MyDonationsScreen} />
+      <Stack.Screen name="MyProductsScreen" component={MyProductsScreen} />
       <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
     </Stack.Navigator>
   );

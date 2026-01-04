@@ -74,7 +74,9 @@ export const CustomTabBar: React.FC<CustomTabBarProps> = ({
     if (
       nestedFocusedRoute?.name === 'CartScreen' ||
       nestedFocusedRoute?.name === 'ProductDetails' ||
-      nestedFocusedRoute?.name === 'ProfileDetailsScreen'
+      nestedFocusedRoute?.name === 'ProfileDetailsScreen' ||
+      nestedFocusedRoute?.name === 'MyProductsScreen' ||
+      nestedFocusedRoute?.name === 'DonationsScreen'
     ) {
       hideTabBar = true;
     }

@@ -316,6 +316,8 @@
     "giftForm": {
       "giftTo": "Gift To",
       "selectGiftTo": "Select",
+      "giftType": "Card Type",
+      "selectGiftType": "Select card type",
       "options": {
         "friend": "Friend",
         "family": "Family",
@@ -337,6 +339,54 @@
     "totalDonations": "Total Donations",
     "totalAmount": "Total Amount",
     "myDonationsList": "My Donations",
-    "noDonations": "No donations yet"
+    "noDonations": "No donations yet",
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "labels": {
+      "item": "Item",
+      "amount": "Amount",
+      "total": "Total",
+      "productDonation": "Product Donation",
+      "publicDonation": "Public Donation",
+      "productDetails": "Product Details"
+    }
+  },
+  "myProducts": {
+    "title": "My Products",
+    "emptyTitle": "You don't have any products yet",
+    "addNew": "Add New Product",
+    "form": {
+      "title": "Add New Product",
+      "subtitle": "Enter the following information to add a new product to your products list",
+      "productName": "Product Name",
+      "productNamePlaceholder": "Enter product name",
+      "productType": "Path",
+      "selectType": "Select",
+      "productValue": "Product Value",
+      "productValuePlaceholder": "Enter product value",
+      "productDetails": "Product Details",
+      "productDetailsPlaceholder": "Enter details",
+      "uploadImage": "Upload product image or download from ",
+      "uploadImageLink": "here",
+      "submit": "Add Product"
+    },
+    "success": {
+      "title": "Product added successfully",
+      "subtitle": "You can now follow your product and received donations from My Products list",
+      "goToProducts": "Go to My Products",
+      "goToHome": "Back to Home"
+    },
+    "errors": {
+      "nameRequired": "Please enter product name",
+      "typeRequired": "Please select product type",
+      "valueRequired": "Please enter product value",
+      "detailsRequired": "Please enter product details",
+      "imageFailed": "Failed to select image",
+      "submitFailed": "Failed to add product",
+      "notAuthenticated": "Please login first"
+    }
   }
 }

@@ -32,6 +32,13 @@ export const PaymentWebView: React.FC<PaymentWebViewProps> = ({
   const {t} = useLanguage();
   const [loading, setLoading] = useState(true);
 
+  // Append agent=mobile-app to the URL
+  const webviewUrl = url
+    ? url.includes('?')
+      ? `${url}&agent=mobile-app`
+      : `${url}?agent=mobile-app`
+    : '';
+
   const handleNavigationStateChange = (navState: any) => {
     const {url: currentUrl} = navState;
 
@@ -62,6 +69,20 @@ export const PaymentWebView: React.FC<PaymentWebViewProps> = ({
     onError?.('Failed to load payment page');
   };
 
+  const handleMessage = (event: any) => {
+    try {
+      const data = JSON.parse(event.nativeEvent.data);
+      if (data.event === 'CLOSE_WEBVIEW' || data.type === 'CLOSE_WEBVIEW') {
+        onClose();
+      }
+    } catch (e) {
+      // If not JSON, check if it's a plain string
+      if (event.nativeEvent.data === 'CLOSE_WEBVIEW') {
+        onClose();
+      }
+    }
+  };
+
   return (
     <Modal
       visible={visible}
@@ -89,12 +110,14 @@ export const PaymentWebView: React.FC<PaymentWebViewProps> = ({
         {/* WebView */}
         {url && (
           <WebView
-            source={{uri: url}}
+            source={{uri: webviewUrl}}
             style={styles.webview}
             onLoadStart={() => setLoading(true)}
             onLoadEnd={() => setLoading(false)}
             onNavigationStateChange={handleNavigationStateChange}
             onError={handleError}
+            userAgent="mobile-app"
+            onMessage={handleMessage}
             startInLoadingState={true}
             javaScriptEnabled={true}
             domStorageEnabled={true}

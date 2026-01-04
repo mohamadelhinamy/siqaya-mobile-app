@@ -7,6 +7,7 @@ export {CareScreen} from './CareScreen';
 export {PathsScreen} from './PathsScreen';
 export {ProfileScreen} from './ProfileScreen';
 export {SettingsScreen} from './SettingsScreen';
+export {MyProductsScreen} from './MyProductsScreen';
 export {PhoneEntryScreen} from './auth/PhoneEntryScreen';
 export {VerificationCodeScreen} from './auth/VerificationCodeScreen';
 export {RegisterScreen} from './auth/RegisterScreen';

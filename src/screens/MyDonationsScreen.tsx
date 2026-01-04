@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
   FlatList,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useLanguage, useAuth} from '../context';
 import {Typography, BackHeader, DonationCard} from '../components';
@@ -153,9 +153,24 @@ export const MyDonationsScreen: React.FC = () => {
     }
   }, [token]);
 
-  useEffect(() => {
-    fetchDonations();
-  }, [fetchDonations]);
+  // Hide bottom tab navigator and fetch donations on focus
+  useFocusEffect(
+    useCallback(() => {
+      const tabNav = navigation.getParent()?.getParent();
+      tabNav?.setOptions({
+        tabBarStyle: {display: 'none'},
+      });
+
+      // Fetch donations on every focus
+      fetchDonations();
+
+      return () => {
+        tabNav?.setOptions({
+          tabBarStyle: undefined,
+        });
+      };
+    }, [navigation, fetchDonations]),
+  );
 
   const handleProductDetailsPress = (productGuid: string) => {
     navigation.navigate('ProductDetails', {productGuid});

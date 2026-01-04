@@ -4,6 +4,7 @@ import {Typography} from '../Typography';
 import {Colors} from '../../constants';
 import {wp, hp} from '../../utils/responsive';
 import {riyalIcon} from '../Icons';
+import {useLanguage} from '../../context';
 
 // Icons
 import TickSquareIcon from '../../assets/icons/outlined/tick-square.svg';
@@ -58,14 +59,7 @@ export const DonationCard: React.FC<DonationCardProps> = ({
   onPress,
   onProductDetailsPress,
 }) => {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ar-SA', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  };
+  const {t} = useLanguage();
 
   const getStatusConfig = (statusValue: string) => {
     switch (statusValue) {
@@ -73,21 +67,21 @@ export const DonationCard: React.FC<DonationCardProps> = ({
         return {
           color: '#4CAF50',
           bgColor: '#E8F5E9',
-          text: 'مدفوع',
+          text: t('donations.status.paid'),
           Icon: TickSquareIcon,
         };
       case 'pending':
         return {
           color: '#FF9800',
           bgColor: '#FFF3E0',
-          text: 'قيد الانتظار',
+          text: t('donations.status.pending'),
           Icon: InfoCircleIcon,
         };
       case 'failed':
         return {
           color: '#F44336',
           bgColor: '#FFEBEE',
-          text: 'فشل',
+          text: t('donations.status.failed'),
           Icon: CloseCircleIcon,
         };
       default:
@@ -111,14 +105,14 @@ export const DonationCard: React.FC<DonationCardProps> = ({
   const getDonationTypeLabel = () => {
     // Product donation
     if (productItem) {
-      return productItem.product?.name || 'تبرع للمنتج';
+      return productItem.product?.name || t('donations.labels.productDonation');
     }
     // Path donation
     if (donationPath) {
       return donationPath.name;
     }
     // Public donation
-    return 'تبرع عام';
+    return t('donations.labels.publicDonation');
   };
 
   return (
@@ -187,13 +181,13 @@ export const DonationCard: React.FC<DonationCardProps> = ({
           <View style={styles.labelsRow}>
             <Typography
               variant="caption"
-              text="البند"
+              text={t('donations.labels.item')}
               color="textSecondary"
               style={styles.labelText}
             />
             <Typography
               variant="caption"
-              text="المبلغ"
+              text={t('donations.labels.amount')}
               color="textSecondary"
               style={styles.labelText}
             />
@@ -239,7 +233,7 @@ export const DonationCard: React.FC<DonationCardProps> = ({
           <View style={styles.totalRow}>
             <Typography
               variant="body2"
-              text="الإجمالي"
+              text={t('donations.labels.total')}
               style={styles.totalLabel}
             />
             <View style={styles.amountContainer}>
@@ -262,21 +256,12 @@ export const DonationCard: React.FC<DonationCardProps> = ({
             activeOpacity={0.7}>
             <Typography
               variant="body2"
-              text="تفاصيل المنتج"
+              text={t('donations.labels.productDetails')}
               color="primary"
               style={styles.productDetailsText}
             />
           </TouchableOpacity>
         )}
-
-        {/* Footer - Date */}
-        <View style={styles.footer}>
-          <Typography
-            variant="caption"
-            text={formatDate(paidAt || createdAt)}
-            color="textSecondary"
-          />
-        </View>
       </View>
     </TouchableOpacity>
   );
