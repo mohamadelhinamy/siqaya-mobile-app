@@ -332,5 +332,11 @@
       "yourName": "Your Name",
       "enterYourName": "Write your name here"
     }
+  },
+  "donations": {
+    "totalDonations": "Total Donations",
+    "totalAmount": "Total Amount",
+    "myDonationsList": "My Donations",
+    "noDonations": "No donations yet"
   }
 }

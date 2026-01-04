@@ -5,6 +5,7 @@ export interface PaymentInitiateRequest {
   order_type: 'cart' | 'product_donation' | 'public_donation';
   payment_method: 'visa' | 'applepay' | 'mada';
   product_id?: number;
+  path_id?: number;
   is_gift?: boolean;
   gift_type_id?: number;
   gift_sender_name?: string;
@@ -23,15 +24,20 @@ export interface PaymentInitiateResponse {
 export const paymentService = {
   initiatePayment: async (
     data: PaymentInitiateRequest,
+    userToken?: string,
   ): Promise<{
     success: boolean;
     data?: PaymentInitiateResponse;
     error?: string;
   }> => {
     try {
+      const headers = userToken
+        ? {Authorization: `Bearer ${userToken}`}
+        : undefined;
       const response = await apiService.post<PaymentInitiateResponse>(
         '/payments/mobile/initiate',
         data,
+        headers,
       );
       return response;
     } catch (error) {

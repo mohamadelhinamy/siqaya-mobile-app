@@ -23,3 +23,4 @@ export {AddToCartModal} from './AddToCartModal';
 export {DonationBottomSheet} from './DonationBottomSheet';
 export {ProductDonationModal} from './ProductDonationModal';
 export {PaymentWebView} from './PaymentWebView';
+export {DonationCard} from './DonationCard';

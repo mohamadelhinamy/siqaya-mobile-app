@@ -5,7 +5,7 @@ export const Config = {
 
   // API Configuration
   API: {
-    BASE_URL: 'https://sokya.ahmedanbar.dev/api/v1',
+    BASE_URL: 'https://don.sekaya.org.sa/api/v1',
     TIMEOUT: 10000,
     // These should be moved to environment variables in production
     APP_KEY: 'app_ENaNAQqNhKAEh7hAdUvKTOX50g4APNw3RuOncGyEgoy2aaos', // Replace with actual app key

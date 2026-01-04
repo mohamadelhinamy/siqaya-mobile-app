@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   StyleSheet,
@@ -6,11 +6,14 @@ import {
   ScrollView,
   TextStyle,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import {AppText} from '../core/AppText';
 import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
 import {Typography} from '../Typography';
+import {apiService} from '../../services/api';
+import {DonationBottomSheet} from '../DonationBottomSheet';
 
 interface ServiceItem {
   id: string;
@@ -52,7 +55,70 @@ const getDefaultServices = (t: any): ServiceItem[] => [
 
 export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
   const {t} = useLanguage();
-  const displayServices = services || getDefaultServices(t);
+  const [apiServices, setApiServices] = useState<ServiceItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [donationModalVisible, setDonationModalVisible] =
+    useState<boolean>(false);
+  const [selectedServiceId, setSelectedServiceId] = useState<number | null>(
+    null,
+  );
+  const [selectedServiceName, setSelectedServiceName] = useState<string>('');
+
+  const displayServices = services || apiServices;
+
+  useEffect(() => {
+    // Only fetch from API if services prop is not provided
+    if (!services) {
+      fetchServices();
+    }
+  }, [services]);
+
+  const handleServicePress = (serviceId: number, serviceName: string) => {
+    setSelectedServiceId(serviceId);
+    setSelectedServiceName(serviceName);
+    setDonationModalVisible(true);
+  };
+
+  const handleCloseDonation = () => {
+    setDonationModalVisible(false);
+    setSelectedServiceId(null);
+    setSelectedServiceName('');
+  };
+
+  const fetchServices = async () => {
+    try {
+      setLoading(true);
+      const response = await apiService.get<any>('/paths');
+      console.log('Paths response:', response);
+
+      if (
+        response.success &&
+        response.data?.pathsOfGoodness &&
+        Array.isArray(response.data.pathsOfGoodness)
+      ) {
+        const mappedServices: ServiceItem[] = response.data.pathsOfGoodness.map(
+          (path: any) => ({
+            id: path.id?.toString() || '',
+            title: path.name || path.title || '',
+            subtitle: path.description || '',
+            image: path.image
+              ? {uri: path.image}
+              : require('../../assets/images/small_card_image.png'),
+            color: path.color || '#FFFFFF',
+            onPress: () =>
+              handleServicePress(path.id, path.name || path.title || ''),
+          }),
+        );
+        setApiServices(mappedServices);
+      }
+    } catch (error) {
+      console.error('Failed to fetch paths:', error);
+      // Fall back to default services on error
+      setApiServices(getDefaultServices(t));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const sectionTitleStyle: TextStyle = {
     ...styles.sectionTitle,
@@ -72,6 +138,22 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
     );
   };
 
+  if (loading && displayServices.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Typography
+          variant="subtitle1"
+          color="textPrimary"
+          text={t('services.title')}
+          style={styles.sectionTitle}
+        />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Typography
@@ -85,9 +167,17 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
-        style={styles.scrollView}>
+        style={styles.scrollView}
+        removeClippedSubviews={false}>
         {displayServices.map(renderServiceCard)}
       </ScrollView>
+
+      <DonationBottomSheet
+        visible={donationModalVisible}
+        onClose={handleCloseDonation}
+        pathId={selectedServiceId || undefined}
+        serviceName={selectedServiceName}
+      />
     </View>
   );
 };
@@ -140,5 +230,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.black,
     textAlign: 'center',
+  },
+  loadingContainer: {
+    paddingVertical: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

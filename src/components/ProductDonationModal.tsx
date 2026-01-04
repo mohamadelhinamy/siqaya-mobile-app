@@ -15,7 +15,7 @@ import {CustomButton} from './CustomButton';
 import {PaymentWebView} from './PaymentWebView';
 import {riyalIcon} from './Icons';
 import {Colors} from '../constants';
-import {useLanguage} from '../context';
+import {useLanguage, useAuth} from '../context';
 import {hp, wp} from '../utils/responsive';
 import {paymentService} from '../services/payment';
 
@@ -39,6 +39,7 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
   onSuccess,
 }) => {
   const {t} = useLanguage();
+  const {token} = useAuth();
   const [customAmount, setCustomAmount] = useState<string>('');
   const [quickAmount, setQuickAmount] = useState<number | null>(null);
   const [donateAsGift, setDonateAsGift] = useState<boolean>(false);
@@ -94,7 +95,10 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
         paymentData.gift_receiver_mobile = receiverPhone;
       }
 
-      const response = await paymentService.initiatePayment(paymentData);
+      const response = await paymentService.initiatePayment(
+        paymentData,
+        token || undefined,
+      );
 
       if (response.success && response.webview_url) {
         // Open payment webview

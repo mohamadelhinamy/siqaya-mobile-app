@@ -145,11 +145,14 @@ export const CartScreen: React.FC = () => {
     setCheckingOut(true);
 
     try {
-      const response = await paymentService.initiatePayment({
-        amount: Number(cartData.total_amount),
-        order_type: 'cart',
-        payment_method: 'visa', // Default to visa for now
-      });
+      const response = await paymentService.initiatePayment(
+        {
+          amount: Number(cartData.total_amount),
+          order_type: 'cart',
+          payment_method: 'visa', // Default to visa for now
+        },
+        token || undefined,
+      );
 
       if (response.success && response.webview_url) {
         // Open payment webview

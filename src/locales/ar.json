@@ -332,5 +332,11 @@
       "yourName": "اسمك",
       "enterYourName": "اكتب اسمك هنا"
     }
+  },
+  "donations": {
+    "totalDonations": "إجمالي التبرعات",
+    "totalAmount": "المبلغ الإجمالي",
+    "myDonationsList": "تبرعاتي",
+    "noDonations": "لا توجد تبرعات بعد"
   }
 }

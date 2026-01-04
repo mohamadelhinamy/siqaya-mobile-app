@@ -15,7 +15,7 @@ import {CustomButton} from './CustomButton';
 import {PaymentWebView} from './PaymentWebView';
 import {riyalIcon} from './Icons';
 import {Colors} from '../constants';
-import {useLanguage} from '../context';
+import {useLanguage, useAuth} from '../context';
 import {hp, wp} from '../utils/responsive';
 import {apiService} from '../services/api';
 import {paymentService} from '../services/payment';
@@ -29,22 +29,25 @@ interface DonationBottomSheetProps {
   visible: boolean;
   onClose: () => void;
   onDonate?: (amount: number, category: string) => void;
+  pathId?: number;
+  serviceName?: string;
 }
 
 export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
   visible,
   onClose,
   onDonate,
+  pathId,
+  serviceName,
 }) => {
   const {t} = useLanguage();
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const {token} = useAuth();
+  const [selectedPath, setSelectedPath] = useState<string>('');
   const [customAmount, setCustomAmount] = useState<string>('');
   const [quickAmount, setQuickAmount] = useState<number | null>(null);
   const [donateToFamilies, setDonateToFamilies] = useState<boolean>(false);
-  const [categories, setCategories] = useState<
-    Array<{value: string; label: string}>
-  >([{value: 'all', label: t('donation.categories.all')}]);
-  const [loadingCategories, setLoadingCategories] = useState<boolean>(false);
+  const [paths, setPaths] = useState<Array<{value: string; label: string}>>([]);
+  const [loadingPaths, setLoadingPaths] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [paymentUrl, setPaymentUrl] = useState<string>('');
 
@@ -64,34 +67,40 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     {value: 'other', label: t('donation.giftForm.options.other')},
   ];
 
-  const fetchPaymentTypes = async () => {
+  const fetchPaths = async () => {
     try {
-      setLoadingCategories(true);
-      const response = await apiService.get<any>('/payment-types');
-      console.log('Payment types response:', response?.data?.payment_types);
+      setLoadingPaths(true);
+      const response = await apiService.get<any>('/paths');
+      console.log('Paths response for donation:', response);
 
       if (
         response.success &&
-        response.data?.payment_types &&
-        Array.isArray(response.data.payment_types)
+        response.data?.pathsOfGoodness &&
+        Array.isArray(response.data.pathsOfGoodness)
       ) {
-        const mappedCategories = response.data.payment_types.map(
-          (type: any) => ({
-            value: type.id.toString(),
-            label: type.name,
-          }),
-        );
+        const mappedPaths = response.data.pathsOfGoodness.map((path: any) => ({
+          value: path.id.toString(),
+          label: path.name || path.title,
+        }));
 
-        setCategories([
+        // Add 'all' option at the beginning
+        setPaths([
           {value: 'all', label: t('donation.categories.all')},
-          ...mappedCategories,
+          ...mappedPaths,
         ]);
+
+        // Preselect the pathId if provided
+        if (pathId) {
+          setSelectedPath(pathId.toString());
+        } else {
+          // Select 'all' by default if no pathId provided
+          setSelectedPath('all');
+        }
       }
     } catch (error) {
-      console.error('Failed to fetch payment types:', error);
-      // Keep default categories on error
+      console.error('Failed to fetch paths:', error);
     } finally {
-      setLoadingCategories(false);
+      setLoadingPaths(false);
     }
   };
 
@@ -107,18 +116,18 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
 
   useEffect(() => {
     if (visible) {
-      fetchPaymentTypes();
+      fetchPaths();
     } else {
       // Reset form when modal closes
       resetForm();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible]);
+  }, [visible, pathId]);
 
   const quickAmounts = [100, 200, 300];
 
   const resetForm = () => {
-    setSelectedCategory('all');
+    setSelectedPath('all');
     setCustomAmount('');
     setQuickAmount(null);
     setDonateToFamilies(false);
@@ -144,6 +153,11 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
           payment_method: 'visa', // Default to visa for now
         };
 
+        // Add path_id from selected path (only if not 'all')
+        if (selectedPath && selectedPath !== 'all') {
+          paymentData.path_id = parseInt(selectedPath, 10);
+        }
+
         if (donateToFamilies) {
           paymentData.gift_sender_name = yourName;
           paymentData.gift_sender_mobile = senderPhone;
@@ -153,7 +167,10 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
           paymentData.gift_type_id = 1;
         }
 
-        const response = await paymentService.initiatePayment(paymentData);
+        const response = await paymentService.initiatePayment(
+          paymentData,
+          token || undefined,
+        );
 
         setSubmitting(false);
         console.log('Payment initiation response:', response);
@@ -256,24 +273,22 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                 style={styles.subtitle}
               />
 
-              {/* Category Chips */}
+              {/* Path Pills */}
               <View style={styles.categoryContainer}>
-                {categories.map(category => (
+                {paths.map(path => (
                   <TouchableOpacity
-                    key={category.value}
-                    onPress={() => setSelectedCategory(category.value)}
+                    key={path.value}
+                    onPress={() => setSelectedPath(path.value)}
                     style={[
                       styles.categoryChip,
-                      selectedCategory === category.value &&
+                      selectedPath === path.value &&
                         styles.categoryChipSelected,
                     ]}>
                     <Typography
                       variant="body2"
-                      text={category.label}
+                      text={path.label}
                       color={
-                        selectedCategory === category.value
-                          ? 'white'
-                          : 'textSecondary'
+                        selectedPath === path.value ? 'white' : 'textSecondary'
                       }
                     />
                   </TouchableOpacity>
@@ -579,7 +594,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
           setPaymentUrl('');
           onDonate?.(
             quickAmount || parseInt(customAmount, 10) || 0,
-            selectedCategory,
+            selectedPath,
           );
           resetForm();
           onClose();
@@ -627,11 +642,11 @@ const styles = StyleSheet.create({
   categoryContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: wp(2),
+    gap: wp(1),
     marginBottom: hp(3),
   },
   categoryChip: {
-    paddingHorizontal: wp(3),
+    paddingHorizontal: wp(2),
     paddingVertical: hp(0.6),
     borderRadius: 20,
     backgroundColor: Colors.background.light,

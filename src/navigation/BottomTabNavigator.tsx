@@ -5,6 +5,7 @@ import {ProfileNavigator} from './ProfileNavigator';
 import {CustomTabBar, DonationBottomSheet} from '../components';
 import {HomeNavigator} from './HomeNavigator';
 import {ProductsNavigator} from './ProductsNavigator';
+import {PathsNavigator} from './PathsNavigator';
 
 export type BottomTabParamList = {
   Home: undefined;
@@ -51,7 +52,7 @@ export const BottomTabNavigator: React.FC = () => {
         <Tab.Screen name="Home" component={HomeNavigator} />
         <Tab.Screen name="Products" component={ProductsNavigator} />
         <Tab.Screen name="Care" component={HomeScreen} />
-        <Tab.Screen name="Paths" component={HomeScreen} />
+        <Tab.Screen name="Paths" component={PathsNavigator} />
         <Tab.Screen name="Profile" component={ProfileNavigator} />
       </Tab.Navigator>
       <DonationBottomSheet
