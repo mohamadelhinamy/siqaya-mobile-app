@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -31,6 +31,7 @@ interface ProductDonationModalProps {
   productId: number;
   productGuid?: string;
   productName: string;
+  isUserProduct?: boolean;
   onSuccess?: () => void;
 }
 
@@ -38,7 +39,9 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
   visible,
   onClose,
   productId,
+  productGuid,
   productName,
+  isUserProduct = false,
   onSuccess,
 }) => {
   const {t} = useLanguage();
@@ -48,6 +51,9 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
   const [donateAsGift, setDonateAsGift] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [paymentUrl, setPaymentUrl] = useState<string>('');
+
+  // Ref to prevent duplicate close/success calls
+  const isClosingRef = useRef(false);
 
   // Gift form fields
   const [senderName, setSenderName] = useState<string>('');
@@ -88,6 +94,7 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
 
   useEffect(() => {
     if (visible) {
+      isClosingRef.current = false;
       fetchGiftTypes();
     } else {
       // Reset form when modal closes
@@ -95,6 +102,34 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
+
+  // Handler for when PaymentWebView is closed (cancelled/failed)
+  // Close webview first, then close donation modal after a short delay
+  const handlePaymentWebViewClose = useCallback(() => {
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+    // First close the payment webview
+    setPaymentUrl('');
+    // Then close the donation modal after a short delay for sequential animation
+    setTimeout(() => {
+      resetForm();
+      onClose();
+    }, 300);
+  }, [onClose]);
+
+  // Guarded success handler - close sequentially on success
+  const handlePaymentSuccess = useCallback(() => {
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+    // First close the payment webview
+    setPaymentUrl('');
+    // Then close the donation modal after a short delay
+    setTimeout(() => {
+      onSuccess?.();
+      resetForm();
+      onClose();
+    }, 300);
+  }, [onSuccess, onClose]);
 
   const resetForm = () => {
     setCustomAmount('');
@@ -119,8 +154,11 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
     try {
       const paymentData: any = {
         amount,
-        order_type: 'product_donation',
+        order_type: isUserProduct
+          ? 'user_product_donation'
+          : 'product_donation',
         product_id: productId,
+        product_guid: productGuid,
         payment_method: 'visa', // Default to visa for now
       };
 
@@ -509,17 +547,8 @@ export const ProductDonationModal: React.FC<ProductDonationModalProps> = ({
       <PaymentWebView
         visible={!!paymentUrl}
         url={paymentUrl}
-        onClose={() => {
-          setPaymentUrl('');
-          resetForm();
-          onClose();
-        }}
-        onSuccess={() => {
-          setPaymentUrl('');
-          onSuccess?.();
-          resetForm();
-          onClose();
-        }}
+        onClose={handlePaymentWebViewClose}
+        onSuccess={handlePaymentSuccess}
       />
     </Modal>
   );

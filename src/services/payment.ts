@@ -5,6 +5,7 @@ export interface PaymentInitiateRequest {
   order_type: 'cart' | 'product_donation' | 'public_donation';
   payment_method: 'visa' | 'applepay' | 'mada';
   product_id?: number;
+  product_guid?: string;
   path_id?: number;
   is_gift?: boolean;
   gift_type_id?: number;

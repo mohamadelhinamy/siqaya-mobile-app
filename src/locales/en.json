@@ -386,7 +386,8 @@
       "detailsRequired": "Please enter product details",
       "imageFailed": "Failed to select image",
       "submitFailed": "Failed to add product",
-      "notAuthenticated": "Please login first"
+      "notAuthenticated": "Please login first",
+      "productInReview": "This product is still under review and cannot receive donations yet"
     }
   }
 }

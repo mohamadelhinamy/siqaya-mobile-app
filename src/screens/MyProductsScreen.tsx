@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -12,8 +12,9 @@ import {
   FlatList,
 } from 'react-native';
 import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {launchImageLibrary} from 'react-native-image-picker';
-import {BackHeader, ProductCard} from '../components';
+import {BackHeader, ProductCard, ProductDonationModal} from '../components';
 import {Typography} from '../components/Typography';
 import {useAuth, useLanguage} from '../context';
 import {apiService} from '../services/api';
@@ -45,13 +46,17 @@ type ScreenState = 'empty' | 'list' | 'form' | 'success';
 export const MyProductsScreen: React.FC = () => {
   const {token} = useAuth();
   const {t} = useLanguage();
-  const navigation = useNavigation();
+  const navigation = useNavigation<StackNavigationProp<any>>();
 
   // Screen state
   const [screenState, setScreenState] = useState<ScreenState>('empty');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [userProducts, setUserProducts] = useState<any[]>([]);
+
+  // Donation modal state
+  const [donationModalVisible, setDonationModalVisible] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   // Form state
   const [productName, setProductName] = useState('');
@@ -72,7 +77,7 @@ export const MyProductsScreen: React.FC = () => {
         return;
       }
 
-      const response = await apiService.get<any>('/user-products', {
+      const response = await apiService.get<any>('/user-products/my', {
         Authorization: `Bearer ${token}`,
       });
 
@@ -280,6 +285,20 @@ export const MyProductsScreen: React.FC = () => {
     navigation.goBack();
   };
 
+  const handleDonate = (product: any) => {
+    // Check if product is active before allowing donation
+    if (product.status !== 'active') {
+      Alert.alert(
+        t('common.error'),
+        t('myProducts.errors.productInReview') ||
+          'This product is still under review and cannot receive donations yet.',
+      );
+      return;
+    }
+    setSelectedProduct(product);
+    setDonationModalVisible(true);
+  };
+
   // Products List View
   const renderProductsList = () => (
     <View style={styles.listContainer}>
@@ -295,14 +314,15 @@ export const MyProductsScreen: React.FC = () => {
             remainingAmount={
               item.remaining_amount?.toString() || item.target_amount
             }
-            progress={item.completion_percentage / 100}
+            progress={(parseFloat(item.completion_percentage) || 0) / 100}
             image={item.image}
             category={item.product_type?.name || ''}
             location=""
             dealersCount={0}
-            onPress={() => {
-              // Navigate to product details if needed
-            }}
+            status={item.status}
+            statusText={item.status_text}
+            hideCartButton={true}
+            onDonate={() => handleDonate(item)}
             style={styles.productCard}
           />
         )}
@@ -601,6 +621,26 @@ export const MyProductsScreen: React.FC = () => {
           <BackHeader title="" backgroundColor={Colors.white} />
           {renderSuccess()}
         </>
+      )}
+
+      {/* Donation Modal */}
+      {selectedProduct && (
+        <ProductDonationModal
+          visible={donationModalVisible}
+          onClose={() => {
+            setDonationModalVisible(false);
+            setSelectedProduct(null);
+          }}
+          productId={selectedProduct.id}
+          productGuid={selectedProduct.guid}
+          productName={selectedProduct.product_name}
+          isUserProduct={true}
+          onSuccess={() => {
+            setDonationModalVisible(false);
+            setSelectedProduct(null);
+            fetchUserProducts();
+          }}
+        />
       )}
     </SafeAreaView>
   );

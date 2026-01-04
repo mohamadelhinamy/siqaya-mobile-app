@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useRef, useCallback} from 'react';
 import {
   View,
   StyleSheet,
@@ -31,6 +31,26 @@ export const PaymentWebView: React.FC<PaymentWebViewProps> = ({
 }) => {
   const {t} = useLanguage();
   const [loading, setLoading] = useState(true);
+  const isClosingRef = useRef(false);
+
+  // Reset closing state when modal becomes visible
+  React.useEffect(() => {
+    if (visible) {
+      isClosingRef.current = false;
+    }
+  }, [visible]);
+
+  const handleClose = useCallback(() => {
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+    onClose();
+  }, [onClose]);
+
+  const handleSuccess = useCallback(() => {
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+    onSuccess?.();
+  }, [onSuccess]);
 
   // Append agent=mobile-app to the URL
   const webviewUrl = url
@@ -47,19 +67,18 @@ export const PaymentWebView: React.FC<PaymentWebViewProps> = ({
       currentUrl.includes('/payment/success') ||
       currentUrl.includes('status=success')
     ) {
-      onSuccess?.();
-      onClose();
+      handleSuccess();
     } else if (
       currentUrl.includes('/payment/failed') ||
       currentUrl.includes('status=failed')
     ) {
       onError?.('Payment failed');
-      onClose();
+      handleClose();
     } else if (
       currentUrl.includes('/payment/cancelled') ||
       currentUrl.includes('status=cancelled')
     ) {
-      onClose();
+      handleClose();
     }
   };
 
@@ -73,12 +92,12 @@ export const PaymentWebView: React.FC<PaymentWebViewProps> = ({
     try {
       const data = JSON.parse(event.nativeEvent.data);
       if (data.event === 'CLOSE_WEBVIEW' || data.type === 'CLOSE_WEBVIEW') {
-        onClose();
+        handleClose();
       }
     } catch (e) {
       // If not JSON, check if it's a plain string
       if (event.nativeEvent.data === 'CLOSE_WEBVIEW') {
-        onClose();
+        handleClose();
       }
     }
   };
@@ -88,7 +107,7 @@ export const PaymentWebView: React.FC<PaymentWebViewProps> = ({
       visible={visible}
       animationType="slide"
       presentationStyle="fullScreen"
-      onRequestClose={onClose}>
+      onRequestClose={handleClose}>
       <SafeAreaView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
@@ -98,7 +117,7 @@ export const PaymentWebView: React.FC<PaymentWebViewProps> = ({
             color="textPrimary"
             style={styles.title}
           />
-          <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
             <CloseCircleIcon
               width={24}
               height={24}

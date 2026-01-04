@@ -20,6 +20,9 @@ export interface ProductCardProps {
   category: string;
   location: string;
   dealersCount: number;
+  status?: string;
+  statusText?: string;
+  hideCartButton?: boolean;
   onDonate?: () => void;
   onViewDetails?: () => void;
   onAddToCart?: () => void;
@@ -37,6 +40,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   category,
   location,
   dealersCount,
+  status,
+  statusText,
+  hideCartButton,
   onDonate,
   onViewDetails,
   onAddToCart,
@@ -44,6 +50,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   style,
 }) => {
   const {t} = useLanguage();
+
+  // Get status badge color based on status
+  const getStatusColor = () => {
+    switch (status) {
+      case 'active':
+        return '#4CAF50'; // Green
+      case 'pending':
+      case 'pending_approval':
+        return '#FF9800'; // Orange
+      case 'rejected':
+        return '#F44336'; // Red
+      case 'completed':
+        return '#2196F3'; // Blue
+      default:
+        return '#9E9E9E'; // Gray
+    }
+  };
+
   const defaultOnDonate = () => {
     console.log('Donate button pressed for product:', id);
   };
@@ -137,6 +161,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
               style={styles.categoryText}
             />
           </View>
+
+          {/* Status Badge on Image */}
+          {status && statusText && (
+            <View
+              style={[styles.statusBadge, {backgroundColor: getStatusColor()}]}>
+              <Typography
+                variant="caption"
+                color="white"
+                text={statusText}
+                style={styles.statusText}
+              />
+            </View>
+          )}
         </View>
       </View>
 
@@ -216,14 +253,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             title={t('products.donateNow')}
             variant="primary"
             onPress={onDonate || defaultOnDonate}
-            style={styles.donateButton}
+            style={[
+              styles.donateButton,
+              hideCartButton && styles.donateButtonFull,
+            ]}
           />
-          <CustomButton
-            variant="icon"
-            icon={<ShoppingCartIcon color={Colors.text.primary} />}
-            onPress={onAddToCart || onViewDetails || defaultOnViewDetails}
-            style={styles.cartButton}
-          />
+          {!hideCartButton && (
+            <CustomButton
+              variant="icon"
+              icon={<ShoppingCartIcon color={Colors.text.primary} />}
+              onPress={onAddToCart || onViewDetails || defaultOnViewDetails}
+              style={styles.cartButton}
+            />
+          )}
         </View>
 
         {/* View Details Link */}
@@ -331,6 +373,18 @@ const styles = StyleSheet.create({
     fontSize: wp(3),
     fontWeight: '600',
   },
+  statusBadge: {
+    position: 'absolute',
+    top: wp(3),
+    right: wp(3),
+    paddingHorizontal: wp(3),
+    paddingVertical: hp(0.6),
+    borderRadius: wp(3),
+  },
+  statusText: {
+    fontSize: wp(2.8),
+    fontWeight: '600',
+  },
   cardContent: {
     padding: wp(4),
     paddingTop: hp(1),
@@ -416,6 +470,9 @@ const styles = StyleSheet.create({
     borderRadius: wp(6),
     margin: 0,
     marginBottom: 0, // Override CustomButton's default marginBottom
+  },
+  donateButtonFull: {
+    flex: 1,
   },
   cartButton: {
     width: hp(5.5), // Fixed width to match height
