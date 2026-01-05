@@ -1,5 +1,6 @@
 import React from 'react';
-import {View, StyleSheet, Alert, Modal, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, Alert} from 'react-native';
+import Modal from 'react-native-modal';
 import {BackHeader} from '../components';
 import IconLabelButton from '../components/IconLabelButton';
 import FlagIcon from '../assets/icons/outlined/flag.svg';
@@ -64,18 +65,17 @@ export const SettingsScreen: React.FC = () => {
       <BackHeader title={t('settings.title')} backgroundColor={Colors.white} />
 
       <Modal
-        visible={languageModalVisible}
-        animationType="slide"
-        transparent
-        onRequestClose={() => setLanguageModalVisible(false)}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPressOut={() => setLanguageModalVisible(false)}>
-          <View style={styles.modalContent}>
-            <LanguageSelector />
-          </View>
-        </TouchableOpacity>
+        isVisible={languageModalVisible}
+        onBackdropPress={() => setLanguageModalVisible(false)}
+        onBackButtonPress={() => setLanguageModalVisible(false)}
+        onSwipeComplete={() => setLanguageModalVisible(false)}
+        swipeDirection="down"
+        style={styles.modal}
+        useNativeDriverForBackdrop>
+        <View style={styles.modalContent}>
+          <View style={styles.swipeIndicator} />
+          <LanguageSelector />
+        </View>
       </Modal>
 
       <View style={styles.content}>
@@ -133,16 +133,23 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.lightGray,
     marginVertical: 8,
   },
-  modalOverlay: {
-    flex: 1,
+  modal: {
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.4)',
+    margin: 0,
   },
   modalContent: {
     backgroundColor: Colors.white,
     padding: 16,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
+  },
+  swipeIndicator: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: 12,
   },
 });
 

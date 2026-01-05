@@ -2,13 +2,11 @@ import React, {useState} from 'react';
 import {
   View,
   StyleSheet,
-  Modal,
   TextInput,
   TouchableOpacity,
-  KeyboardAvoidingView,
-  Platform,
   Alert,
 } from 'react-native';
+import Modal from 'react-native-modal';
 import {Typography} from '../Typography';
 import {CustomButton} from '../CustomButton';
 import {riyalIcon} from '../Icons';
@@ -108,102 +106,101 @@ export const AddToCartModal: React.FC<AddToCartModalProps> = ({
 
   return (
     <Modal
-      visible={visible}
-      transparent={true}
-      animationType="slide"
-      onRequestClose={handleClose}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoid}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={handleClose}>
-          <TouchableOpacity
-            style={styles.modalContent}
-            activeOpacity={1}
-            onPress={e => e.stopPropagation()}>
-            {/* Close Button */}
-            <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-              <Typography
-                variant="h4"
-                text="✕"
-                color="textSecondary"
-                style={styles.closeIcon}
-              />
-            </TouchableOpacity>
+      isVisible={visible}
+      onBackdropPress={handleClose}
+      onBackButtonPress={handleClose}
+      onSwipeComplete={handleClose}
+      swipeDirection="down"
+      style={styles.modal}
+      propagateSwipe={true}
+      avoidKeyboard={true}
+      useNativeDriverForBackdrop>
+      <View style={styles.modalContent}>
+        <View style={styles.swipeIndicator} />
 
-            {/* Product Name Title */}
-            <Typography
-              variant="h6"
-              text={productName}
-              color="textPrimary"
-              style={styles.modalTitle}
-            />
-
-            {/* Amount Input */}
-            <View style={styles.inputContainer}>
-              <TextInput
-                style={styles.amountInput}
-                value={cartAmount}
-                onChangeText={text => {
-                  setCartAmount(text);
-                  setError('');
-                }}
-                placeholder={t('products.enterAmount')}
-                placeholderTextColor={Colors.text.secondary}
-                keyboardType="numeric"
-              />
-              <View style={styles.riyalIconContainer}>
-                {React.createElement(riyalIcon, {
-                  width: wp(5),
-                  height: wp(5),
-                })}
-              </View>
-            </View>
-
-            {/* Error Message */}
-            {error ? (
-              <Typography
-                variant="caption"
-                text={error}
-                color="error"
-                style={styles.errorText}
-              />
-            ) : null}
-
-            {/* Confirm Button */}
-            <CustomButton
-              title={t('products.addToCart')}
-              variant="primary"
-              onPress={handleConfirm}
-              loading={loading}
-              disabled={loading}
-              style={styles.confirmButton}
-            />
-          </TouchableOpacity>
+        {/* Close Button */}
+        <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+          <Typography
+            variant="h4"
+            text="✕"
+            color="textSecondary"
+            style={styles.closeIcon}
+          />
         </TouchableOpacity>
-      </KeyboardAvoidingView>
+
+        {/* Product Name Title */}
+        <Typography
+          variant="h6"
+          text={productName}
+          color="textPrimary"
+          style={styles.modalTitle}
+        />
+
+        {/* Amount Input */}
+        <View style={styles.inputContainer}>
+          <TextInput
+            style={styles.amountInput}
+            value={cartAmount}
+            onChangeText={text => {
+              setCartAmount(text);
+              setError('');
+            }}
+            placeholder={t('products.enterAmount')}
+            placeholderTextColor={Colors.text.secondary}
+            keyboardType="numeric"
+          />
+          <View style={styles.riyalIconContainer}>
+            {React.createElement(riyalIcon, {
+              width: wp(5),
+              height: wp(5),
+            })}
+          </View>
+        </View>
+
+        {/* Error Message */}
+        {error ? (
+          <Typography
+            variant="caption"
+            text={error}
+            color="error"
+            style={styles.errorText}
+          />
+        ) : null}
+
+        {/* Confirm Button */}
+        <CustomButton
+          title={t('products.addToCart')}
+          variant="primary"
+          onPress={handleConfirm}
+          loading={loading}
+          disabled={loading}
+          style={styles.confirmButton}
+        />
+      </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-  keyboardAvoid: {
-    flex: 1,
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  modal: {
     justifyContent: 'flex-end',
+    margin: 0,
   },
   modalContent: {
     backgroundColor: Colors.white,
     borderTopLeftRadius: wp(6),
     borderTopRightRadius: wp(6),
     padding: wp(6),
-    paddingTop: hp(6),
+    paddingTop: hp(2),
     paddingBottom: hp(4),
+  },
+  swipeIndicator: {
+    width: 40,
+    height: 4,
+    backgroundColor: '#E0E0E0',
+    borderRadius: 2,
+    alignSelf: 'center',
+    marginBottom: hp(3),
   },
   closeButton: {
     position: 'absolute',

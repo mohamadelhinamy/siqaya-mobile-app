@@ -14,7 +14,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useLanguage, useRTLStyles} from '../context';
 import {Typography} from '../components';
-import {DonationBottomSheet} from '../components/DonationBottomSheet';
+import {PathDonationModal} from '../components/PathDonationModal';
 import {apiService} from '../services/api';
 import {Colors} from '../constants';
 import {wp, hp} from '../utils/responsive';
@@ -48,6 +48,12 @@ export const PathsScreen: React.FC = () => {
     useState<boolean>(false);
   const [selectedPathId, setSelectedPathId] = useState<number | null>(null);
   const [selectedPathName, setSelectedPathName] = useState<string>('');
+  const [selectedPathImage, setSelectedPathImage] = useState<
+    string | undefined
+  >(undefined);
+  const [selectedPathDescription, setSelectedPathDescription] = useState<
+    string | undefined
+  >(undefined);
 
   useEffect(() => {
     fetchPaths();
@@ -73,9 +79,16 @@ export const PathsScreen: React.FC = () => {
     }
   };
 
-  const handlePathPress = (pathId: number, pathName: string) => {
+  const handlePathPress = (
+    pathId: number,
+    pathName: string,
+    pathImage?: string,
+    pathDescription?: string,
+  ) => {
     setSelectedPathId(pathId);
     setSelectedPathName(pathName);
+    setSelectedPathImage(pathImage);
+    setSelectedPathDescription(pathDescription);
     setDonationModalVisible(true);
   };
 
@@ -83,6 +96,8 @@ export const PathsScreen: React.FC = () => {
     setDonationModalVisible(false);
     setSelectedPathId(null);
     setSelectedPathName('');
+    setSelectedPathImage(undefined);
+    setSelectedPathDescription(undefined);
   };
 
   const handleSearchPress = () => {
@@ -98,7 +113,9 @@ export const PathsScreen: React.FC = () => {
   const renderPathCard = ({item}: {item: PathItem}) => (
     <TouchableOpacity
       style={styles.pathCard}
-      onPress={() => handlePathPress(item.id, item.name)}
+      onPress={() =>
+        handlePathPress(item.id, item.name, item.image, item.summary)
+      }
       activeOpacity={0.8}>
       <Image
         source={
@@ -246,11 +263,13 @@ export const PathsScreen: React.FC = () => {
         />
       )}
 
-      <DonationBottomSheet
+      <PathDonationModal
         visible={donationModalVisible}
         onClose={handleCloseDonation}
-        pathId={selectedPathId || undefined}
-        serviceName={selectedPathName}
+        pathId={selectedPathId || 0}
+        pathName={selectedPathName}
+        pathDescription={selectedPathDescription}
+        pathImage={selectedPathImage}
       />
     </SafeAreaView>
   );

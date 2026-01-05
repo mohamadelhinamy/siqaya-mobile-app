@@ -227,13 +227,6 @@ export const MyDonationsScreen: React.FC = () => {
           />
         </View>
       </View>
-
-      {/* Section Title */}
-      <Typography
-        variant="h5"
-        text={t('donations.myDonationsList')}
-        style={styles.sectionTitle}
-      />
     </View>
   );
 

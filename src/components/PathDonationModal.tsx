@@ -1,11 +1,10 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef, useCallback} from 'react';
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   TextInput,
   ScrollView,
-  Platform,
   Alert,
   Image,
 } from 'react-native';
@@ -17,49 +16,49 @@ import {riyalIcon} from './Icons';
 import {Colors} from '../constants';
 import {useLanguage, useAuth} from '../context';
 import {hp, wp} from '../utils/responsive';
-import {apiService} from '../services/api';
 import {paymentService} from '../services/payment';
+import {apiService} from '../services/api';
 
 // Import icons
 import CloseCircleIcon from '../assets/icons/outlined/close-circle.svg';
-import InfoIcon from '../assets/icons/outlined/info-circle.svg';
 import ArrowDownIcon from '../assets/icons/outlined/arrow-down.svg';
+import InfoIcon from '../assets/icons/outlined/info-circle.svg';
 
-interface DonationBottomSheetProps {
+interface PathDonationModalProps {
   visible: boolean;
   onClose: () => void;
-  onDonate?: (amount: number, category: string) => void;
-  pathId?: number;
-  serviceName?: string;
+  pathId: number;
+  pathName: string;
+  pathDescription?: string;
+  pathImage?: string;
+  onSuccess?: () => void;
 }
 
-export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
+export const PathDonationModal: React.FC<PathDonationModalProps> = ({
   visible,
   onClose,
-  onDonate,
   pathId,
-  serviceName,
+  pathName,
+  pathDescription,
+  pathImage,
+  onSuccess,
 }) => {
   const {t} = useLanguage();
   const {token} = useAuth();
-  const [selectedPath, setSelectedPath] = useState<string>('');
   const [customAmount, setCustomAmount] = useState<string>('');
   const [quickAmount, setQuickAmount] = useState<number | null>(null);
-  const [donateToFamilies, setDonateToFamilies] = useState<boolean>(false);
-  const [paths, setPaths] = useState<Array<{value: string; label: string}>>([]);
-  const [loadingPaths, setLoadingPaths] = useState<boolean>(false);
+  const [donateAsGift, setDonateAsGift] = useState<boolean>(false);
   const [submitting, setSubmitting] = useState<boolean>(false);
   const [paymentUrl, setPaymentUrl] = useState<string>('');
 
+  // Ref to prevent duplicate close/success calls
+  const isClosingRef = useRef(false);
+
   // Gift form fields
-  const [giftTo, setGiftTo] = useState<string>('');
-  const [recipientName, setRecipientName] = useState<string>('');
-  const [recipientPhone, setRecipientPhone] = useState<string>('');
-  const [yourName, setYourName] = useState<string>('');
+  const [senderName, setSenderName] = useState<string>('');
   const [senderPhone, setSenderPhone] = useState<string>('');
-  const [giftMessage, setGiftMessage] = useState<string>('');
-  const [rememberName, setRememberName] = useState<boolean>(false);
-  const [giftToModalVisible, setGiftToModalVisible] = useState<boolean>(false);
+  const [receiverName, setReceiverName] = useState<string>('');
+  const [receiverPhone, setReceiverPhone] = useState<string>('');
 
   // Gift types from API
   const [giftTypes, setGiftTypes] = useState<
@@ -70,59 +69,18 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     useState<boolean>(false);
   const [loadingGiftTypes, setLoadingGiftTypes] = useState<boolean>(false);
 
-  const giftToOptions = [
-    {value: 'friend', label: t('donation.giftForm.options.friend')},
-    {value: 'family', label: t('donation.giftForm.options.family')},
-    {value: 'other', label: t('donation.giftForm.options.other')},
-  ];
-
-  const fetchPaths = async () => {
-    try {
-      setLoadingPaths(true);
-      const response = await apiService.get<any>('/paths');
-      console.log('Paths response for donation:', response);
-
-      if (
-        response.success &&
-        response.data?.pathsOfGoodness &&
-        Array.isArray(response.data.pathsOfGoodness)
-      ) {
-        const mappedPaths = response.data.pathsOfGoodness.map((path: any) => ({
-          value: path.id.toString(),
-          label: path.name || path.title,
-        }));
-
-        // Add 'all' option at the beginning
-        setPaths([
-          {value: 'all', label: t('donation.categories.all')},
-          ...mappedPaths,
-        ]);
-
-        // Preselect the pathId if provided
-        if (pathId) {
-          setSelectedPath(pathId.toString());
-        } else {
-          // Select 'all' by default if no pathId provided
-          setSelectedPath('all');
-        }
-      }
-    } catch (error) {
-      console.error('Failed to fetch paths:', error);
-    } finally {
-      setLoadingPaths(false);
-    }
-  };
+  const quickAmounts = [100, 200, 300];
 
   const fetchGiftTypes = async () => {
     try {
       setLoadingGiftTypes(true);
       const response = await apiService.get<any>('/gift-types');
-      console.log('Gift types response:', response?.data?.gift_types);
+      console.log('Gift types response:', response);
 
       if (
         response.success &&
-        response.data &&
-        Array.isArray(response.data?.gift_types)
+        response.data?.gift_types &&
+        Array.isArray(response.data.gift_types)
       ) {
         setGiftTypes(response.data.gift_types);
       }
@@ -133,90 +91,95 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
     }
   };
 
-  const handleSelectGiftTo = (value: string) => {
-    setGiftTo(value);
-    setGiftToModalVisible(false);
-  };
-
-  const getGiftToLabel = () => {
-    const selected = giftToOptions.find(opt => opt.value === giftTo);
-    return selected ? selected.label : t('donation.giftForm.selectGiftTo');
-  };
-
   useEffect(() => {
     if (visible) {
-      fetchPaths();
+      isClosingRef.current = false;
       fetchGiftTypes();
     } else {
       // Reset form when modal closes
       resetForm();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, pathId]);
+  }, [visible]);
 
-  const quickAmounts = [100, 200, 300];
+  // Handler for when PaymentWebView is closed (cancelled/failed)
+  const handlePaymentWebViewClose = useCallback(() => {
+    if (isClosingRef.current) {
+      return;
+    }
+    isClosingRef.current = true;
+    setPaymentUrl('');
+    setTimeout(() => {
+      resetForm();
+      onClose();
+    }, 300);
+  }, [onClose]);
+
+  // Guarded success handler
+  const handlePaymentSuccess = useCallback(() => {
+    if (isClosingRef.current) {
+      return;
+    }
+    isClosingRef.current = true;
+    setPaymentUrl('');
+    setTimeout(() => {
+      onSuccess?.();
+      resetForm();
+      onClose();
+    }, 300);
+  }, [onSuccess, onClose]);
 
   const resetForm = () => {
-    setSelectedPath('all');
     setCustomAmount('');
     setQuickAmount(null);
-    setDonateToFamilies(false);
-    setGiftTo('');
-    setRecipientName('');
-    setRecipientPhone('');
-    setYourName('');
+    setDonateAsGift(false);
+    setSenderName('');
     setSenderPhone('');
-    setGiftMessage('');
-    setRememberName(false);
+    setReceiverName('');
+    setReceiverPhone('');
     setPaymentUrl('');
     setSelectedGiftType(null);
   };
 
   const handleDonate = async () => {
     const amount = quickAmount || parseInt(customAmount, 10) || 0;
-    if (amount > 0) {
-      setSubmitting(true);
+    if (amount <= 0) {
+      return;
+    }
 
-      try {
-        const paymentData: any = {
-          amount,
-          order_type: 'public_donation',
-          payment_method: 'visa', // Default to visa for now
-        };
+    setSubmitting(true);
 
-        // Add path_id from selected path (only if not 'all')
-        if (selectedPath && selectedPath !== 'all') {
-          paymentData.path_id = parseInt(selectedPath, 10);
-        }
+    try {
+      const paymentData: any = {
+        amount,
+        order_type: 'public_donation',
+        path_id: pathId,
+        payment_method: 'visa',
+      };
 
-        if (donateToFamilies) {
-          paymentData.gift_sender_name = yourName;
-          paymentData.gift_sender_mobile = senderPhone;
-          paymentData.gift_receiver_name = recipientName;
-          paymentData.gift_receiver_mobile = recipientPhone;
-          paymentData.is_gift = true;
-          paymentData.gift_type_id = selectedGiftType;
-        }
-
-        const response = await paymentService.initiatePayment(
-          paymentData,
-          token || undefined,
-        );
-
-        setSubmitting(false);
-        console.log('Payment initiation response:', response);
-
-        if (response.success && response.webview_url) {
-          // Open payment webview
-          setPaymentUrl(response.webview_url);
-        } else {
-          Alert.alert(t('common.error'), response.error || 'Payment failed');
-        }
-      } catch (error) {
-        setSubmitting(false);
-        console.error('Donation error:', error);
-        Alert.alert(t('common.error'), 'Failed to process donation');
+      if (donateAsGift) {
+        paymentData.gift_sender_name = senderName;
+        paymentData.gift_sender_mobile = senderPhone;
+        paymentData.gift_receiver_name = receiverName;
+        paymentData.gift_receiver_mobile = receiverPhone;
+        paymentData.is_gift = true;
+        paymentData.gift_type_id = selectedGiftType;
       }
+
+      const response = await paymentService.initiatePayment(
+        paymentData,
+        token || undefined,
+      );
+
+      if (response.success && response.data?.webview_url) {
+        setPaymentUrl(response.data.webview_url);
+      } else {
+        Alert.alert(t('common.error'), response.error || 'Payment failed');
+      }
+    } catch (error) {
+      console.error('Donation error:', error);
+      Alert.alert(t('common.error'), 'Failed to process donation');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -231,22 +194,20 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
   };
 
   const handleCustomAmountChange = (text: string) => {
-    // Only allow numbers
     const cleaned = text.replace(/[^0-9]/g, '');
     setCustomAmount(cleaned);
     setQuickAmount(null);
   };
 
   const isGiftFormValid = () => {
-    if (!donateToFamilies) {
-      return true; // Gift form not shown, so it's valid
+    if (!donateAsGift) {
+      return true;
     }
-    // When gift form is shown, validate required fields
     return (
-      recipientPhone.trim() !== '' &&
-      recipientName.trim() !== '' &&
-      yourName.trim() !== '' &&
-      senderPhone.trim() !== ''
+      senderName.trim() !== '' &&
+      senderPhone.trim() !== '' &&
+      receiverName.trim() !== '' &&
+      receiverPhone.trim() !== ''
     );
   };
 
@@ -274,7 +235,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
           nestedScrollEnabled={true}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={styles.scrollContent}>
-          {/* Header */}
+          {/* Header with Close Button */}
           <View style={styles.header}>
             <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
               <CloseCircleIcon
@@ -283,41 +244,33 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                 color={Colors.text.primary}
               />
             </TouchableOpacity>
-            <Typography
-              variant="h5"
-              text={t('donation.title')}
-              color="textPrimary"
-              style={styles.title}
-            />
           </View>
 
-          {/* Subtitle */}
-          <Typography
-            variant="body2"
-            text={t('donation.subtitle')}
-            color="textSecondary"
-            style={styles.subtitle}
-          />
-
-          {/* Path Pills */}
-          <View style={styles.categoryContainer}>
-            {paths.map(path => (
-              <TouchableOpacity
-                key={path.value}
-                onPress={() => setSelectedPath(path.value)}
-                style={[
-                  styles.categoryChip,
-                  selectedPath === path.value && styles.categoryChipSelected,
-                ]}>
-                <Typography
-                  variant="body2"
-                  text={path.label}
-                  color={
-                    selectedPath === path.value ? 'white' : 'textSecondary'
-                  }
-                />
-              </TouchableOpacity>
-            ))}
+          {/* Path Image and Name */}
+          <View style={styles.pathHeader}>
+            <Image
+              source={
+                pathImage
+                  ? {uri: pathImage}
+                  : require('../assets/images/small_card_image.png')
+              }
+              style={styles.pathImage}
+              resizeMode="cover"
+            />
+            <Typography
+              variant="h5"
+              text={pathName}
+              color="textPrimary"
+              style={styles.pathName}
+            />
+            {pathDescription ? (
+              <Typography
+                variant="body2"
+                text={pathDescription}
+                color="textSecondary"
+                style={styles.pathDescription}
+              />
+            ) : null}
           </View>
 
           {/* Quick Amount Buttons */}
@@ -364,16 +317,13 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
             </View>
           </View>
 
-          {/* Donate to Families Checkbox */}
+          {/* Donate as Gift Checkbox */}
           <TouchableOpacity
-            onPress={() => setDonateToFamilies(!donateToFamilies)}
+            onPress={() => setDonateAsGift(!donateAsGift)}
             style={styles.checkboxContainer}>
             <View
-              style={[
-                styles.checkbox,
-                donateToFamilies && styles.checkboxChecked,
-              ]}>
-              {donateToFamilies && (
+              style={[styles.checkbox, donateAsGift && styles.checkboxChecked]}>
+              {donateAsGift && (
                 <Typography variant="caption" color="white" text="✓" />
               )}
             </View>
@@ -385,8 +335,8 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
             />
           </TouchableOpacity>
 
-          {/* Gift Form - Show when donateToFamilies is checked */}
-          {donateToFamilies && (
+          {/* Gift Form */}
+          {donateAsGift && (
             <View style={styles.giftFormContainer}>
               {/* Gift Type Dropdown */}
               <View style={styles.formField}>
@@ -435,83 +385,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                 </TouchableOpacity>
               </View>
 
-              {/* Recipient Phone */}
-              <View style={styles.formField}>
-                <Typography
-                  variant="body2"
-                  text={t('donation.giftForm.recipientPhone')}
-                  color="textPrimary"
-                  style={styles.formLabel}
-                />
-                <TextInput
-                  style={styles.formInput}
-                  placeholder={t('donation.giftForm.enterPhone')}
-                  value={recipientPhone}
-                  onChangeText={setRecipientPhone}
-                  keyboardType="phone-pad"
-                  placeholderTextColor={Colors.text.secondary}
-                />
-              </View>
-
-              {/* Recipient Name */}
-              <View style={styles.formField}>
-                <Typography
-                  variant="body2"
-                  text={t('donation.giftForm.recipientName')}
-                  color="textPrimary"
-                  style={styles.formLabel}
-                />
-                <TextInput
-                  style={styles.formInput}
-                  placeholder={t('donation.giftForm.enterRecipientName')}
-                  value={recipientName}
-                  onChangeText={setRecipientName}
-                  placeholderTextColor={Colors.text.secondary}
-                />
-              </View>
-
-              {/* Gift Message */}
-              {/* <View style={styles.formField}>
-                  <Typography
-                    variant="body2"
-                    text={t('donation.giftForm.message')}
-                    color="textPrimary"
-                    style={styles.formLabel}
-                  />
-                  <TextInput
-                    style={[styles.formInput, styles.messageInput]}
-                    placeholder={t('donation.giftForm.messagePlaceholder')}
-                    value={giftMessage}
-                    onChangeText={setGiftMessage}
-                    multiline
-                    numberOfLines={4}
-                    textAlignVertical="top"
-                    placeholderTextColor={Colors.text.secondary}
-                  />
-                </View> */}
-
-              {/* Remember Name Checkbox */}
-              {/* <TouchableOpacity
-                  onPress={() => setRememberName(!rememberName)}
-                  style={styles.checkboxContainer}>
-                  <View
-                    style={[
-                      styles.checkbox,
-                      rememberName && styles.checkboxChecked,
-                    ]}>
-                    {rememberName && (
-                      <Typography variant="caption" color="white" text="✓" />
-                    )}
-                  </View>
-                  <Typography
-                    variant="body2"
-                    text={t('donation.giftForm.rememberName')}
-                    color="textPrimary"
-                    style={styles.checkboxLabel}
-                  />
-                </TouchableOpacity> */}
-
-              {/* Your Name */}
+              {/* Sender Name */}
               <View style={styles.formField}>
                 <Typography
                   variant="body2"
@@ -522,8 +396,8 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                 <TextInput
                   style={styles.formInput}
                   placeholder={t('donation.giftForm.enterYourName')}
-                  value={yourName}
-                  onChangeText={setYourName}
+                  value={senderName}
+                  onChangeText={setSenderName}
                   placeholderTextColor={Colors.text.secondary}
                 />
               </View>
@@ -541,6 +415,41 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                   placeholder={t('donation.giftForm.enterPhone')}
                   value={senderPhone}
                   onChangeText={setSenderPhone}
+                  keyboardType="phone-pad"
+                  placeholderTextColor={Colors.text.secondary}
+                />
+              </View>
+
+              {/* Receiver Name */}
+              <View style={styles.formField}>
+                <Typography
+                  variant="body2"
+                  text={t('donation.giftForm.recipientName')}
+                  color="textPrimary"
+                  style={styles.formLabel}
+                />
+                <TextInput
+                  style={styles.formInput}
+                  placeholder={t('donation.giftForm.enterRecipientName')}
+                  value={receiverName}
+                  onChangeText={setReceiverName}
+                  placeholderTextColor={Colors.text.secondary}
+                />
+              </View>
+
+              {/* Receiver Phone */}
+              <View style={styles.formField}>
+                <Typography
+                  variant="body2"
+                  text={t('donation.giftForm.recipientPhone')}
+                  color="textPrimary"
+                  style={styles.formLabel}
+                />
+                <TextInput
+                  style={styles.formInput}
+                  placeholder={t('donation.giftForm.enterPhone')}
+                  value={receiverPhone}
+                  onChangeText={setReceiverPhone}
                   keyboardType="phone-pad"
                   placeholderTextColor={Colors.text.secondary}
                 />
@@ -576,52 +485,8 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
             style={styles.donateButton}
             loading={submitting}
           />
-
-          {/* Terms Link */}
-          <TouchableOpacity style={styles.termsContainer}>
-            <Typography
-              variant="caption"
-              text={t('donation.termsLink')}
-              color="turquoise"
-              style={styles.termsLink}
-            />
-          </TouchableOpacity>
         </ScrollView>
       </View>
-
-      {/* Gift To Selection Modal */}
-      {giftToModalVisible && (
-        <View style={styles.selectionModalOverlay}>
-          <TouchableOpacity
-            style={styles.selectionModalBackdrop}
-            activeOpacity={1}
-            onPress={() => setGiftToModalVisible(false)}
-          />
-          <View style={styles.selectionModalContent}>
-            <Typography
-              variant="h5"
-              text={t('donation.giftForm.giftTo')}
-              color="textPrimary"
-              style={styles.selectionModalTitle}
-            />
-            {giftToOptions.map(option => (
-              <TouchableOpacity
-                key={option.value}
-                style={styles.selectionOption}
-                onPress={() => handleSelectGiftTo(option.value)}>
-                <Typography
-                  variant="body1"
-                  text={option.label}
-                  color="textPrimary"
-                />
-                {giftTo === option.value && (
-                  <Typography variant="body1" text="✓" color="primary" />
-                )}
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-      )}
 
       {/* Gift Type Selection Modal */}
       {giftTypeModalVisible && (
@@ -643,7 +508,7 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
                 variant="body1"
                 text={t('common.loading')}
                 color="textSecondary"
-                style={{textAlign: 'center', padding: hp(2)}}
+                style={styles.loadingText}
               />
             ) : (
               <ScrollView
@@ -690,20 +555,8 @@ export const DonationBottomSheet: React.FC<DonationBottomSheetProps> = ({
       <PaymentWebView
         visible={!!paymentUrl}
         url={paymentUrl}
-        onClose={() => {
-          setPaymentUrl('');
-          resetForm();
-          onClose();
-        }}
-        onSuccess={() => {
-          setPaymentUrl('');
-          onDonate?.(
-            quickAmount || parseInt(customAmount, 10) || 0,
-            selectedPath,
-          );
-          resetForm();
-          onClose();
-        }}
+        onClose={handlePaymentWebViewClose}
+        onSuccess={handlePaymentSuccess}
       />
     </Modal>
   );
@@ -733,36 +586,36 @@ const styles = StyleSheet.create({
     paddingBottom: hp(4),
   },
   header: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     marginBottom: hp(1),
   },
   closeButton: {
     padding: 4,
   },
-  title: {
+  pathHeader: {
+    alignItems: 'center',
+    marginBottom: hp(3),
+  },
+  pathImage: {
+    width: wp(30),
+    height: wp(30),
+    borderRadius: wp(15),
+    marginBottom: hp(2),
+  },
+  pathName: {
     fontWeight: '600',
+    textAlign: 'center',
+    marginBottom: hp(1),
+  },
+  pathDescription: {
+    textAlign: 'center',
+    marginBottom: hp(1),
+    paddingHorizontal: wp(4),
   },
   subtitle: {
-    marginBottom: hp(3),
-    textAlign: 'left',
-  },
-  categoryContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: wp(1),
-    marginBottom: hp(3),
-  },
-  categoryChip: {
-    paddingHorizontal: wp(2),
-    paddingVertical: hp(0.6),
-    borderRadius: 20,
-    backgroundColor: Colors.background.light,
-  },
-  categoryChipSelected: {
-    backgroundColor: Colors.text.turquoise,
-    borderColor: Colors.primary,
+    textAlign: 'center',
   },
   quickAmountContainer: {
     flexDirection: 'row',
@@ -854,12 +707,6 @@ const styles = StyleSheet.create({
   donateButton: {
     marginBottom: hp(2),
   },
-  termsContainer: {
-    alignItems: 'center',
-  },
-  termsLink: {
-    textDecorationLine: 'underline',
-  },
   giftFormContainer: {
     marginTop: hp(2),
     marginBottom: hp(2),
@@ -882,29 +729,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
     textAlign: 'right',
   },
-  dropdownContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Colors.light,
-    borderRadius: 16,
-    paddingHorizontal: wp(4),
-    paddingVertical: hp(1.5),
-    backgroundColor: Colors.white,
-  },
-  dropdownInput: {
-    flex: 1,
-    fontSize: 16,
-    color: Colors.text.primary,
-    textAlign: 'left',
-  },
   dropdownText: {
     flex: 1,
     textAlign: 'left',
-  },
-  messageInput: {
-    minHeight: hp(12),
-    paddingTop: hp(1.5),
   },
   selectionModalOverlay: {
     position: 'absolute',
@@ -924,26 +751,14 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.5)',
   },
-  selectionModalContent: {
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    padding: wp(6),
-    width: '80%',
-    maxWidth: 400,
-  },
   selectionModalTitle: {
     marginBottom: hp(2),
     textAlign: 'center',
   },
-  selectionOption: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: hp(2),
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light,
+  loadingText: {
+    textAlign: 'center',
+    padding: hp(2),
   },
-  // Gift Type specific styles
   giftTypeDropdown: {
     flexDirection: 'row',
     alignItems: 'center',

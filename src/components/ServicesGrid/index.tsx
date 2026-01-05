@@ -13,7 +13,7 @@ import {useLanguage} from '../../context';
 import {Colors} from '../../constants';
 import {Typography} from '../Typography';
 import {apiService} from '../../services/api';
-import {DonationBottomSheet} from '../DonationBottomSheet';
+import {PathDonationModal} from '../PathDonationModal';
 
 interface ServiceItem {
   id: string;
@@ -21,6 +21,7 @@ interface ServiceItem {
   subtitle: string;
   icon?: string;
   image?: any;
+  imageUrl?: string;
   color: string;
   onPress?: () => void;
 }
@@ -63,6 +64,12 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
     null,
   );
   const [selectedServiceName, setSelectedServiceName] = useState<string>('');
+  const [selectedServiceImage, setSelectedServiceImage] = useState<
+    string | undefined
+  >(undefined);
+  const [selectedServiceDescription, setSelectedServiceDescription] = useState<
+    string | undefined
+  >(undefined);
 
   const displayServices = services || apiServices;
 
@@ -73,9 +80,16 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
     }
   }, [services]);
 
-  const handleServicePress = (serviceId: number, serviceName: string) => {
+  const handleServicePress = (
+    serviceId: number,
+    serviceName: string,
+    serviceImage?: string,
+    serviceDescription?: string,
+  ) => {
     setSelectedServiceId(serviceId);
     setSelectedServiceName(serviceName);
+    setSelectedServiceImage(serviceImage);
+    setSelectedServiceDescription(serviceDescription);
     setDonationModalVisible(true);
   };
 
@@ -83,13 +97,15 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
     setDonationModalVisible(false);
     setSelectedServiceId(null);
     setSelectedServiceName('');
+    setSelectedServiceImage(undefined);
+    setSelectedServiceDescription(undefined);
   };
 
   const fetchServices = async () => {
     try {
       setLoading(true);
       const response = await apiService.get<any>('/paths');
-      console.log('Paths response:', response);
+      console.log('Paths response:', response.data.pathsOfGoodness);
 
       if (
         response.success &&
@@ -100,13 +116,19 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
           (path: any) => ({
             id: path.id?.toString() || '',
             title: path.name || path.title || '',
-            subtitle: path.description || '',
+            subtitle: path.summary || '',
             image: path.image
               ? {uri: path.image}
               : require('../../assets/images/small_card_image.png'),
+            imageUrl: path.image,
             color: path.color || '#FFFFFF',
             onPress: () =>
-              handleServicePress(path.id, path.name || path.title || ''),
+              handleServicePress(
+                path.id,
+                path.name || path.title || '',
+                path.image,
+                path.summary,
+              ),
           }),
         );
         setApiServices(mappedServices);
@@ -172,11 +194,13 @@ export const ServicesGrid: React.FC<ServicesGridProps> = ({services}) => {
         {displayServices.map(renderServiceCard)}
       </ScrollView>
 
-      <DonationBottomSheet
+      <PathDonationModal
         visible={donationModalVisible}
         onClose={handleCloseDonation}
-        pathId={selectedServiceId || undefined}
-        serviceName={selectedServiceName}
+        pathId={selectedServiceId || 0}
+        pathName={selectedServiceName}
+        pathDescription={selectedServiceDescription}
+        pathImage={selectedServiceImage}
       />
     </View>
   );
